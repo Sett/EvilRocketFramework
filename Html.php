@@ -223,7 +223,7 @@ class Evil_Html
                 unset($options['text']);
             }
         }
-        $result .= '<' . $name . ' ';
+        $result = '<' . $name . ' ';
         if(is_array($options)){
             if(!isset($options['name']) && self::$useElementNameAsTagName)
                 $options['name'] = $name;
@@ -278,10 +278,13 @@ class Evil_Html
         if(false == $start)
             return '';
 
-        $result .= '<input ';
+        $result = '<input ';
         foreach($options as $attr => $value){
             $attr  = (string) $attr;
             $value = (string) $value;
+            if( ('readonly' == $attr) && empty($value) )
+                continue;
+
             $result .= $attr . '="' . $value . '" ';
         }
         return $result . '/>';
@@ -311,6 +314,10 @@ class Evil_Html
             }
             $attr  = (string) $attr;
             $value = (string) $value;
+
+            if( ('disabled' == $attr) && empty($value) )
+                continue;
+
             $result .= $attr . '="' . $value . '" ';
         }
 
@@ -349,8 +356,12 @@ class Evil_Html
         else
             $text = '';
 
-        foreach($options as $attr => $value)
+        foreach($options as $attr => $value){
+            if( ('selected' == $attr) && empty($value) )
+                continue;
+
             $result .= $attr . '="' . $value . '" ';
+        }
 
         $result .= '>' . $text;
         return $result;
