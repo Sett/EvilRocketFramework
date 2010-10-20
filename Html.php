@@ -337,7 +337,7 @@ class Evil_Html
         if(false == $start)
             return '</option>';
 
-        $result .= '';
+        $result = '';
         if(!is_array($options))
             return '';
 
