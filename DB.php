@@ -51,4 +51,27 @@
         {
             // TODO: Sharding support
         }
+
+        protected function enableCache ()
+        {
+        	$frontendOptions = array(
+                'cache_id_prefix' => 'Cache_',
+        		'automatic_serialization' => true
+            );
+            // Rediska options
+            $backendOptions = array();
+
+            $cache = Zend_Cache::factory(
+                'Core',
+                'Rediska_Zend_Cache_Backend_Redis',
+                $frontendOptions,
+                $backendOptions,
+                false,
+                true
+            );
+
+            Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
+
+            return $this;
+        }
     }
