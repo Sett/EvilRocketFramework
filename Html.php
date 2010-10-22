@@ -112,7 +112,7 @@ class Evil_Html
 
     protected function _generateName()
     {
-        return sha1(mt_rand(1,9999) . time());
+        return sha1(mt_rand(1,9999) . time() . mt_rand(0,99999)) . md5(mt_rand(0,99999));
     }
 
 
