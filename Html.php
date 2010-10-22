@@ -92,7 +92,7 @@ class Evil_Html
             $tagType = self::$defaultTag;
 
         if(empty($name))
-            $name = $htis->_generateName();
+            $name = $this->_generateName();
 
         if(is_string($tagType)){// we don't know how to work with not-a-string
             if(empty(self::$_head)){// check, if we are crerating head-element
