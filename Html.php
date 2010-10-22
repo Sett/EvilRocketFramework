@@ -86,10 +86,13 @@ class Evil_Html
      * @param string $tagType default null
      * @param string $parent default null
      */
-    public function __construct($name, $options, $tagType = null, $parent = null, $adding = false)
+    public function __construct($name = '', $options = null, $tagType = null, $parent = null, $adding = false)
     {
         if(is_null($tagType))
             $tagType = self::$defaultTag;
+
+        if(empty($name))
+            $name = $htis->_generateName();
 
         if(is_string($tagType)){// we don't know how to work with not-a-string
             if(empty(self::$_head)){// check, if we are crerating head-element
@@ -105,6 +108,11 @@ class Evil_Html
             $this->_setCurrent($name);// save current element's name
             $this->_setCurrentOptions($options); // save current element's options for comfort extracting
         }
+    }
+
+    protected function _generateName()
+    {
+        return sha1(mt_rand(1,9999) . time());
     }
 
 
