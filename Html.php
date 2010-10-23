@@ -323,9 +323,6 @@ class Evil_Html
             $attr  = (string) $attr;
             $value = (string) $value;
 
-            if( ('disabled' == $attr) && empty($value) )
-                continue;
-
             $result .= $attr . '="' . $value . '" ';
         }
 
@@ -364,12 +361,8 @@ class Evil_Html
         else
             $text = '';
 
-        foreach($options as $attr => $value){
-            if( ('selected' == $attr) && empty($value) )
-                continue;
-
+        foreach($options as $attr => $value)
             $result .= $attr . '="' . $value . '" ';
-        }
 
         $result .= '>' . $text;
         return $result;
