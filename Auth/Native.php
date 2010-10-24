@@ -8,10 +8,8 @@
  */
  
     class Evil_Auth_Native implements Evil_Auth_Interface 
-    {
-        const STEPS = 3;
-        
-        public function step1($controller)
+    {       
+        public function doAuth ($controller)
         {
             $form = new Evil_Auth_Form_Native();
             $controller->view->form = $form;
@@ -20,22 +18,22 @@
                 if ($form->isValid($_POST))
                 {
                     $data  = $form->getValues();
-                    $user = new Evil_Object_2D('user');
+
+                    $user = new Evil_Object_2D('user'); // TODO: Abstract Factory
 
                     $user->where('nickname','=', $data['username']);
+
                     if ($user->load())
                     {                       
                         if ($user->getValue('password') == md5($data['password']))
-                        {
-                            return true;
-                        }
+                            return $user->getId();
                         else
                             throw new Exception('Password Incorrect');
                     }
                     else
                         throw new Exception('Unknown user');
                 }
-            return false;
+            return -1;
         }
 
         public function onFailure()

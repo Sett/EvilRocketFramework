@@ -7,7 +7,7 @@
 
     interface Evil_Auth_Interface
     {
-        public function step1 ($controller);
+        public function doAuth ($controller);
 
         public function onSuccess();
         public function onFailure();        
