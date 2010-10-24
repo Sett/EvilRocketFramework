@@ -1,6 +1,6 @@
 <?php
  
-    class Evil_I18N
+    class Evil_I18N extends Zend_Controller_Plugin_Abstract
     {
         public function routeStartup(Zend_Controller_Request_Abstract $request)
         {
