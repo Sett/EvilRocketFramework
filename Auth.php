@@ -19,6 +19,7 @@
         public function init()
         {
             $this->_ticket = new Evil_Object_2D('ticket');
+            Zend_Registry::set('userid', -1);
         }
 
         public function routeStartup(Zend_Controller_Request_Abstract $request)
@@ -42,8 +43,6 @@
         public function audit ()
         {
             $logger = Zend_Registry::get('logger');
-
-            Zend_Registry::set('userid', -1);
 
             if (isset($_COOKIE['SCORETID']))
             {
