@@ -43,6 +43,8 @@
         {
             $logger = Zend_Registry::get('logger');
 
+            Zend_Registry::set('userid', -1);
+
             if (isset($_COOKIE['SCORETID']))
             {
                 if ($this->_ticket->load($_COOKIE['SCORETID']))
