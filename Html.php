@@ -88,6 +88,12 @@ class Evil_Html
      */
     public function __construct($name = '', $options = null, $tagType = null, $parent = null, $adding = false)
     {
+        if(is_null($tagType) && empty($options)){
+            $tagType = $name;
+            $name    = $this->_generateName();
+            $options = array();
+        }
+
         if(is_null($tagType))
             $tagType = self::$defaultTag;
 
@@ -131,6 +137,11 @@ class Evil_Html
      */
     public function addChild($name, $options, $htmlTagType = null)
     {
+        if(is_null($options) && is_null($htmlTagType)){
+            $htmlTagType = $name;
+            $options     = array();
+            $name        = '';
+        }
         $child = new self($name, $options, $htmlTagType, $this->_current, true);
         $child->_setParent($this->_current);
 
