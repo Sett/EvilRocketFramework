@@ -153,7 +153,7 @@
             return $this;
         }
 
-        public function addNode  ($key, $value = null)
+        public function addNode  ($key, $value)
         {
             return $this;
         }
