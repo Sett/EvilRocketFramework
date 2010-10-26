@@ -3,10 +3,6 @@
     /**
      * @author BreathLess
      * @type Interface
-     * @description: ${Description}
-     * @package ${Package}
-     * @subpackage ${Subpackage}
-     * @version ${Version}
      * @date 24.10.10
      * @time 12:47
      */
@@ -16,7 +12,7 @@
         public function load();
         public function data();
 
-        public function where($key, $selector, $value);
+        public function where($key, $selector, $value = null);
         public function create($id, $data);
         public function erase();
 
