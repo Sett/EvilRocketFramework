@@ -233,12 +233,15 @@
 
         public function getValue  ($key, $return = 'var', $default = null)
         {
+            if ($return == 'array' and $default == null)
+                $default = array();
+
             if (isset($this->_dnodes[$key]))
                 return $this->_getDValue($key);
 
             if (isset($this->_data[$key]))
             {
-                if ($return === 'var' and is_array($this->_data[$key]))
+                if ($return == 'var' and is_array($this->_data[$key]))
                     return $this->_data[$key][0];
                 else
                     return $this->_data[$key];

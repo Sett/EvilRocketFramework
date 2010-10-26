@@ -14,6 +14,10 @@
 
     class Evil_Auth extends Zend_Controller_Plugin_Abstract 
     {
+        /**
+         * @var $_ticket
+         * @description Ticket Object
+         */
         private $_ticket;
 
         public function init()

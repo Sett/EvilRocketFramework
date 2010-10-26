@@ -19,12 +19,17 @@
         {
             parent::routeStartup ($request);
             $this->init();
+            if ($this->denied(Zend_Registry::get('userid'),
+                $request->getControllerName().'/'.$request->getActionName(),
+                $request->getParam('id')))
+                    throw new Exception('Access Denied');
         }
 
         public function init ()
         {
-            self::$_rules = new H2D_Composite('access');
-            self::$_rules = self::$_rules->fetchAll()->toArray();
+            self::$_rules = new Evil_Composite_H2D('rule');
+            self::$_rules->where('active','=', '1');
+
             return true;
         }
 
@@ -41,27 +46,34 @@
             $decisions = array();
             $logger = Zend_Registry::get('logger');
 
-            foreach(self::$_rules as $rule)
+            foreach(self::$_rules->_items as $rule)
             {
-                $objects = explode(';', $rule['object']);
-                $actions = explode(',', $rule['action']);
-                if ($rule['action'] == '*' or in_array($action, $actions))
+                $objects = $rule->getValue('object', 'array');
+                $actions = $rule->getValue('action', 'array');
+                $subjects = $rule->getValue('subject', 'array');
+
+                if ($actions == array('*') or in_array($action, $actions))
                 {
-                    if ($rule['subject'] == '*' or $rule['subject'] == $subject)
+                    if ($subjects == array('*') or in_array($subject, $subjects))
                     {
-                        if ($rule['object'] == '*' or in_array($object[0], $objects) or in_array($object[1], $objects))
+                        if ($objects == array('*') or in_array($object, $objects))
                         {
-                            if (self::_resolve($rule['condition'], $object, $subject))
+                            //if (self::_resolve($rule['condition'], $object, $subject))
                             {
-                                $decisions[(int) $rule['weight']] = $rule['decision'];
-                                $logger->info($rule['comment'].' = '.$rule['decision'].' с весом '.$rule['weight']);
+                                $decisions[(int) $rule->getValue('weight')] = $rule->getValue('decision');
                             }
                         }
                     }
                 }
             }
-            $decision = $decisions[max(array_keys($decisions))];
-            $logger->info('Вердикт: '.$decision);
+
+            if (count($decisions)>0)
+            {
+                $decision = $decisions[max(array_keys($decisions))];
+                $logger->info('Вердикт: '.$decision);
+            } else
+                throw new Exception('No rules applicable');
+
             return $decision;
         }
 
