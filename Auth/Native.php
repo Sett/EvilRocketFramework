@@ -17,7 +17,7 @@
             if ($controller->getRequest()->isPost())
                 if ($form->isValid($_POST))
                 {
-                    $data  = $form->getValues();
+                    $data = $form->getValues();
 
                     $user = new Evil_Object_2D('user'); // TODO: Abstract Factory
 
