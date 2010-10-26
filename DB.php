@@ -52,7 +52,7 @@
             // TODO: Sharding support
         }
 
-        protected function enableCache ()
+        /*protected function enableCache ()
         {
         	$frontendOptions = array(
                 'cache_id_prefix' => 'Cache_',
@@ -73,5 +73,5 @@
             Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
 
             return $this;
-        }
+        }*/
     }

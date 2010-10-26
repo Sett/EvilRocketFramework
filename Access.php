@@ -1,5 +1,4 @@
 <?php
-
     /**
      * @author BreathLess
      * @name Evil_Access Plugin
@@ -12,105 +11,72 @@
      * @time 14:20
      */
 
-    class Evil_Access extends Zend_Controller_Plugin_Abstract 
+  class Evil_Access extends Zend_Controller_Plugin_Abstract
     {
-        private $_ticket;
-
-        public function init()
+        private static $_rules;
+      
+        public function routeStartup (Zend_Controller_Request_Abstract $request)
         {
-            $this->_ticket = new Evil_Object_2D('ticket');
-        }
-
-        public function routeStartup(Zend_Controller_Request_Abstract $request)
-        {
-            parent::routeStartup($request);
+            parent::routeStartup ($request);
             $this->init();
-            $this->audit();
         }
 
-        public function routeShutdown(Zend_Controller_Request_Abstract $request)
+        public function init ()
         {
-            parent::routeShutdown($request);
+            self::$_rules = new H2D_Composite('access');
+            self::$_rules = self::$_rules->fetchAll()->toArray();
+            return true;
         }
 
-        private function _seal ()
+        private function _resolve($condition, $object, $subject)
         {
-            return 'seal';
-            // TODO Cool seal algo
+            if ('*' !== $condition)
+                return self::$condition($object, $subject);
+            else
+                return true;
         }
 
-        public function audit ()
+        public function _check ($object, $subject, $action)
         {
+            $decisions = array();
             $logger = Zend_Registry::get('logger');
 
-            if (isset($_COOKIE['SCORETID']))
+            foreach(self::$_rules as $rule)
             {
-                if ($this->_ticket->load($_COOKIE['SCORETID']))
+                $objects = explode(';', $rule['object']);
+                $actions = explode(',', $rule['action']);
+                if ($rule['action'] == '*' or in_array($action, $actions))
                 {
-                    if (isset($_COOKIE['SCORETSL']))
+                    if ($rule['subject'] == '*' or $rule['subject'] == $subject)
                     {
-                        if ($this->_ticket->getValue('seal') == $_COOKIE['SCORETSL'])
+                        if ($rule['object'] == '*' or in_array($object[0], $objects) or in_array($object[1], $objects))
                         {
-                            if ($this->_seal() == $_COOKIE['SCORETSL'])
+                            if (self::_resolve($rule['condition'], $object, $subject))
                             {
-                                $logger->log('Audited', Zend_Log::INFO);
-                                Zend_Registry::set('userid', $this->_ticket->getValue('user'));
-                            }
-                            else
-                            {
-                                $logger->log('Stolen seal', Zend_Log::INFO);
-                                $this->annulate();
+                                $decisions[(int) $rule['weight']] = $rule['decision'];
+                                $logger->info($rule['comment'].' = '.$rule['decision'].' с весом '.$rule['weight']);
                             }
                         }
-                        else
-                        {
-                            $logger->log('Broken seal', Zend_Log::INFO);
-                            $this->annulate();
-                        }
-                    }
-                    else
-                    {
-                        $logger->log('No seal', Zend_Log::INFO);                        
-                        $this->annulate();
                     }
                 }
-                else
-                {
-                    $logger->log('Ticket No Exist', Zend_Log::INFO);
-                    $this->annulate();
-                }
             }
-            else
-            {
-                $logger->log('No TID', Zend_Log::INFO);
-                $this->register();
-            }
-
+            $decision = $decisions[max(array_keys($decisions))];
+            $logger->info('Вердикт: '.$decision);
+            return $decision;
         }
 
-        public function register()
+        public function allowed($object, $subject, $action)
         {
-            $id = uniqid(true);
-            $seal = $this->_seal();
-
-            $this->_ticket->create($id, array('seal' => $seal, 'username'=> -1, 'created'=>time()));
-            setcookie('SCORETID', $id, 0, '/');
-            setcookie('SCORETSL', $seal, 0, '/');
+            return self::_check($object, $subject, $action);
         }
 
-        public function annulate()
+        public function denied($object, $subject, $action)
         {
-            setcookie('SCORETID', '', 0, '/');
-            setcookie('SCORETSL', '', 0, '/');
+            return !self::_check($object, $subject, $action);
         }
 
-        public function attach($username)
+        private function isOwner($object, $subject)
         {
-            $this->_ticket->setNode('user', $username);
-        }
-
-        public function detach()
-        {
-            $this->_ticket->setNode('user', -1);
+            return ($subject->owner() == $object);
         }
     }
