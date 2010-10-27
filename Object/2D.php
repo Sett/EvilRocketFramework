@@ -44,7 +44,7 @@
 
         public function __construct ($type, $id = null)
         {
-           $this->type = $type;
+           $this->_type = $type;
 
            $prefix = Zend_Registry::get('db-prefix');
 
@@ -224,11 +224,13 @@
             return isset($this->_data[$name]);
         }
 
-        public function __set ($name, $value) {
-            // TODO: Implement __set() method.
+        public function __set ($name, $value)
+        {
+            return $this->setNode($name, $value);
         }
 
-        public function __toString () {
-            // TODO: Implement __toString() method.
+        public function __toString ()
+        {
+            return $this->_type.'::'.$this->_id;
         }
     }

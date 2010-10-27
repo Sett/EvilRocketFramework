@@ -279,4 +279,26 @@
 
             return true;
         }
+
+        // Абстрактный класс?
+
+        public function __get ($name)
+        {
+            return $this->getValue($name);
+        }
+
+        public function __isset ($name)
+        {
+            return isset($this->_data[$name]);
+        }
+
+        public function __set ($name, $value)
+        {
+            return $this->setNode($name, $value);
+        }
+
+        public function __toString ()
+        {
+            return $this->_type.'::'.$this->_id;
+        }
     }
