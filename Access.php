@@ -22,7 +22,7 @@
            
             if ($this->denied(Zend_Registry::get('userid'), $request->getParam('id'),
                 $request->getControllerName(), $request->getActionName()))
-                    throw new Exception('Access Denied');
+                    throw new Exception('Access Denied for '.$request->getControllerName().'::'.$request->getActionName());
         }
 
         public function init ()
@@ -47,23 +47,30 @@
             $logger = Zend_Registry::get('logger');
 
             $conditions = array('controller', 'action', 'object', 'subject', 'role');
-
-
+          
             foreach(self::$_rules as $ruleName => $rule)
             {
                 $selected = true;
                 $logger->log($ruleName.' checking ', Zend_Log::NOTICE);
                 foreach ($conditions as $condition)
-                    if (isset($rule[$condition]) &&
-                        (($rule[$condition] !== $$condition) ||
-                        (is_array($rule[$condition]) &&
-                        !in_array($$condition, $rule[$condition]))))
-                    {
-                        $selected = false;
-                        $logger->log($condition.' not match with '.$$condition, Zend_Log::WARN);
+                {
+                    //if (isset($rule[$condition])) var_dump($$condition, $rule[$condition]);
+                    
+                    if (isset($rule[$condition]))
+                    {                        
+                        if (is_array($rule[$condition]))
+                        {
+                            if (!in_array($$condition, $rule[$condition]))
+                                $selected = false;
+                        }
+                        elseif ($rule[$condition] != $$condition)
+                            $selected = false;
                     }
+
+                    if ($selected == false)
+                        $logger->log($condition.' not match with '.$$condition, Zend_Log::WARN);
                     else
-                        $logger->log($condition.' match with '.$$condition, Zend_Log::INFO);                        
+                        $logger->log($condition.' match with '.$$condition, Zend_Log::INFO);                                   }
 
                 if ($selected)
                 {
