@@ -213,4 +213,22 @@
 
             return true;
         }
+
+        public function __get ($name)
+        {
+            return $this->getValue($name);
+        }
+
+        public function __isset ($name)
+        {
+            return isset($this->_data[$name]);
+        }
+
+        public function __set ($name, $value) {
+            // TODO: Implement __set() method.
+        }
+
+        public function __toString () {
+            // TODO: Implement __toString() method.
+        }
     }
