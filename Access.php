@@ -67,10 +67,13 @@
                             $selected = false;
                     }
 
+                    /*
                     if ($selected == false)
                         $logger->log($condition.' not match with '.$$condition, Zend_Log::WARN);
                     else
-                        $logger->log($condition.' match with '.$$condition, Zend_Log::INFO);                                   }
+                        $logger->log($condition.' match with '.$$condition, Zend_Log::INFO);
+                     
+                     */                                   }
 
                 if ($selected)
                 {
