@@ -15,21 +15,19 @@
     {
         private static $_rules;
       
-        public function routeStartup (Zend_Controller_Request_Abstract $request)
+        public function routeShutdown(Zend_Controller_Request_Abstract $request)
         {
             parent::routeStartup ($request);
             $this->init();
-            if ($this->denied(Zend_Registry::get('userid'),
-                $request->getControllerName().'/'.$request->getActionName(),
-                $request->getParam('id')))
+           
+            if ($this->denied(Zend_Registry::get('userid'), $request->getParam('id'),
+                $request->getControllerName(), $request->getActionName()))
                     throw new Exception('Access Denied');
         }
 
         public function init ()
         {
-            self::$_rules = new Evil_Composite_H2D('rule');
-            self::$_rules->where('active','=', '1');
-
+            self::$_rules = json_decode(file_get_contents(APPLICATION_PATH.'/configs/access.json'), true);
             return true;
         }
 
@@ -41,30 +39,39 @@
                 return true;
         }
 
-        public function _check ($object, $subject, $action)
+        public function _check ($object, $subject, $controller, $action)
         {
             $decisions = array();
+            $user = new Evil_Object_2D('user', $object);
+            $role = $user->getValue('role');
             $logger = Zend_Registry::get('logger');
 
-            foreach(self::$_rules->_items as $rule)
-            {
-                $objects = $rule->getValue('object', 'array');
-                $actions = $rule->getValue('action', 'array');
-                $subjects = $rule->getValue('subject', 'array');
+            $conditions = array('controller', 'action', 'object', 'subject', 'role');
 
-                if ($actions == array('*') or in_array($action, $actions))
-                {
-                    if ($subjects == array('*') or in_array($subject, $subjects))
+
+            foreach(self::$_rules as $ruleName => $rule)
+            {
+                $selected = true;
+                $logger->log($ruleName.' checking ', Zend_Log::NOTICE);
+                foreach ($conditions as $condition)
+                    if (isset($rule[$condition]) &&
+                        (($rule[$condition] !== $$condition) ||
+                        (is_array($rule[$condition]) &&
+                        !in_array($$condition, $rule[$condition]))))
                     {
-                        if ($objects == array('*') or in_array($object, $objects))
-                        {
-                            //if (self::_resolve($rule['condition'], $object, $subject))
-                            {
-                                $decisions[(int) $rule->getValue('weight')] = $rule->getValue('decision');
-                            }
-                        }
+                        $selected = false;
+                        $logger->log($condition.' not match with '.$$condition, Zend_Log::WARN);
                     }
+                    else
+                        $logger->log($condition.' match with '.$$condition, Zend_Log::INFO);                        
+
+                if ($selected)
+                {
+                    $decisions[(int) $rule['weight']] = $rule['decision'];
+                    $logger->log($ruleName.' applicable!', Zend_Log::ALERT);
                 }
+                else
+                    $logger->log($ruleName.' no applicable!', Zend_Log::WARN);
             }
 
             if (count($decisions)>0)
@@ -77,14 +84,14 @@
             return $decision;
         }
 
-        public function allowed($object, $subject, $action)
+        public function allowed($object, $subject, $controller, $action)
         {
-            return self::_check($object, $subject, $action);
+            return self::_check($object, $subject, $controller, $action);
         }
 
-        public function denied($object, $subject, $action)
-        {
-            return !self::_check($object, $subject, $action);
+        public function denied($object, $subject, $controller, $action)
+        {           
+            return !self::_check($object, $subject, $controller, $action);
         }
 
         private function isOwner($object, $subject)
