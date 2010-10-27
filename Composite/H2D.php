@@ -187,13 +187,11 @@
                     break;
 
                 case ':':
-                    $values = explode (',', $values);
+                    foreach ($value as &$cvalue)
+                        $cvalue = '"' . $cvalue . '"';
 
-                    foreach ($values as &$value)
-                    $value = '"' . $value . '"';
-
-                    if (in_array ($key, $this->_fixedschema)) {
-
+                    if (in_array ($key, $this->_fixedschema))
+                    {
                         $rows = $this->_fixed->fetchAll (
                             $this->_fixed
                                 ->select ()
@@ -201,7 +199,7 @@
                                 $this->_fixed,
                                 array($this->_type . '_id')
                             )
-                                ->where ($key . ' IN (' . implode (',', $values) . ')'));
+                                ->where ($key . ' IN (' . implode (',', $value) . ')'));
 
 
                         $ids = $rows->toArray ();
@@ -222,7 +220,7 @@
                                 array('i')
                             )
                                 ->where ('k = ?', $key)
-                                ->where ('v IN ("' . implode (',', $values) . '")'));
+                                ->where ('v IN ("' . implode (',', $value) . '")'));
 
                         $ids = $rows->toArray ();
 
@@ -239,11 +237,12 @@
             return $this;
         }
 
-        public function data () {
+        public function data ()
+        {
             $output = array();
 
             foreach ($this->_items as $id => $item)
-            $output[$id] = $item->data ();
+                $output[$id] = $item->data ();
 
             return $output;
         }

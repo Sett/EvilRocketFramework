@@ -5,9 +5,8 @@
         public function routeStartup(Zend_Controller_Request_Abstract $request)
         {
            $logger = new Zend_Log();
-           $writer = new Zend_Log_Writer_Firebug();
            // TODO: Configurable Logger.
-           $logger->addWriter($writer);
+           $logger->addWriter(new Zend_Log_Writer_Firebug());
 
            // TODO: New option: SVN Expose
            exec ('svn info', $svn);
