@@ -23,7 +23,7 @@
          * @var <string>
          * ID of object
          */
-        protected $id       = null;
+        protected $_id       = null;
         /**
          *
          * @var <array>
@@ -88,7 +88,7 @@
 
         public function setId ($id)
         {
-            $this->id = $id;
+            $this->_id = $id;
 
             return $this;
         }
@@ -101,7 +101,7 @@
 
         public function getId ()
         {
-            return $this->id;
+            return $this->_id;
         }
 
         public function where ($key, $selector, $value = null)
@@ -136,9 +136,9 @@
 
         public function create ($id, $data)
         {
-            $this->id = $id;
+            $this->_id = $id;
 
-            $fixedvalues = array('id' => $id);
+            $fixedvalues = array($this->type.'_id' => $id);
 
             foreach ($data as $key => $value)
                 if (in_array($key, $this->_fixedschema))
@@ -173,7 +173,7 @@
                 if (!in_array($key, $this->_fixedschema))
                 {
                     $this->_fluid->insert(
-                            array('i'=> $this->id, 'k'=>$key,'v'=>$value)
+                            array('i'=> $this->_id, 'k'=>$key,'v'=>$value)
                         );
                 }
 
@@ -186,10 +186,10 @@
                 {
                     if (null !== $value and !empty($value))
                         $this->_fluid->delete(
-                            $this->_fluid->getAdapter()->quoteInto(array('i = ?','k = ?','v = ?'), array($this->id, $key, $value)));
+                            $this->_fluid->getAdapter()->quoteInto(array('i = ?','k = ?','v = ?'), array($this->_id, $key, $value)));
                     else
                         $this->_fluid->delete(
-                            $this->_fluid->getAdapter()->quoteInto(array('i = ?','k = ?'), array($this->id, $key)));
+                            $this->_fluid->getAdapter()->quoteInto(array('i = ?','k = ?'), array($this->_id, $key)));
                 }
 
             return $this;
@@ -202,18 +202,18 @@
                 if (null !== $oldvalue and !empty($oldvalue))
                 {
                     if (in_array($oldvalue, $this->_data[$key]))
-                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = "'.$this->id.'"','k = "'.$key.'"','v = "'.$oldvalue.'"'));
+                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = "'.$this->_id.'"','k = "'.$key.'"','v = "'.$oldvalue.'"'));
                 }
                 else
                 {
                     if (isset($this->_data[$key]))
-                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = "'.$this->id.'"','k = "'.$key.'"'));
+                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = "'.$this->_id.'"','k = "'.$key.'"'));
                     else
                         $this->addNode($key, $value);
                 }
             }
             else
-                $this->_fixed->update(array($key => $value), array('id = "'.$this->id.'"'));
+                $this->_fixed->update(array($key => $value), array($this->type.'_id = "'.$this->_id.'"'));
 
             return $this;
         }
@@ -253,19 +253,19 @@
         public function load($id = null)
         {
             if (null !== $id)
-                $this->id = $id;
+                $this->_id = $id;
 
             $this->_data = array();
 
             // Find fixed row, and extract data from
 
-            $data = $this->_fixed->find($this->id)->toArray();
+            $data = $this->_fixed->find($this->_id)->toArray();
 
             if (!empty($data))
             {
                 $this->_data = $data[0];
 
-                $fluidrows = $this->_fluid->fetchAll('i = "'.$this->id.'"')->toArray();
+                $fluidrows = $this->_fluid->fetchAll('i = "'.$this->_id.'"')->toArray();
 
                     foreach ($fluidrows as $row)
                     {
