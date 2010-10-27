@@ -5,6 +5,7 @@
         public function routeStartup(Zend_Controller_Request_Abstract $request)
         {
            $logger = new Zend_Log();
+
            // TODO: Configurable Logger.
            $logger->addWriter(new Zend_Log_Writer_Firebug());
 
