@@ -270,7 +270,7 @@
                     foreach ($fluidrows as $row)
                     {
                         unset ($row['u']);
-                        $this->_fluidnodes[$row['k']] = $row['k'];
+                        //$this->_fluidnodes[$row['k']] = $row['k'];
                         $this->_data[$row['k']][] = $row['v'];
                     }
             }
