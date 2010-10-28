@@ -20,7 +20,7 @@
             parent::routeStartup ($request);
             $this->init();
            
-            if ($this->denied(Zend_Registry::get('userid'), $request->getParam('id'),
+            if ($this->denied($request->getParam('id'),
                 $request->getControllerName(), $request->getActionName()))
                     throw new Exception('Access Denied for '.$request->getControllerName().'::'.$request->getActionName());
         }
@@ -39,13 +39,13 @@
                 return true;
         }
 
-        public function _check ($object, $subject, $controller, $action)
+        public function _check ($subject, $controller, $action)
         {
             $decisions = array();
-            $user = new Evil_Object_2D('user', $object);
+            $user = new Evil_Object_2D('user', Zend_Registry::get('userid'));
             $role = $user->getValue('role');
             $logger = Zend_Registry::get('logger');
-
+            
             $conditions = array('controller', 'action', 'object', 'subject', 'role');
           
             foreach(self::$_rules as $ruleName => $rule)
@@ -94,18 +94,18 @@
             return $decision;
         }
 
-        public function allowed($object, $subject, $controller, $action)
+        public function allowed($subject, $controller, $action)
         {
-            return self::_check($object, $subject, $controller, $action);
+            return self::_check($subject, $controller, $action);
         }
 
-        public function denied($object, $subject, $controller, $action)
+        public function denied($subject, $controller, $action)
         {           
-            return !self::_check($object, $subject, $controller, $action);
+            return !self::_check($subject, $controller, $action);
         }
 
-        private function isOwner($object, $subject)
+        private function isOwner($subject)
         {
-            return ($subject->owner() == $object);
+            return ($subject->owner() == Zend_Registry::get('userid'));
         }
     }
