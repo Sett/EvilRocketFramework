@@ -42,7 +42,8 @@
         public function _check ($subject, $controller, $action)
         {
             $decisions = array();
-            $user = new Evil_Object_2D('user', Zend_Registry::get('userid'));
+            $object = Zend_Registry::get('userid');
+            $user = new Evil_Object_2D('user', $object);
             $role = $user->getValue('role');
             $logger = Zend_Registry::get('logger');
             
