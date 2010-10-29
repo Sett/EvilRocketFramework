@@ -1,6 +1,6 @@
     <?php
 
-    class Evil_Composite_H2D implements Evil_Composite_Interface,
+    class Evil_Composite_Hybrid implements Evil_Composite_Interface,
         ArrayAccess, Countable, Iterator
     {
         public $_items = array();
