@@ -43,7 +43,7 @@
         {
             $decisions = array();
             $object = Zend_Registry::get('userid');
-            $user = new Evil_Object_2D('user', $object);
+            $user = new Evil_Object_Fixed('user', $object);
             $role = $user->getValue('role');
             $logger = Zend_Registry::get('logger');
             
