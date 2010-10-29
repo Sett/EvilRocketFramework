@@ -14,7 +14,7 @@
             $template = new Evil_Template();
             $entity = $controller->getRequest()->getControllerName();
 
-            $object = Evil_Object::factory($entity , $controller->_getParam('id'));
+            $object = Evil_Structure::getObject($entity , $controller->_getParam('id'));
             $controller->view->assign('body', $template->mix($object->data(), $entity.'/show'));
         }
         
