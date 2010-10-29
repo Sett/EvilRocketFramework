@@ -1,6 +1,6 @@
-    <?php
+<?php
 
-    class Evil_Composite_Hybrid implements Evil_Composite_Interface,
+    class Evil_Composite_Fixed implements Evil_Composite_Interface,
         ArrayAccess, Countable, Iterator
     {
         public $_items = array();
@@ -65,8 +65,6 @@
         public function valid () {
             // TODO: Implement valid() method.
         }
-
-        private $_fluid;
 
         /**
          * (PHP 5 &gt;= 5.1.0)<br/>
@@ -138,14 +136,13 @@
             else
                $postfix = '';
 
-            $this->_fixed = new Zend_Db_Table($prefix . $type . $postfix. '-fixed');
-            $this->_fluid = new Zend_Db_Table($prefix . $type . $postfix. '-fluid'); // ?
+            $this->_fixed = new Zend_Db_Table($prefix . $type . $postfix);
 
             $info = $this->_fixed->info ();
             $this->_fixedschema = $info['cols'];
         }
 
-        public function where ($key, $selector, $value)
+        public function where ($key, $selector, $value = null)
         {
             switch ($selector)
             {
@@ -161,34 +158,7 @@
                                 ->where ($key . ' = ?', $value));
 
                         $ids = $rows->toArray ();
-
-                        foreach ($ids as $id)
-                        {
-                            $id = $id[$this->_type . '_id'];
-                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
-                        }
                     }
-                    else
-                    {
-                        $rows = $this->_fluid->fetchAll (
-                            $this->_fluid
-                                ->select ()
-                                ->from (
-                                $this->_fluid,
-                                array('i')
-                            )
-                                ->where ('k = ?', $key)
-                                ->where ('v = ?', $value));
-
-                        $ids = $rows->toArray ();
-
-                        foreach ($ids as $id)
-                        {
-                            $id = $id['i'];
-                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
-                        }
-                    }
-
                     break;
 
                 case ':':
@@ -205,40 +175,26 @@
                                 array($this->_type . '_id')
                             )
                                 ->where ($key . ' IN (' . implode (',', $value) . ')'));
-
-
-                        $ids = $rows->toArray ();
-
-                        foreach ($ids as $id)
-                        {
-                            $id = $id[$this->_type . '_id'];
-                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
-                        }
                     }
-                    else
-                    {
-                        $rows = $this->_fluid->fetchAll (
-                            $this->_fluid
-                                ->select ()
-                                ->from (
-                                $this->_fluid,
-                                array('i')
-                            )
-                                ->where ('k = ?', $key)
-                                ->where ('v IN ("' . implode (',', $value) . '")'));
+                    break;
 
-                        $ids = $rows->toArray ();
-
-                        foreach ($ids as $id)
+                    case '@':
+                        switch ($key)
                         {
-                            $id = $id['i'];
-                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
+                            case 'all':
+                                $rows = $this->_fixed->fetchAll();
+                            break;
                         }
-                    }
-
                     break;
             }
 
+            $ids = $rows->toArray ();
+            foreach ($ids as $id)
+            {
+                $id = $id[$this->_type . '_id'];
+                $this->_items[$id] = new Evil_Object_Fixed($this->_type, $id);
+            }
+            
             return $this;
         }
 
@@ -252,9 +208,10 @@
             return $output;
         }
 
-        public function addDNode ($key, $fn) {
+        public function addDNode ($key, $fn)
+        {
             foreach ($this->_items as $item)
-            $item->addDNode ($key, $fn);
+                $item->addDNode ($key, $fn);
 
             return $this;
         }

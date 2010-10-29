@@ -170,14 +170,14 @@
 
         public function setNode  ($key, $value, $oldvalue = null)
         {
-            $this->_fixed->update(array($key => $value), array('id = "'.$this->_id.'"'));
+            $this->_fixed->update(array($key => $value), array($this->_type.'_id = "'.$this->_id.'"'));
             return $this;
         }
 
         public function incNode  ($key, $increment)
         {
             if (isset($this->_data[$key]))
-                return $this->setNode($key, $this->_data[$key][0]+$increment);
+                return $this->setNode($key, $this->_data[$key]+$increment);
             else
                 return $this->addNode($key, $increment);
         }
