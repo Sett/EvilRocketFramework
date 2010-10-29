@@ -1,8 +1,8 @@
 <?php
     /**
      * @author BreathLess
-     * @name Evil_Object_H2D
-     * @description: 2D implementation of ORM, classical table interface
+     * @name Evil_Object_3D
+     * @description: 3D implementation of ORM
      * @package Evil
      * @subpackage ORM
      * @version 0.1
@@ -10,7 +10,7 @@
      * @time 12:43
      */
 
-    class Evil_Object_H2D implements Evil_Object_Interface
+    class Evil_Object_Fluid implements Evil_Object_Interface
     {
         /**
          * @var <string>
@@ -33,18 +33,12 @@
         private   $_data     = array ();
 
         /**
-         * List of fixed table keys
-         * @var <array> 
-         */
-        private   $_fixedschema = array();
-        /**
          * List of fluid table keys
          * @var <array>
          */
         private   $_fluidschema = array();
         private   $_dnodes      = array();
 
-        private   $_fixed   = null;
         private   $_fluid   = null;
 
         public function __construct ($type, $id = null)
@@ -53,11 +47,12 @@
 
            $prefix = Zend_Registry::get('db-prefix');
 
-           $this->_fixed = new Zend_Db_Table($prefix.$type.'s-fixed');
-           $this->_fluid = new Zend_Db_Table($prefix.$type.'s-fluid'); // ?
+           if (substr($type, strlen($type)-1) != 's')
+               $postfix = 's';
+           else
+               $postfix = '';
 
-           $info = $this->_fixed->info();
-           $this->_fixedschema = $info['cols'];
+           $this->_fluid = new Zend_Db_Table($prefix.$type.$postfix); // ?
 
            if (null !== $id)
                 $this->load($id);
@@ -109,11 +104,6 @@
             switch ($selector)
             {
                 case '=':
-                    if (in_array($key, $this->_fixedschema))
-                        $data = $this->_fixed->fetchRow(
-                                        $this->_fixed->select()->where($key.' = ?', $value)
-                                                       );
-                    else
                         $data = $this->_fluid->fetchRow(
                                         $this->_fluid->select()->where('K = ?', $key)->where('V = ?', $value)
                                                        );                 
@@ -138,15 +128,8 @@
         {
             $this->_id = $id;
 
-            $fixedvalues = array($this->type.'_id' => $id);
-
             foreach ($data as $key => $value)
-                if (in_array($key, $this->_fixedschema))
-                    $fixedvalues[$key] =  $value;
-                else
-                    $this->addNode ($key, $value);
-
-            $this->_fixed->insert($fixedvalues);
+                $this->addNode ($key, $value);
 
             return $this;
         }
@@ -165,55 +148,46 @@
         public function addNode  ($key, $value = null)
         {
             if (is_array($key) and ($value === null))
-                {
-                    foreach ($key as $k => $v)
-                        $this->addNode($k, $v);
-                }
+                foreach ($key as $k => $v)
+                    $this->addNode($k, $v);
             else
-                if (!in_array($key, $this->_fixedschema))
-                {
-                    $this->_fluid->insert(
-                            array('i'=> $this->_id, 'k'=>$key,'v'=>$value)
-                        );
-                }
+                $this->_fluid->insert(
+                        array('i'=> $this->_id, 'k'=>$key,'v'=>$value)
+                    );
 
             return $this;
         }
 
         public function delNode  ($key, $value = null)
         {
-            if (in_array($key, $this->_fluidschema) and in_array($value, $this->_data[$key]))
-                {
-                    if (null !== $value and !empty($value))
-                        $this->_fluid->delete(
-                            $this->_fluid->getAdapter()->quoteInto(array('i = ?','k = ?','v = ?'), array($this->_id, $key, $value)));
-                    else
-                        $this->_fluid->delete(
-                            $this->_fluid->getAdapter()->quoteInto(array('i = ?','k = ?'), array($this->_id, $key)));
-                }
+            if (null !== $value and !empty($value))
+                $this->_fluid->delete(
+                    $this->_fluid->getAdapter()->quoteInto(array('i = ?','k = ?','v = ?'), array($this->_id, $key, $value)));
+            else
+                $this->_fluid->delete(
+                    $this->_fluid->getAdapter()->quoteInto(array('i = ?','k = ?'), array($this->_id, $key)));
 
             return $this;
         }
 
         public function setNode  ($key, $value, $oldvalue = null)
         {
-            if (!in_array($key, $this->_fixedschema))
+            if (null !== $oldvalue and !empty($oldvalue))
             {
-                if (null !== $oldvalue and !empty($oldvalue))
-                {
-                    if (in_array($oldvalue, $this->_data[$key]))
-                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = "'.$this->_id.'"','k = "'.$key.'"','v = "'.$oldvalue.'"'));
-                }
-                else
-                {
-                    if (isset($this->_data[$key]))
-                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = "'.$this->_id.'"','k = "'.$key.'"'));
-                    else
-                        $this->addNode($key, $value);
-                }
+                if (in_array($oldvalue, $this->_data[$key]))
+                    $this->_fluid->update(
+                        array('k'=>$key, 'v'=>$value),
+                        array('i = "'.$this->_id.'"','k = "'.$key.'"','v = "'.$oldvalue.'"'));
             }
             else
-                $this->_fixed->update(array($key => $value), array($this->type.'_id = "'.$this->_id.'"'));
+            {
+                if (isset($this->_data[$key]))
+                    $this->_fluid->update(
+                        array('k'=>$key, 'v'=>$value),
+                        array('i = "'.$this->_id.'"','k = "'.$key.'"'));
+                else
+                    $this->addNode($key, $value);
+            }
 
             return $this;
         }
@@ -257,26 +231,19 @@
 
             $this->_data = array();
 
-            // Find fixed row, and extract data from
+            $fluidrows = $this->_fluid->fetchAll('i = "'.$this->_id.'"')->toArray();
 
-            $data = $this->_fixed->find($this->_id)->toArray();
-
-            if (!empty($data))
+            if ($fluidrows)
             {
-                $this->_data = $data[0];
-
-                $fluidrows = $this->_fluid->fetchAll('i = "'.$this->_id.'"')->toArray();
-
-                    foreach ($fluidrows as $row)
-                    {
-                        unset ($row['u']);
-                        //$this->_fluidnodes[$row['k']] = $row['k'];
-                        $this->_data[$row['k']][] = $row['v'];
-                    }
+                foreach ($fluidrows as $row)
+                {
+                    unset ($row['u']);
+                    //$this->_fluidnodes[$row['k']] = $row['k'];
+                    $this->_data[$row['k']][] = $row['v'];
+                }
             }
             else
                 return false;
-
             return true;
         }
 

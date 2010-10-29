@@ -19,7 +19,7 @@
                 {
                     $data = $form->getValues();
 
-                    $user = new Evil_Object_2D('user'); // TODO: Abstract Factory
+                    $user = Evil_Object::factory('user');
 
                     $user->where('nickname','=', $data['username']);
 

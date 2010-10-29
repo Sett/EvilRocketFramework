@@ -23,7 +23,7 @@
             }
             else
             {
-                $user = new Evil_Object_2D('user'); // TODO: Abstract Factory
+                $user = Evil_Object::factory('user');
 
                 $user->where('nickname','=', $_SERVER['PHP_AUTH_USER']);
 
