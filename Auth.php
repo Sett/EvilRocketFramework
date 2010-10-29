@@ -98,7 +98,7 @@
             $id = uniqid(true);
             $seal = $this->_seal();
 
-            $this->_ticket->create($id, array('seal' => $seal, 'username'=> -1, 'created'=>time()));
+            $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
             setcookie('SCORETID', $id, 0, '/');
             setcookie('SCORETSL', $seal, 0, '/');
         }
