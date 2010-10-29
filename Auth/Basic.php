@@ -23,7 +23,7 @@
             }
             else
             {
-                $user = Evil_Object::factory('user');
+                $user = Evil_Structure::getObject('user');
 
                 $user->where('nickname','=', $_SERVER['PHP_AUTH_USER']);
 

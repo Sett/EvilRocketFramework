@@ -42,7 +42,7 @@
             {
                 if ($data = $this->_http_digest_parse($_SERVER['PHP_AUTH_DIGEST']))
                 {
-                    $user = Evil_Object::factory('user');
+                    $user = Evil_Structure::getObject('user');
 
                     $user->where('nickname','=', $data['username']);
 

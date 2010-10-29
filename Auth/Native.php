@@ -19,7 +19,7 @@
                 {
                     $data = $form->getValues();
 
-                    $user = Evil_Object::factory('user');
+                    $user = Evil_Structure::getObject('user');
 
                     $user->where('nickname','=', $data['username']);
 
