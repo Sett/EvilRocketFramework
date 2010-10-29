@@ -22,7 +22,7 @@
 
         public function init()
         {
-            $this->_ticket = new Evil_Object_2D('ticket');
+            $this->_ticket = new Evil_Object_Fixed('ticket');
             Zend_Registry::set('userid', -1);
         }
 
@@ -119,8 +119,9 @@
             $this->_ticket->setNode('user', -1);
         }
 
-        private function _check ()
+        public static function factory ($authMethod)
         {
-            
+            $authMethod = 'Evil_Auth_'.ucfirst($authMethod);
+            return new $authMethod();
         }
     }

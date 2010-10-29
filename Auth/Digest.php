@@ -42,7 +42,7 @@
             {
                 if ($data = $this->_http_digest_parse($_SERVER['PHP_AUTH_DIGEST']))
                 {
-                    $user = new Evil_Object_2D('user'); // TODO: Abstract Factory
+                    $user = Evil_Object::factory('user');
 
                     $user->where('nickname','=', $data['username']);
 

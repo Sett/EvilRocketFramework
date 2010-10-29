@@ -160,7 +160,7 @@
                         foreach ($ids as $id)
                         {
                             $id = $id[$this->_type . '_id'];
-                            $this->_items[$id] = new Evil_Object_H2D($this->_type, $id);
+                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
                         }
                     }
                     else
@@ -180,7 +180,7 @@
                         foreach ($ids as $id)
                         {
                             $id = $id['i'];
-                            $this->_items[$id] = new Evil_Object_H2D($this->_type, $id);
+                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
                         }
                     }
 
@@ -207,7 +207,7 @@
                         foreach ($ids as $id)
                         {
                             $id = $id[$this->_type . '_id'];
-                            $this->_items[$id] = new Evil_Object_H2D($this->_type, $id);
+                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
                         }
                     }
                     else
@@ -227,7 +227,7 @@
                         foreach ($ids as $id)
                         {
                             $id = $id['i'];
-                            $this->_items[$id] = new Evil_Object_H2D($this->_type, $id);
+                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
                         }
                     }
 
