@@ -153,7 +153,7 @@
                                 ->select ()
                                 ->from (
                                 $this->_fixed,
-                                array($this->_type . '_id')
+                                array('id')
                             )
                                 ->where ($key . ' = ?', $value));
 
@@ -191,7 +191,7 @@
             $ids = $rows->toArray ();
             foreach ($ids as $id)
             {
-                $id = $id[$this->_type . '_id'];
+                $id = $id['id'];
                 $this->_items[$id] = new Evil_Object_Fixed($this->_type, $id);
             }
             
