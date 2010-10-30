@@ -22,7 +22,7 @@
            
             if ($this->denied($request->getParam('id'),
                 $request->getControllerName(), $request->getActionName()))
-                    throw new Exception('Access Denied for '.$request->getControllerName().'::'.$request->getActionName());
+                    throw new Evil_Exception('Access Denied for '.$request->getControllerName().'::'.$request->getActionName(), 403);
         }
 
         public function init ()
