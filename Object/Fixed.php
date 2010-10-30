@@ -170,7 +170,7 @@
 
         public function setNode  ($key, $value, $oldvalue = null)
         {
-            $this->_fixed->update(array($key => $value), array($this->_type.'_id = "'.$this->_id.'"'));
+            $this->_fixed->update(array($key => $value), array('id = "'.$this->_id.'"'));
             return $this;
         }
 
