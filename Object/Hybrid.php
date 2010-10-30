@@ -218,7 +218,7 @@
                 }
             }
             else
-                $this->_fixed->update(array($key => $value), array($this->type.'_id = "'.$this->_id.'"'));
+                $this->_fixed->update(array($key => $value), array('id = "'.$this->_id.'"'));
 
             return $this;
         }
