@@ -143,7 +143,7 @@
         {
             $this->_id = $id;
 
-            $fixedvalues = array($this->type.'_id' => $id);
+            $fixedvalues = array('id' => $id);
 
             foreach ($data as $key => $value)
                 if (in_array($key, $this->_fixedschema))
