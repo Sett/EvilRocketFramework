@@ -156,7 +156,7 @@ class Evil_Html
      * @param string $htmlTagType default null
      * @return self
      */
-    public function append($name, $options, $htmlTagType = null)
+    public function append($name, $options = null, $htmlTagType = null)
     {
         return new self($name, $options, $htmlTagType, $this->_parent, true);
     }
