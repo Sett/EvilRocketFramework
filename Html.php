@@ -135,7 +135,7 @@ class Evil_Html
      * @param string $htmlTagType default null
      * @return self
      */
-    public function addChild($name, $options, $htmlTagType = null)
+    public function addChild($name, $options = null, $htmlTagType = null)
     {
         if(is_null($options) && is_null($htmlTagType)){
             $htmlTagType = $name;
