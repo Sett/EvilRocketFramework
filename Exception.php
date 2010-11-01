@@ -21,7 +21,8 @@
             if(isset($exceptionConfig[$code]))
             {
                 $exceptionClass = Evil_Factory::make('Evil_Exception_'.$exceptionConfig[$code]);
-                $exceptionClass($message);
+                if (is_callable($exceptionClass))
+                    $exceptionClass($message);
             }
         }
     }
