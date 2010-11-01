@@ -145,7 +145,7 @@
             $this->_fixedschema = $info['cols'];
         }
 
-        public function where ($key, $selector, $value)
+        public function where ($key, $selector, $value = null)
         {
             switch ($selector)
             {

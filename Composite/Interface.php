@@ -11,7 +11,7 @@
     {
         public function data();
 
-        public function where($key, $selector, $value);
+        public function where($key, $selector, $value = null);
 
         public function addDNode($key, $fn);
     }
