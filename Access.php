@@ -46,7 +46,7 @@
             $user = new Evil_Object_Fixed('user', $object);
             $role = $user->getValue('role');
             $logger = Zend_Registry::get('logger');
-            
+            Zend_Wildfire_Plugin_FirePhp::group('Access');            
             $conditions = array('controller', 'action', 'object', 'subject', 'role');
           
             foreach(self::$_rules as $ruleName => $rule)
@@ -92,6 +92,7 @@
             } else
                 throw new Exception('No rules applicable');
 
+            Zend_Wildfire_Plugin_FirePhp::groupEnd('Access');
             return $decision;
         }
 
