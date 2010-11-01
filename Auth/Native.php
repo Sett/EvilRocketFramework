@@ -28,10 +28,10 @@
                         if ($user->getValue('password') == md5($data['password']))
                             return $user->getId();
                         else
-                            throw new Exception('Password Incorrect');
+                            throw new Evil_Exception('Password Incorrect', 4042);
                     }
                     else
-                        throw new Exception('Unknown user');
+                        throw new Evil_Exception('Unknown user', 4044);
                 }
             return -1;
         }
