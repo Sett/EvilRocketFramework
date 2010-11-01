@@ -24,5 +24,6 @@
                 $exceptionClass($this);
             }
 
+            parent::__construct($message, $code);
         }
     }
