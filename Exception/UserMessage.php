@@ -11,11 +11,11 @@
      * @time 13:38
      */
 
-    class Evil_Exception_RedirectToAuth implements Evil_Exception_Interface
+    class Evil_Exception_UserMessage implements Evil_Exception_Interface
     {
         public function __invoke($message)
         {
-            header('Location: http://'.$_SERVER['HTTP_HOST'].'/auth');
+            echo $message;
             die();
         }
     }
