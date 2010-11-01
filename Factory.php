@@ -13,8 +13,8 @@
 
     class Evil_Factory
     {
-        public static function make($className)
+        public static function make($className, $args = null)
         {
-            return new $className();
+            return new $className($args);
         }
     }

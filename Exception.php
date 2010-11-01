@@ -21,9 +21,7 @@
             if(isset($exceptionConfig[$code]))
             {
                 $exceptionClass = Evil_Factory::make('Evil_Exception_'.$exceptionConfig[$code]);
-                $exceptionClass($this);
+                $exceptionClass($message);
             }
-
-            parent::__construct($message, $code);
         }
     }
