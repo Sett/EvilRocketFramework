@@ -28,4 +28,9 @@
                 return self::$_classes[$className] = new $className($args);
         }
 
+        public static function makeFunc($fn, $args)
+        {
+            return $fn($args);    
+        }
+
     }
