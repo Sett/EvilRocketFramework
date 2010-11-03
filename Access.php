@@ -66,7 +66,7 @@
                                 $selected = false;
                                 //var_dump($ruleName.' => '.$condition.'['.($$condition).'] in not in ['.implode(',', $rule[$condition]).']');
                                  
-                                // Уже flase - нам не надо дальше ничего проверять |Artemy
+                                // Уже false - нам не надо дальше ничего проверять |Artemy
                             	break;
                             }
                         }
@@ -75,7 +75,7 @@
                             $selected = false;
                             // var_dump($ruleName.' => '.$condition.'['.($$condition).'] != '.$rule[$condition]);
 
-                            // Уже flase - нам не надо дальше ничего проверять |Artemy
+                            // Уже false - нам не надо дальше ничего проверять |Artemy
                             break;
                         }
                     }
@@ -96,7 +96,7 @@
                 }
                 else
                 {
-                    $logger->log($ruleName.' no applicable!', Zend_Log::WARN);
+                    //$logger->log($ruleName.' no applicable!', Zend_Log::WARN);
                 }
             }
             //var_dump($controller.":".$action);
