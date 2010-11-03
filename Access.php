@@ -46,17 +46,15 @@
             $user = new Evil_Object_Fixed('user', $object);
             $role = $user->getValue('role');
             $logger = Zend_Registry::get('logger');
-            Zend_Wildfire_Plugin_FirePhp::group('Access');            
+            Zend_Wildfire_Plugin_FirePhp::group('Access');
+            
             $conditions = array('controller', 'action', 'object', 'subject', 'role');
           
             foreach(self::$_rules as $ruleName => $rule)
             {
                 $selected = true;
-                $logger->log($ruleName.' checking ', Zend_Log::NOTICE);
                 foreach ($conditions as $condition)
                 {
-                    //if (isset($rule[$condition])) var_dump($$condition, $rule[$condition]);
-                    
                     if (isset($rule[$condition]))
                     {                        
                         if (is_array($rule[$condition]))
@@ -64,43 +62,23 @@
                             if (!in_array($$condition, $rule[$condition]))
                             {
                                 $selected = false;
-                                //var_dump($ruleName.' => '.$condition.'['.($$condition).'] in not in ['.implode(',', $rule[$condition]).']');
-                                 
-                                // Уже false - нам не надо дальше ничего проверять |Artemy
                             	break;
                             }
                         }
                         elseif ($rule[$condition] != $$condition)
                         {
                             $selected = false;
-                            // var_dump($ruleName.' => '.$condition.'['.($$condition).'] != '.$rule[$condition]);
-
-                            // Уже false - нам не надо дальше ничего проверять |Artemy
                             break;
                         }
                     }
-
-                    /*
-                    if ($selected == false)
-                        $logger->log($condition.' not match with '.$$condition, Zend_Log::WARN);
-                    else
-                        $logger->log($condition.' match with '.$$condition, Zend_Log::INFO);
-                     
-                     */                                 
                 }
 
                 if ($selected)
                 {
                     $decisions[(int) $rule['weight']] = $rule['decision'];
-                    $logger->log($ruleName.' applicable!', Zend_Log::ALERT);
-                }
-                else
-                {
-                    //$logger->log($ruleName.' no applicable!', Zend_Log::WARN);
+                    $logger->log($ruleName.' applicable!', Zend_Log::INFO);
                 }
             }
-            //var_dump($controller.":".$action);
-			//var_dump($decisions);
             if (count($decisions)>0)
             {
                 $decision = $decisions[max(array_keys($decisions))];
