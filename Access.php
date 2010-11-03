@@ -62,10 +62,22 @@
                         if (is_array($rule[$condition]))
                         {
                             if (!in_array($$condition, $rule[$condition]))
+                            {
                                 $selected = false;
+                                //var_dump($ruleName.' => '.$condition.'['.($$condition).'] in not in ['.implode(',', $rule[$condition]).']');
+                                 
+                                // Уже flase - нам не надо дальше ничего проверять |Artemy
+                            	break;
+                            }
                         }
                         elseif ($rule[$condition] != $$condition)
+                        {
                             $selected = false;
+                            // var_dump($ruleName.' => '.$condition.'['.($$condition).'] != '.$rule[$condition]);
+
+                            // Уже flase - нам не надо дальше ничего проверять |Artemy
+                            break;
+                        }
                     }
 
                     /*
@@ -74,7 +86,8 @@
                     else
                         $logger->log($condition.' match with '.$$condition, Zend_Log::INFO);
                      
-                     */                                   }
+                     */                                 
+                }
 
                 if ($selected)
                 {
@@ -82,9 +95,12 @@
                     $logger->log($ruleName.' applicable!', Zend_Log::ALERT);
                 }
                 else
+                {
                     $logger->log($ruleName.' no applicable!', Zend_Log::WARN);
+                }
             }
-
+            //var_dump($controller.":".$action);
+			//var_dump($decisions);
             if (count($decisions)>0)
             {
                 $decision = $decisions[max(array_keys($decisions))];
