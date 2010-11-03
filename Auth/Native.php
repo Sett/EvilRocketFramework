@@ -47,8 +47,6 @@
         	$config = Zend_Registry::get('config');
         	$config = (is_object($config)) ? $config->toArray() : $config;
         	
-        	var_dump($config['evil']['auth']['native']['view']);
-        	
         	if (isset($config['evil']['auth']['native']['view']) && !empty($config['evil']['auth']['native']['view']))
         	{
 				return $this->_doCustomAuth($controller, $config['evil']['auth']['native']['view']);
