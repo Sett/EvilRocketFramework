@@ -15,6 +15,12 @@
     {
         private static $_rules;
       
+        const ACCESS_FILE 		= '/configs/access.json';
+        const ACCESS_METHOD 	= 'ACCESS';
+
+        // const ACCESS_FILE 		= '/configs/roles.json';
+        // const ACCESS_METHOD 	= 'ROLE';        
+        
         public function routeShutdown(Zend_Controller_Request_Abstract $request)
         {
             parent::routeStartup ($request);
@@ -27,7 +33,7 @@
 
         public function init ()
         {
-            self::$_rules = json_decode(file_get_contents(APPLICATION_PATH.'/configs/access.json'), true);
+            self::$_rules = json_decode(file_get_contents(APPLICATION_PATH.self::ACCESS_FILE), true);
             return true;
         }
 
@@ -38,8 +44,55 @@
             else
                 return true;
         }
-
+        
         public function _check ($subject, $controller, $action)
+        {
+        	if (self::ACCESS_METHOD == 'ROLE')
+        	{
+        		return $this->_check_by_role_table($subject, $controller, $action);
+        	}
+        	else return $this->_check_by_access_table($subject, $controller, $action);
+        }
+        
+        // by Artemy
+        private function _check_by_role_table ($subject, $controller, $action)
+        {
+        	$decisions = array();
+        	$object 	= Zend_Registry::get('userid');
+        	$user 		= new Evil_Object_Fixed('user', $object);
+        	$role 		= $user->getValue('role');
+            $logger 	= Zend_Registry::get('logger');
+            Zend_Wildfire_Plugin_FirePhp::group('Access');   
+            
+            // Роль для гостя - незарег. пользователя
+            $role = $object == -1 ? 'guest' : $role;
+            
+            // По 3-м возможным вариантам
+            foreach (array('all', $role, $object) as $__user_role)
+            {
+            	if (!isset(self::$_rules[$__user_role][$controller])) continue; else
+            	$current = self::$_rules[$__user_role][$controller];
+            	
+	            if (is_array($current))
+	            {
+	            	if (empty($current))
+	            	{
+	            		// пустой массив - все методы - разрешаем
+	            		$decision = true;
+	            	}
+	            	elseif (in_array($action, $current))
+	            	{
+	            		// есть в списке - разрешаем
+	            		$decision = true;           		
+	            	}
+	            }        
+            }    
+            
+            Zend_Wildfire_Plugin_FirePhp::groupEnd('Access');     	
+            return $decision;
+        }
+        
+        private function _check_by_access_table ($subject, $controller, $action)
         {
             $decisions = array();
             $object = Zend_Registry::get('userid');
