@@ -11,7 +11,7 @@
      * @time 14:20
      */
     
-    class Evil_Access extends Evil_Access_Weighted //Evil_Access_RBAC
+    class Evil_Access extends Evil_Access_RBAC
     {
    		// Class factory - coming soon
     }
