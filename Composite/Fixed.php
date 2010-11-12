@@ -172,7 +172,7 @@
                                 ->select ()
                                 ->from (
                                 $this->_fixed,
-                                array($this->_type . '_id')
+                                array('id')
                             )
                                 ->where ($key . ' IN (' . implode (',', $value) . ')'));
                     }
@@ -198,12 +198,16 @@
             return $this;
         }
 
-        public function data ()
+        public function data ($key = null)
         {
             $output = array();
 
-            foreach ($this->_items as $id => $item)
-                $output[$id] = $item->data ();
+            if ($key == null)
+                foreach ($this->_items as $id => $item)
+                    $output[$id] = $item->data ();
+            else
+                foreach ($this->_items as $id => $item)
+                    $output[$id] = $item->getValue ($key);
 
             return $output;
         }
