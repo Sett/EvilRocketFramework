@@ -26,7 +26,7 @@
 			$view->error_message = $message;
 			
 			// установка переменных:
-			$layout->content = $view->render('/exeption/activate.phtml');
+			$layout->content = $view->render('/exeption/user.phtml');
 
 			echo $layout->render();        	
         	
