@@ -21,8 +21,13 @@
             if(isset($exceptionConfig[$code]))
             {
                 $exceptionClass = Evil_Factory::make('Evil_Exception_'.$exceptionConfig[$code]);
+                
                 if (is_callable($exceptionClass)) 
                     $exceptionClass($message);
+                
+                // For compatibility with php 5.2 by #Artemy
+                elseif (method_exists($exceptionClass, '__invoke'))
+                	$exceptionClass->__invoke($message);
             }
         }
     }
