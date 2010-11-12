@@ -145,6 +145,13 @@
             $this->_fixedschema = $info['cols'];
         }
 
+        public function load ($ids)
+        {
+            // TODO Mass loading
+            foreach ($ids as $id)
+                $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
+        }
+
         public function where ($key, $selector, $value = null)
         {
             switch ($selector)
@@ -242,12 +249,16 @@
             return $this;
         }
 
-        public function data ()
+        public function data ($key = null)
         {
             $output = array();
 
-            foreach ($this->_items as $id => $item)
-                $output[$id] = $item->data ();
+            if ($key == null)
+                foreach ($this->_items as $id => $item)
+                    $output[$id] = $item->data ();
+            else
+                foreach ($this->_items as $id => $item)
+                    $output[$id] = $item->getValue ($key);
 
             return $output;
         }
