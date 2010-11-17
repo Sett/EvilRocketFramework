@@ -63,7 +63,7 @@
         public function enableCache()
         {
           $frontendOptions = array(
-             'lifetime' => 7200,
+             'lifetime' => 60,
              'automatic_serialization' => true
           );
 
