@@ -12,6 +12,7 @@
 
     class Evil_Object_Hybrid implements Evil_Object_Interface
     {
+        protected $_loaded = false;
         /**
          * @var <string>
          * Type of object, entity name
@@ -47,7 +48,7 @@
         private   $_fixed   = null;
         private   $_fluid   = null;
 
-        public function __construct ($type, $id = null)
+        public function __construct ($type, $id = null, $data = null)
         {
            $this->type = $type;
 
@@ -64,8 +65,14 @@
            $info = $this->_fixed->info();
            $this->_fixedschema = $info['cols'];
 
-           if (null !== $id)
-                $this->load($id);
+           if ($data !== null)
+           {
+               $this->_data = $data;
+               $this->_loaded = true;
+           }
+           else
+               if (null !== $id)
+                    $this->load($id);
 
            return true;
         }
@@ -257,6 +264,9 @@
 
         public function load($id = null)
         {
+            if ($this->_loaded)
+                return true;
+
             if (null !== $id)
                 $this->_id = $id;
 
@@ -282,6 +292,7 @@
             else
                 return false;
 
+            $this->_loaded = true;
             return true;
         }
 

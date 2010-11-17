@@ -13,6 +13,8 @@
 
     class Evil_Object_Fixed implements Evil_Object_Interface
     {
+        protected $_loaded = false;
+
         /**
          * @var <string>
          * Type of object, entity name
@@ -200,6 +202,9 @@
 
         public function load($id = null)
         {
+            if ($this->_loaded)
+                return true;
+
             if (null !== $id)
                 $this->_id = $id;
 
@@ -216,26 +221,7 @@
             else
                 return false;
 
+            $this->_loaded = true;
             return true;
-        }
-
-        public function __get ($name)
-        {
-            return $this->getValue($name);
-        }
-
-        public function __isset ($name)
-        {
-            return isset($this->_data[$name]);
-        }
-
-        public function __set ($name, $value)
-        {
-            return $this->setNode($name, $value);
-        }
-
-        public function __toString ()
-        {
-            return $this->_type.'::'.$this->_id;
         }
     }

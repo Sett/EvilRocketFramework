@@ -10,6 +10,7 @@
             parent::routeStartup($request);
 
             $this->controllerDrivenDB($request);
+            $this->enableCache ();
         }
 
         public function controllerDrivenDB($request)
@@ -35,6 +36,13 @@
 
             Zend_Registry::set('db',$db);
             Zend_Db_Table_Abstract::setDefaultAdapter($db);
+
+            if ($config['evil']['db']['profiling'])
+            {
+                $profiler = new Zend_Db_Profiler_Firebug('DB Queries');
+                $profiler->setEnabled(true);
+                $db->setProfiler($profiler);
+            }
         }
 
         public function fallbackDB ()
@@ -52,26 +60,20 @@
             // TODO: Sharding support
         }
 
-        /*protected function enableCache ()
+        public function enableCache()
         {
-        	$frontendOptions = array(
-                'cache_id_prefix' => 'Cache_',
-        		'automatic_serialization' => true
-            );
-            // Rediska options
-            $backendOptions = array();
+          $frontendOptions = array(
+             'lifetime' => 7200,
+             'automatic_serialization' => true
+          );
 
-            $cache = Zend_Cache::factory(
-                'Core',
-                'Rediska_Zend_Cache_Backend_Redis',
-                $frontendOptions,
-                $backendOptions,
-                false,
-                true
-            );
+          $backendOptions = array();
 
-            Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
+          $cache = Zend_Cache::factory('Core',
+                                       'XCache',
+                                       $frontendOptions,
+                                       $backendOptions);
 
-            return $this;
-        }*/
+          Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
+        }
     }
