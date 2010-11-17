@@ -34,15 +34,15 @@
                 Zend_Registry::set('db-prefix',$config['resources']['db']['prefix']);
             }
 
-            Zend_Registry::set('db',$db);
-            Zend_Db_Table_Abstract::setDefaultAdapter($db);
-
             if ($config['evil']['db']['profiling'])
             {
                 $profiler = new Zend_Db_Profiler_Firebug('DB Queries');
                 $profiler->setEnabled(true);
                 $db->setProfiler($profiler);
             }
+
+            Zend_Registry::set('db',$db);
+            Zend_Db_Table_Abstract::setDefaultAdapter($db);
         }
 
         public function fallbackDB ()
