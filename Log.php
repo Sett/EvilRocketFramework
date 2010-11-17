@@ -9,10 +9,22 @@
            // TODO: Configurable Logger.
            $logger->addWriter(new Zend_Log_Writer_Firebug());
 
-           // TODO: New option: SVN Expose
-           exec ('svn info', $svn);
-           $logger->log($svn[4], Zend_Log::INFO);
-           
+           $config = Zend_Registry::get('config');
+
+           if (isset($config['evil']['log']['expose']['svn']) and $config['evil']['log']['expose']['svn'])
+           {
+               exec ('svn info', $svn);
+               $logger->log($svn[4], Zend_Log::INFO);
+           }
+
+            $columnMapping = array('lvl' => 'priority', 'msg' => 'message');
+            $dbWriter = new Zend_Log_Writer_Db(Zend_Registry::get('db'), 'score_log', $columnMapping);
+
+            $onlyCrit = new Zend_Log_Filter_Priority(Zend_Log::CRIT);
+            $dbWriter->addFilter($onlyCrit);
+
+            $logger->addWriter($dbWriter);
+
            Zend_Registry::set('logger',$logger);
         }
     }
