@@ -18,7 +18,7 @@
             self::$_rules = json_decode(file_get_contents(APPLICATION_PATH.'/configs/roles.json'), true);
             
             if (!self::$_rules)
-            throw new Exception('JSON-encoded file "/configs/roles.json" is corrupted');
+                throw new Exception('JSON-encoded file "/configs/roles.json" is corrupted');
             
             return true;
         }  	
@@ -28,11 +28,10 @@
         {
         	$decision	= false;
         	$object 	= Zend_Registry::get('userid');
-        	$user 		= new Evil_Object_Fixed('user', $object);
+        	$user 		= Evil_Structure::getObject('user', $object);
         	$role 		= $user->getValue('role');
             $logger 	= Zend_Registry::get('logger');
-            Zend_Wildfire_Plugin_FirePhp::group('Access');   
-            
+
             // Роль для гостя - незарег. пользователя
             $role = $object == -1 ? 'guest' : $role;
             
@@ -59,7 +58,6 @@
 	            }
             }    
             
-            Zend_Wildfire_Plugin_FirePhp::groupEnd('Access');     	
             return $decision;
         }
         

@@ -4,6 +4,7 @@
         ArrayAccess, Countable, Iterator
     {
         public $_items = array();
+        private $_ids = array();
         private $_type;
 
         private $_fixed;
@@ -145,13 +146,6 @@
             $this->_fixedschema = $info['cols'];
         }
 
-        public function load ($ids)
-        {
-            // TODO Mass loading
-            foreach ($ids as $id)
-                $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
-        }
-
         public function where ($key, $selector, $value = null)
         {
             switch ($selector)
@@ -218,8 +212,7 @@
 
                         foreach ($ids as $id)
                         {
-                            $id = $id['id'];
-                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
+                            $this->_ids[] = $id['id'];
                         }
                     }
                     else
@@ -237,10 +230,7 @@
                         $ids = $rows->toArray ();
 
                         foreach ($ids as $id)
-                        {
-                            $id = $id['i'];
-                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
-                        }
+                            $this->_ids[] = $id['i'];
                     }
 
                     break;
@@ -268,5 +258,49 @@
             $item->addDNode ($key, $fn);
 
             return $this;
+        }
+
+        public function load($ids = null)
+        {
+            if ($ids !== null)
+                $this->_ids = $ids;
+
+            $this->_items = array();
+            $this->_data = array();
+
+            $ids = $this->_ids;
+
+            foreach($ids as &$id)
+                $id = '"'.$id.'"';
+
+            $fixedRows = $this->_fixed->fetchAll (
+                            $this->_fixed
+                                ->select ()
+                                ->from (
+                                $this->_fixed
+                            )
+                                ->where ('`id` IN (' . implode (',', $ids) . ')'));
+
+            $fluidRows = $this->_fluid->fetchAll (
+                            $this->_fluid
+                                ->select ()
+                                ->from (
+                                $this->_fluid
+                            )
+                                ->where ('`i` IN (' . implode (',', $ids) . ')'));
+
+            $fluidRows = $fluidRows->toArray();
+            
+            $fixedRows = $fixedRows->toArray();
+
+            foreach ($fluidRows as $row)
+                $data[$row['i']][$row['k']] = $row['v'];
+
+            foreach($fixedRows as $row)
+                $data[$row['id']] = array_merge($data[$row['id']], $row);
+
+            foreach ($data as $id => $data)
+                $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id, $data);
+            
         }
     }
