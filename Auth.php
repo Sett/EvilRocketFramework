@@ -54,7 +54,7 @@
                 {
                     if (isset($_COOKIE['SCORETSL']))
                     {
-                        if ($this->_ticket->seal == $_COOKIE['SCORETSL'])
+                        if ($this->_ticket->getValue('seal') == $_COOKIE['SCORETSL'])
                         {
                             if ($this->_seal() == $_COOKIE['SCORETSL'])
                             {

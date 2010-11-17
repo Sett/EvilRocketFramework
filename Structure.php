@@ -8,6 +8,8 @@
 
     class Evil_Structure
     {
+        protected static $_Structures = array();
+        
         private static function _getMapper($type)
         {
             $config = Zend_Registry::get('config');
@@ -20,8 +22,13 @@
 
         public static function getObject ($type, $id = null)
         {
-            $className = 'Evil_Object_'.self::_getMapper($type);
-            return new $className($type, $id);
+            if (!isset(self::$_Structures['Object'][$type][$id]))
+            {
+                $className = 'Evil_Object_'.self::_getMapper($type);
+                self::$_Structures['Object'][$type][$id] = new $className($type, $id);
+            }
+            return self::$_Structures['Object'][$type][$id];
+
         }
 
         public static function getComposite ($type, $id = null)

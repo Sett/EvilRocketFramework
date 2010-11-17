@@ -22,10 +22,4 @@
         public function getValue($key, $return = 'var', $default = null);
 
         public function addDNode($key, $fn);
-
-        public function __get ($name);
-        public function __set ($name, $value);
-        public function __isset ($name);
-        public function __toString ();
-
     }
