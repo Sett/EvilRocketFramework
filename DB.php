@@ -62,6 +62,7 @@
 
         public function enableCache()
         {
+            return true;// Se#
           $frontendOptions = array(
              'lifetime' => 60,
              'automatic_serialization' => true
