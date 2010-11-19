@@ -36,7 +36,8 @@
             $role = $object == -1 ? 'guest' : $role;
             
             // По 3-м возможным вариантам: все, роль пользователя, ID пользователя
-            foreach (array('all', $role, $object) as $__user_role)
+            $check = array('all', $role, $object);
+            foreach ($check as $__user_role)
             {
             	if (!isset(self::$_rules[$__user_role][$controller])) continue; else
             	$current = self::$_rules[$__user_role][$controller];
