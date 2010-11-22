@@ -25,9 +25,9 @@
 
                 if ($user->load())
                 {                       
-                        if ($user->getValue('password') == md5($data['password']))
+                    if ($user->getValue('password') == md5($data['password']))
                         return $user->getId();
-                        else
+                    else
                         $login_view->error_message = 'Пароль указан не верно';
                 }
                 else $login_view->error_message = 'Пользователь не найден';

@@ -22,7 +22,7 @@
 
         public function init()
         {
-            $this->_ticket = new Evil_Object_Fixed('ticket');
+            $this->_ticket = Evil_Structure::getObject('ticket');
             Zend_Registry::set('userid', -1);
         }
 
