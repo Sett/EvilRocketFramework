@@ -10,93 +10,25 @@
      * @time 12:43
      */
 
-    class Evil_Object_Fluid implements Evil_Object_Interface
+    class Evil_Object_Fluid extends Evil_Object_Base implements Evil_Object_Interface
     {
-        /**
-         * @var <string>
-         * Type of object, entity name
-         */
-
-        protected $type     = null;
-        /**
-         *
-         * @var <string>
-         * ID of object
-         */
-        protected $_id       = null;
-        /**
-         *
-         * @var <array>
-         * Internal data cache. Populating by load() method.
-         * Implements State Machine Pattern.
-         */
-        private   $_data     = array ();
-
         /**
          * List of fluid table keys
          * @var <array>
          */
         private   $_fluidschema = array();
-        private   $_dnodes      = array();
-
         private   $_fluid   = null;
 
         public function __construct ($type, $id = null)
         {
            $this->type = $type;
 
-           $prefix = Zend_Registry::get('db-prefix');
-
-           if (substr($type, strlen($type)-1) != 's')
-               $postfix = 's';
-           else
-               $postfix = '';
-
-           $this->_fluid = new Zend_Db_Table($prefix.$type.$postfix); // ?
+           $this->_fluid = new Zend_Db_Table(Evil_DB::scope2table($type));
 
            if (null !== $id)
                 $this->load($id);
 
            return true;
-        }
-
-        public function data()
-        {
-        	foreach ($this->_dnodes as $key => $fn)
-                $this->_getDValue($key);
-
-        	return $this->_data;
-        }
-
-        public function reset()
-        {
-
-        }
-
-        /**
-         *
-         * @param <string> $id
-         * @return ObjectH3D
-         *
-         * Setter for ID
-         */
-
-        public function setId ($id)
-        {
-            $this->_id = $id;
-
-            return $this;
-        }
-
-        /**
-         *
-         * @return <string>
-         * Getter for ID
-         */
-
-        public function getId ()
-        {
-            return $this->_id;
         }
 
         public function where ($key, $selector, $value = null)
@@ -131,17 +63,6 @@
             foreach ($data as $key => $value)
                 $this->addNode ($key, $value);
 
-            return $this;
-        }
-
-        public function erase ()
-        {
-            return $this;
-        }
-
-        public function addDNode ($key, $fn)
-        {
-            $this->_dnodes[$key] = $fn;
             return $this;
         }
 
@@ -200,30 +121,6 @@
                 return $this->addNode($key, $increment);
         }
 
-        private function _getDValue ($key)
-        {
-        	return $this->_data[$key] = $this->_dnodes[$key]($this->_data);
-        }
-
-        public function getValue  ($key, $return = 'var', $default = null)
-        {
-            if ($return == 'array' and $default == null)
-                $default = array();
-
-            if (isset($this->_dnodes[$key]))
-                return $this->_getDValue($key);
-
-            if (isset($this->_data[$key]))
-            {
-                if ($return == 'var' and is_array($this->_data[$key]))
-                    return $this->_data[$key][0];
-                else
-                    return $this->_data[$key];
-            }
-            else
-                return $default;
-        }
-
         public function load($id = null)
         {
             if (null !== $id)
@@ -245,27 +142,5 @@
             else
                 return false;
             return true;
-        }
-
-        // Абстрактный класс?
-
-        public function __get ($name)
-        {
-            return $this->getValue($name);
-        }
-
-        public function __isset ($name)
-        {
-            return isset($this->_data[$name]);
-        }
-
-        public function __set ($name, $value)
-        {
-            return $this->setNode($name, $value);
-        }
-
-        public function __toString ()
-        {
-            return $this->_type.'::'.$this->_id;
         }
     }

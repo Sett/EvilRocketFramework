@@ -11,52 +11,21 @@
      * @time 12:43
      */
 
-    class Evil_Object_Fixed implements Evil_Object_Interface
+    class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interface
     {
-        protected $_loaded = false;
-
-        /**
-         * @var <string>
-         * Type of object, entity name
-         */
-
-        protected $_type     = null;
-        /**
-         *
-         * @var <string>
-         * ID of object
-         */
-        protected $_id       = null;
-        /**
-         *
-         * @var <array>
-         * Internal data cache. Populating by load() method.
-         * Implements State Machine Pattern.
-         */
-        private   $_data     = array ();
-
         /**
          * List of fixed table keys
          * @var <array>
          */
         private   $_fixedschema = array();
-        private   $_dnodes      = array();
-
         private   $_fixed   = null;
 
         public function __construct ($type, $id = null)
         {
            $this->_type = $type;
 
-           $prefix = Zend_Registry::get('db-prefix');
-
-           if (substr($type, strlen($type)-1) != 's')
-               $postfix = 's';
-           else
-               $postfix = '';
-
-           $this->_fixed = new Zend_Db_Table($prefix.$type.$postfix);
-
+           $this->_fixed = new Zend_Db_Table(Evil_DB::scope2table($type));
+           
            $info = $this->_fixed->info();
            $this->_fixedschema = $info['cols'];
 
@@ -64,45 +33,6 @@
                 $this->load($id);
 
            return true;
-        }
-
-        public function data()
-        {
-        	foreach ($this->_dnodes as $key => $fn)
-                $this->_getDValue($key);
-
-        	return $this->_data;
-        }
-
-        public function reset()
-        {
-
-        }
-
-        /**
-         *
-         * @param <string> $id
-         * @return ObjectH3D
-         *
-         * Setter for ID
-         */
-
-        public function setId ($id)
-        {
-            $this->_id = $id;
-
-            return $this;
-        }
-
-        /**
-         *
-         * @return <string>
-         * Getter for ID
-         */
-
-        public function getId ()
-        {
-            return $this->_id;
         }
 
         public function where ($key, $selector, $value = null)
@@ -154,12 +84,6 @@
             return $this;
         }
 
-        public function addDNode ($key, $fn)
-        {
-            $this->_dnodes[$key] = $fn;
-            return $this;
-        }
-
         public function addNode  ($key, $value)
         {
             return $this;
@@ -182,22 +106,6 @@
                 return $this->setNode($key, $this->_data[$key]+$increment);
             else
                 return $this->addNode($key, $increment);
-        }
-
-        private function _getDValue ($key)
-        {
-        	return $this->_data[$key] = $this->_dnodes[$key]($this->_data);
-        }
-
-        public function getValue  ($key, $return = 'var', $default = null)
-        {
-            if (isset($this->_dnodes[$key]))
-                return $this->_getDValue($key);
-
-            if (isset($this->_data[$key]))
-                return $this->_data[$key];
-            else
-                return $default;
         }
 
         public function load($id = null)
