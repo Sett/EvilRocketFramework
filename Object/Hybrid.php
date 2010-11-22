@@ -2,7 +2,7 @@
     /**
      * @author BreathLess
      * @name Evil_Object_H2D
-     * @description: 2D implementation of ORM, classical table interface
+     * @description: 2D-3D implementation of ORM, classical table interface + fluid tables
      * @package Evil
      * @subpackage ORM
      * @version 0.1
@@ -10,29 +10,8 @@
      * @time 12:43
      */
 
-    class Evil_Object_Hybrid implements Evil_Object_Interface
+    class Evil_Object_Hybrid extends Evil_Object_Base implements Evil_Object_Interface
     {
-        protected $_loaded = false;
-        /**
-         * @var <string>
-         * Type of object, entity name
-         */
-
-        protected $type     = null;
-        /**
-         *
-         * @var <string>
-         * ID of object
-         */
-        protected $_id       = null;
-        /**
-         *
-         * @var <array>
-         * Internal data cache. Populating by load() method.
-         * Implements State Machine Pattern.
-         */
-        private   $_data     = array ();
-
         /**
          * List of fixed table keys
          * @var <array> 
@@ -43,7 +22,6 @@
          * @var <array>
          */
         private   $_fluidschema = array();
-        private   $_dnodes      = array();
 
         private   $_fixed   = null;
         private   $_fluid   = null;
@@ -52,15 +30,8 @@
         {
            $this->type = $type;
 
-           $prefix = Zend_Registry::get('db-prefix');
-
-           if (substr($type, strlen($type)-1) != 's')
-               $postfix = 's';
-           else
-               $postfix = '';
-
-           $this->_fixed = new Zend_Db_Table($prefix.$type.$postfix.'-fixed');
-           $this->_fluid = new Zend_Db_Table($prefix.$type.$postfix.'-fluid'); // ?
+           $this->_fixed = new Zend_Db_Table(Evil_DB::scope2table($type,'-fixed'));
+           $this->_fluid = new Zend_Db_Table(Evil_DB::scope2table($type,'-fluid'));
 
            $info = $this->_fixed->info();
            $this->_fixedschema = $info['cols'];
@@ -75,45 +46,6 @@
                     $this->load($id);
 
            return true;
-        }
-
-        public function data()
-        {
-        	foreach ($this->_dnodes as $key => $fn)
-                $this->_getDValue($key);
-
-        	return $this->_data;
-        }
-
-        public function reset()
-        {
-
-        }
-
-        /**
-         *
-         * @param <string> $id
-         * @return ObjectH3D
-         *
-         * Setter for ID
-         */
-
-        public function setId ($id)
-        {
-            $this->_id = $id;
-
-            return $this;
-        }
-
-        /**
-         *
-         * @return <string>
-         * Getter for ID
-         */
-
-        public function getId ()
-        {
-            return $this->_id;
         }
 
         public function where ($key, $selector, $value = null)
@@ -165,12 +97,6 @@
 
         public function erase ()
         {
-            return $this;
-        }
-
-        public function addDNode ($key, $fn)
-        {
-            $this->_dnodes[$key] = $fn;
             return $this;
         }
 
@@ -238,30 +164,6 @@
                 return $this->addNode($key, $increment);
         }
 
-        private function _getDValue ($key)
-        {
-        	return $this->_data[$key] = $this->_dnodes[$key]($this->_data);
-        }
-
-        public function getValue  ($key, $return = 'var', $default = null)
-        {
-            if ($return == 'array' and $default == null)
-                $default = array();
-
-            if (isset($this->_dnodes[$key]))
-                return $this->_getDValue($key);
-
-            if (isset($this->_data[$key]))
-            {
-                if ($return == 'var' and is_array($this->_data[$key]))
-                    return $this->_data[$key][0];
-                else
-                    return $this->_data[$key];
-            }
-            else
-                return $default;
-        }
-
         public function load($id = null)
         {
             if ($this->_loaded)
@@ -294,27 +196,5 @@
 
             $this->_loaded = true;
             return true;
-        }
-
-        // Абстрактный класс?
-
-        public function __get ($name)
-        {
-            return $this->getValue($name);
-        }
-
-        public function __isset ($name)
-        {
-            return isset($this->_data[$name]);
-        }
-
-        public function __set ($name, $value)
-        {
-            return $this->setNode($name, $value);
-        }
-
-        public function __toString ()
-        {
-            return $this->_type.'::'.$this->_id;
         }
     }

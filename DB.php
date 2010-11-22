@@ -77,4 +77,16 @@
 
           Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
         }
+
+        public static function scope2table($scope, $type = '')
+        {
+            $prefix = Zend_Registry::get ('db-prefix');
+
+            if (substr($scope, strlen($scope)-1) != 's')
+               $postfix = 's';
+            else
+               $postfix = '';
+
+            return $prefix.$scope.$postfix.$type;
+        }
     }
