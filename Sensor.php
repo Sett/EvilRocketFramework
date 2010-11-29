@@ -28,6 +28,8 @@
                       'value'=> $value,
                       'time'=>time())
             );
+
+            return $value;
         }
 
         public static function get ($type, $source)
