@@ -15,7 +15,7 @@
     {
         private $_template = '';
         private $_data = array();
-        private $_fusers = array('key2');
+        private $_fusers = array('key');
 
         public function __construct ($fusers = null)
         {
@@ -47,6 +47,7 @@
 
 		// чуть проще и немного быстрее |@Artemy|
         // BreathLess. Fuser надо прописать было.
+        // Artemy. Нет, надо было название метода поменять
 		private function _keyTag ($body)
 		{
 			$d = $this->_data;
