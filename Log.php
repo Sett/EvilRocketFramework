@@ -25,6 +25,6 @@
 
             $logger->addWriter($dbWriter);
 
-           Zend_Registry::set('logger',$logger);
+            Zend_Registry::set('logger',$logger);
         }
     }
