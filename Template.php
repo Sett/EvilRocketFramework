@@ -47,7 +47,7 @@
 
 		// чуть проще и немного быстрее |@Artemy|
         // BreathLess. Fuser надо прописать было.
-		private function _key2Tag ($body)
+		private function _keyTag ($body)
 		{
 			$d = $this->_data;
 			return preg_replace_callback(
