@@ -15,15 +15,18 @@
     {
         public function __construct($message, $code = 0)
         {
-        	echo $message; return;
-        	
             $exceptionConfig = new Zend_Config_Json(APPLICATION_PATH.'/configs/exception.json');
             $exceptionConfig = $exceptionConfig->toArray();
 
+            var_dump($exceptionConfig);
+           	
             if(isset($exceptionConfig[$code]))
             {
                 $exceptionClass = Evil_Factory::make('Evil_Exception_'.$exceptionConfig[$code]);
                 
+                var_dump($exceptionConfig);
+           		return;
+           		
                 if (is_callable($exceptionClass)) 
                     $exceptionClass($message);
                 
