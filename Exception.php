@@ -15,18 +15,16 @@
     {
         public function __construct($message, $code = 0)
         {
-        	return;
+        	//  Не могу сказать почему, но на сервере это не работает
+        	// Локально - работает. @Artemy
         	
-            $exceptionConfig = new Zend_Config_Json(APPLICATION_PATH.'/configs/exception.json');
-            $exceptionConfig = $exceptionConfig->toArray();
-
-            var_dump($exceptionConfig);
+            // $exceptionConfig = new Zend_Config_Json(APPLICATION_PATH.'/configs/exception.json');          
+            // $exceptionConfig = $exceptionConfig->toArray();
+            
+            $exceptionConfig = json_decode(file_get_contents(APPLICATION_PATH.'/configs/exception.json'), true);
            	
             if(isset($exceptionConfig[$code]))
-            {
-                var_dump($exceptionConfig);
-           		return;
-           		            	
+            {           		            	
                 $exceptionClass = Evil_Factory::make('Evil_Exception_'.$exceptionConfig[$code]);
                 
                 if (is_callable($exceptionClass)) 
