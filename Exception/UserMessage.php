@@ -15,6 +15,9 @@
     {
         public function __invoke($message)
         {
+        	echo $message;
+        	return;
+        	
 			$layout = new Zend_Layout();
 			
 			// Установка пути к скриптам макета:
@@ -31,6 +34,6 @@
 			echo $layout->render();        	
         	
             //echo $message;
-            die();
+            // die();
         }
     }
