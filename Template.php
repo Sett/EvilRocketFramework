@@ -56,6 +56,9 @@
 		}        
         
         /*
+        
+        Old version
+        
         private function _keyTag ($body)
         {            
             if (preg_match_all('@<k>(.*)</k>@SsUu', $body, $pockets))
