@@ -45,6 +45,17 @@
             return $body;
         }
 
+		// чуть проще и немного быстрее |@Artemy|
+		private function _keyTag2 ($body)
+		{
+			$d = $this->_data;
+			return preg_replace_callback(
+				'@<k>(.*)</k>@SsUu', 
+				function($m) use ($d) {return isset($d[$m[1]]) ? $d[$m[1]] : '';}, 
+				$body);
+		}        
+        
+        /*
         private function _keyTag ($body)
         {            
             if (preg_match_all('@<k>(.*)</k>@SsUu', $body, $pockets))
@@ -60,4 +71,5 @@
             
             return $body;
         }
+        */
     }
