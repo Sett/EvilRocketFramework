@@ -22,11 +22,11 @@
            	
             if(isset($exceptionConfig[$code]))
             {
-                $exceptionClass = Evil_Factory::make('Evil_Exception_'.$exceptionConfig[$code]);
-                
                 var_dump($exceptionConfig);
            		return;
-           		
+           		            	
+                $exceptionClass = Evil_Factory::make('Evil_Exception_'.$exceptionConfig[$code]);
+                
                 if (is_callable($exceptionClass)) 
                     $exceptionClass($message);
                 
