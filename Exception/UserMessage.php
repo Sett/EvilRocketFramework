@@ -31,6 +31,6 @@
 			echo $layout->render();        	
         	
             //echo $message;
-            // die();
+            die();
         }
     }
