@@ -15,6 +15,8 @@
     {
         public function __construct($message, $code = 0)
         {
+        	echo $message; return;
+        	
             $exceptionConfig = new Zend_Config_Json(APPLICATION_PATH.'/configs/exception.json');
             $exceptionConfig = $exceptionConfig->toArray();
 
