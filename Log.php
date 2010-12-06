@@ -18,7 +18,7 @@
            }
 
             $columnMapping = array('lvl' => 'priority', 'msg' => 'message');
-            $dbWriter = new Zend_Log_Writer_Db(Zend_Registry::get('db'), 'score_log', $columnMapping);
+            $dbWriter = new Zend_Log_Writer_Db(Zend_Registry::get('db'), Zend_Registry::get('db-prefix').'log', $columnMapping);
 
             $onlyCrit = new Zend_Log_Filter_Priority(Zend_Log::CRIT);
             $dbWriter->addFilter($onlyCrit);

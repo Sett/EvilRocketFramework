@@ -53,7 +53,16 @@
 			$d = $this->_data;
 			return preg_replace_callback(
 				'@<k>(.*)</k>@SsUu', 
-				function($m) use ($d) {return isset($d[$m[1]]) ? $d[$m[1]] : '';}, 
+				function($m) use ($d) {
+                    if (isset($d[$m[1]]))
+                    {
+                        if (is_array($d[$m[1]]))
+                            $d[$m[1]] = $d[$m[1]][0];
+                    }
+                    else
+                        $d[$m[1]] = '';
+                    
+                    return $d[$m[1]];},
 				$body);
 		}        
         
