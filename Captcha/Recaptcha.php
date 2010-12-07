@@ -59,7 +59,7 @@ class Evil_Captcha_Recaptcha
             $server = $_SERVER;
 
 		$error = null;
-		if ($post["recaptcha_response_field"]) {
+		if (isset($post["recaptcha_response_field"])) {
 		
 			$resp = recaptcha_check_answer($pri,
                                         $server["REMOTE_ADDR"],
