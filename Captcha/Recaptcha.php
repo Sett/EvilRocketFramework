@@ -73,6 +73,8 @@ class Evil_Captcha_Recaptcha
 				$error = $resp->error;
 	        }
 		}
+        else
+            $error = ' Missed data ';
 		
 		return $error;
 	}
