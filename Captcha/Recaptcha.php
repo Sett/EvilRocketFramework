@@ -23,9 +23,11 @@ class Evil_Captcha_Recaptcha
      * @param bool $echo
      * @return void
      */
-	public function __construct($pub, $pri, $echo = false)
+	public function __construct($pub, $pri, $echo = false, $challenge = true, $error = null)
 	{
-		$error          = Evil_Captcha_Recaptcha::challenge($pri);
+        if(true === $challenge)
+		    $error = Evil_Captcha_Recaptcha::challenge($pri);
+
 		$this->_captcha = recaptcha_get_html($pub, $error);
 		if(true === $echo)
 			echo $this->_captcha;
@@ -48,15 +50,21 @@ class Evil_Captcha_Recaptcha
      * @param  $privateKey
      * @return null | string
      */
-	public static function challenge($pri)
+	public static function challenge($pri, $post = null, $server = null)
 	{
+        if(empty($post))
+            $post = $_POST;
+
+        if(empty($server))
+            $server = $_SERVER;
+
 		$error = null;
-		if ($_POST["recaptcha_response_field"]) {
+		if ($post["recaptcha_response_field"]) {
 		
 			$resp = recaptcha_check_answer($pri,
-                                        $_SERVER["REMOTE_ADDR"],
-                                        $_POST["recaptcha_challenge_field"],
-                                        $_POST["recaptcha_response_field"]);
+                                        $server["REMOTE_ADDR"],
+                                        $post["recaptcha_challenge_field"],
+                                        $post["recaptcha_response_field"]);
 
 	        if ($resp->is_valid)
 				echo "You got it!";
