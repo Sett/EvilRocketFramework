@@ -62,19 +62,24 @@
 
         public function enableCache()
         {
-          $frontendOptions = array(
-             'lifetime' => 60,
-             'automatic_serialization' => true
-          );
+            if (extension_loaded('xcache'))
+            {
+                  $frontendOptions = array(
+                     'lifetime' => 60,
+                     'automatic_serialization' => true
+                  );
 
-          $backendOptions = array();
+                  $backendOptions = array();
 
-          $cache = Zend_Cache::factory('Core',
-                                       'XCache',
-                                       $frontendOptions,
-                                       $backendOptions);
+                  $cache = Zend_Cache::factory('Core',
+                                               'XCache',
+                                               $frontendOptions,
+                                               $backendOptions);
 
-          Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
+                  Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
+            }
+            else
+                Evil_Log::info('xcache recommended');
         }
 
         public static function scope2table($scope, $type = '')
