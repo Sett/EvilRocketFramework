@@ -30,7 +30,10 @@
 
         public static function info($message)
         {
-            $logger = Zend_Registry::get('logger');
-            $logger->log($message, Zend_Log::Info);            
+            if (Zend_Registry::isRegistered('logger'))
+            {
+                $logger = Zend_Registry::get('logger');
+                $logger->log($message, Zend_Log::Info);
+            }
         }
     }
