@@ -132,25 +132,28 @@
 
             $ids = $this->_ids;
 
-            foreach($ids as &$id)
-                $id = '"'.$id.'"';
+            echo '<pre>';
+            print_r($ids);
+            echo '</pre>';
+           // foreach($ids as &$id) // Se#: WTF?
+             //   $id = '"'.$id.'"';
 
+            echo 'e1';
             $fixedRows = $this->_fixed->fetchAll (
                             $this->_fixed
                                 ->select ()
-                                ->from (
-                                $this->_fixed
-                            )
+                                ->from ($this->_fixed)
                                 ->where ('`id` IN (' . implode (',', $ids) . ')'));
 
+            echo 'e2';
             $fluidRows = $this->_fluid->fetchAll (
                             $this->_fluid
                                 ->select ()
-                                ->from (
-                                $this->_fluid
-                            )
+                                ->from ($this->_fluid)
                                 ->where ('`i` IN (' . implode (',', $ids) . ')'));
 
+            echo 'e3';
+            die();
             $fluidRows = $fluidRows->toArray();
             
             $fixedRows = $fixedRows->toArray();
