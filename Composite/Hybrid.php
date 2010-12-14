@@ -132,8 +132,8 @@
 
             $ids = $this->_ids;
 
-           // foreach($ids as &$id) // Se#: WTF?
-             //   $id = '"'.$id.'"';// old-school
+            foreach($ids as &$id) // Se#: WTF?
+                $id = '"'.$id.'"';// old-school
 
             $fixedRows = $this->_fixed->fetchAll (
                             $this->_fixed
