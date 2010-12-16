@@ -15,12 +15,12 @@
                 define ('_IP', $_SERVER['REMOTE_ADDR']);
         }
 
-        public static function geoIP($mode)
+        public static function geoIP()
         {
             switch (APPLICATION_ENV)
             {
                 case 'production':
-                    if (preg_match('@127\.*@', _IP or preg_match('@10\.*@', _IP) or preg_match('@172\.*@', _IP)))
+                    if (preg_match('@127\.*@', _IP or preg_match('@10\.*@', _IP) or preg_match('@172\.*@', _IP)) or _IP == '127.0.0.1')
                         $result = 'LO';
                     else
                     	$result = geoip_country_code_by_name(_IP);
