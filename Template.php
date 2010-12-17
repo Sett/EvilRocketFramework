@@ -26,7 +26,7 @@
 
         private function _load ($template)
         {
-            $this->_template = file_get_contents(APPLICATION_PATH.'/views/templates/'.$template.'.phtml');
+            $this->_template = file_get_contents(Evil_Locator::ff('/views/templates/'.$template.'.phtml'));
         }
 
         public function mix ($data, $template = null)
