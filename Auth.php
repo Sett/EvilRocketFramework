@@ -40,8 +40,7 @@
 
         private function _seal ()
         {
-            return 'seal';
-            // TODO Cool seal algo
+            return sha1(mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 32));
         }
 
         public function audit ()
