@@ -50,11 +50,10 @@
         protected function _initPlaceholders()
             {
                 $this->bootstrap('View');
-                $config = Zend_Registry::get('config');
 
                 $view = $this->getResource('View');
                 $view->doctype('XHTML1_STRICT');
-                $view->headTitle($config['system']['title']);
+                $view->headTitle($this->_config['system']['title']);
             }
 
 
