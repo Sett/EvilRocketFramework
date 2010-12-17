@@ -54,7 +54,6 @@
                 $view = $this->getResource('View');
                 $view->doctype('XHTML1_STRICT');
                 $view->headTitle($this->_config['system']['title']);
-
             }
 
 
