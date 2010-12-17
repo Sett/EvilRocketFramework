@@ -34,7 +34,7 @@
             $viewRenderer->setViewSuffix('phtml');
             $viewRenderer->setView($view);
 
-            $config = parent::getOptions()
+            $config = parent::getOptions();
             $view->headTitle($config['system']['title']);
             $view->doctype('XHTML1_STRICT');
 
