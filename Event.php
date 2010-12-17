@@ -79,7 +79,8 @@
             {
                 if (!empty($options['src']) && !empty($options['type']))
                 {
-                	if (in_array($options['type'], self::$_config['evil']['event']['types']))
+                	if (!self::$_config['evil']['event']['types']['checking']
+                            || in_array($options['type'], self::$_config['evil']['event']['types']))
                 	{
                 		if (!isset($options['date']))
                             $options['date'] = time();
