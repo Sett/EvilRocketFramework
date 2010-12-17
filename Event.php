@@ -15,6 +15,12 @@
         {
             self::$_config = Zend_Registry::get('config');
 
+            if (null === self::$_queue)
+            {
+                self::$_queue = new Zend_Queue(self::$_config['evil']['event']['queue']['type'],
+                                        self::$_config['evil']['event']['queue']['options']);
+            }
+            
             if (isset(self::$_config['evil']['event']['dynFields']))
                 foreach (self::$_config['evil']['event']['dynFields'] as $field)
                     include Evil_Locator::FF('functions/event/dynfields/'.$field.'.php');
@@ -42,35 +48,11 @@
         	return floor($time/self::$_config['evil']['event']['time']['resolution']);
         }
 
-        public static function _queueInit ()
-        {
-            if (null === self::$_queue)
-            {
-                // FIXME
-                self::$_queue = new Zend_Queue(
-                    'Redis',
-                    array(
-                            'servers' => array(
-                                array('host'     => '127.0.0.1',
-                                      'port'     => 6379
-                                )),
-                            'adapterNamespace' => 'Rediska_Zend_Queue_Adapter',
-                            'name' => 'Events',
-                            'driverOptions' => array('namespace' => 'Event_'))
-                    	);                
-            }
-
-            return self::$_queue;
-        }
-
         public static function fire($options)
         {
-            self::_queueInit();
-            
             if (null !== self::$_dynFields)
                 foreach (self::$_dynFields as $key => $fn)
                     $options[$key] = $fn($options);          
-
 
             if (!isset($options['date']))
                 $options['date'] = time();
@@ -81,8 +63,6 @@
 
         private static function _queue ($count = 1)
         {
-            self::_queueInit();
-
             $queueKey = self::$_config['evil']['event']['slices']['default'];
             
             $events = self::$_queue->receive($count);
@@ -114,13 +94,12 @@
 
         public static function inject ($count = 1)
         {
-            $objects = self::_queue($count);
-
             $events = array();
-
             $ui = 0;
             $ci = 0;
 
+            $objects = self::_queue($count);
+            
             foreach ($objects as $object)
             {
                 $oid = self::_genId($object);
@@ -155,7 +134,10 @@
 
             }
 
-            return array('Created Objects'=>$ci, 'Updated objects' => $ui, 'Remain ' => self::$_queue->count());
+            return array(
+                'Created Objects' => $ci,
+                'Updated objects' => $ui,
+                'Remain ' => self::$_queue->count());
 
         }
 
