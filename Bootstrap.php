@@ -35,26 +35,9 @@
             $viewRenderer->setViewSuffix('phtml');
             $viewRenderer->setView($view);
 
+            $view->headTitle($this->_config['system']['title']);
+            $view->doctype('XHTML1_STRICT');
+
             return $view;
         }
-        /*
-        protected function _setRouter()
-        {
-           $router = new Score_Router();
-           // If router not a Zend_Controller_Router_Abstract, throw the Exception
-           if (!($router instanceof Zend_Controller_Router_Abstract))
-               throw new Exception('Incorrect config file: routes');
-           return $router;
-        }
-        */
-        protected function _initPlaceholders()
-            {
-                $this->bootstrap('View');
-
-                $view = $this->getResource('View');
-                $view->doctype('XHTML1_STRICT');
-                $view->headTitle($this->_config['system']['title']);
-            }
-
-
     }
