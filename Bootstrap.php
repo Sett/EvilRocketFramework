@@ -27,7 +27,7 @@
             $layout = Zend_Layout::getMvcInstance();
 
             $view = $layout->getView();
-           $view->addHelperPath(APPLICATION_PATH.'/views/helpers');
+            $view->addHelperPath(APPLICATION_PATH.'/views/helpers');
             $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper(
                 'ViewRenderer'
             );
@@ -35,7 +35,7 @@
             $viewRenderer->setViewSuffix('phtml');
             $viewRenderer->setView($view);
 
-            $view->headTitle($this->_config['system']['title']);
+            $view->headTitle('.'.$this->_config['system']['title']);
             $view->doctype('XHTML1_STRICT');
 
             return $view;
