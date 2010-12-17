@@ -2,18 +2,19 @@
 
     class Evil_Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
+        private $_config;
         public function run ()
         {
 
-           Zend_Registry::set('config', $config = parent::getOptions());
+           Zend_Registry::set('config', $this->_config = parent::getOptions());
 
            $front = $this->getResource('FrontController');
            header('Content-type: text/html;charset=utf-8');
 
-           foreach ($config['bootstrap']['plugins'] as $plugin)
+           foreach ($this->_config['bootstrap']['plugins'] as $plugin)
                 $front->registerPlugin(new $plugin);
 
-           Zend_Controller_Front::run($config['resources']['frontController']['controllerDirectory']);
+           Zend_Controller_Front::run($this->_config['resources']['frontController']['controllerDirectory']);
         }
 
         protected function _initView()
@@ -52,7 +53,7 @@
 
                 $view = $this->getResource('View');
                 $view->doctype('XHTML1_STRICT');
-                $view->headTitle('JunkieBytes');
+                $view->headTitle($this->_config['system']['title']);
 
             }
 
