@@ -5,7 +5,6 @@
         private $_config;
         public function run ()
         {
-
            Zend_Registry::set('config', $this->_config = parent::getOptions());
 
            $front = $this->getResource('FrontController');
@@ -35,7 +34,8 @@
             $viewRenderer->setViewSuffix('phtml');
             $viewRenderer->setView($view);
 
-            $view->headTitle('.'.$this->_config['system']['title']);
+            $config = parent::getOptions()
+            $view->headTitle($config['system']['title']);
             $view->doctype('XHTML1_STRICT');
 
             return $view;
