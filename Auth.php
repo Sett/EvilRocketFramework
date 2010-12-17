@@ -40,6 +40,8 @@
 
         private function _seal ()
         {
+            if (!isset($_SERVER['HTTP_USER_AGENT']))
+                $_SERVER['HTTP_USER_AGENT'] = '';
             return sha1(mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 32));
         }
 
