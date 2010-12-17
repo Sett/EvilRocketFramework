@@ -31,7 +31,8 @@
         {
             $h = '';
             foreach (self::$_config['evil']['event']['slices'] as $slice)
-                $h.= $data[$slice];
+                if (isset($data[$slice]))
+                    $h.= $data[$slice];
 
             return sha1($h);
         }
@@ -45,6 +46,7 @@
         {
             if (null === self::$_queue)
             {
+                // FIXME
                 self::$_queue = new Zend_Queue(
                     'Redis',
                     array(
@@ -65,37 +67,24 @@
         {
             self::_queueInit();
             
-            if (!isset($options['src']))
-                $options['src'] = isset($_COOKIE['trackID'])? $_COOKIE['trackID'] : '-1';
-
-            if (!isset($options['type']))
-                $options['type'] = self::$_config['evil']['event']['types']['default'];
-
             if (null !== self::$_dynFields)
                 foreach (self::$_dynFields as $key => $fn)
                     $options[$key] = $fn($options);          
 
-            if (isset($options['src']) && isset($options['type']))
-            {
-                if (!empty($options['src']) && !empty($options['type']))
-                {
-                	if (!self::$_config['evil']['event']['types']['checking']
-                            || in_array($options['type'], self::$_config['evil']['event']['types']))
-                	{
-                		if (!isset($options['date']))
-                            $options['date'] = time();
 
-                        $options['date'] = self::_eventTime($options['date']);
-                		return self::$_queue->send($options);
-                	}
-                }
-            }
+            if (!isset($options['date']))
+                $options['date'] = time();
+
+            $options['date'] = self::_eventTime($options['date']);
+            return self::$_queue->send($options);
         }
 
         private static function _queue ($count = 1)
         {
             self::_queueInit();
 
+            $queueKey = self::$_config['evil']['event']['slices']['default'];
+            
             $events = self::$_queue->receive($count);
             $compilated = array();
 
@@ -105,16 +94,18 @@
 
                 if (isset($compilated[$rid]))
                 {
-                    if (isset($compilated[$rid][$event->body['type']]))
-                        $compilated[$rid][$event->body['type']]++;
+                    if (isset($compilated[$rid][$event->body[$queueKey]]))
+                        $compilated[$rid][$event->body[$queueKey]]++;
                     else
-                        $compilated[$rid][$event->body['type']] = 1;
+                        $compilated[$rid][$event->body[$queueKey]] = 1;
                 }
                 else
                 {
-                    $compilated[$rid] = array($event->body['type'] => 1);
+                    $compilated[$rid] = array($event->body[$queueKey] => 1);
+                    
                     foreach(self::$_config['evil']['event']['slices'] as $slice)
-                        $compilated[$rid][$slice] = $event->body[$slice];
+                        if ($slice != self::$_config['evil']['event']['slices']['default'])
+                            $compilated[$rid][$slice] = $event->body[$slice];
                 }
             }
 
