@@ -21,7 +21,8 @@
             
             $candidates = array_merge(array(
                 realpath(APPLICATION_PATH),
-                realpath(APPLICATION_PATH . '/../library'), $config['evil']['locator']['places']));
+                realpath(APPLICATION_PATH . '/../library'),
+                $config['evil']['locator']['places']));
 
             foreach ($candidates as $candidate)
                 if (file_exists($candidate.'/'.$name))
