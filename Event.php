@@ -118,7 +118,8 @@
 
             $events = array();
 
-            $ui = $ci = 0;
+            $ui = 0;
+            $ci = 0;
 
             foreach ($objects as $object)
             {
@@ -131,7 +132,7 @@
                    if ($events[$oid]->load($oid))
                     {
                         foreach ($object as $key => $value)
-                            if (in_array($key, self::$_config['evil']['event']['types']))
+                            if (!in_array($key, self::$_config['evil']['event']['slices']))
                                 $events[$oid]->incNode($key, $value);
 
                         $ui++; // Updated Counter
@@ -146,6 +147,7 @@
                 else
                 {
                     foreach ($object as $key => $value)
+                        if (!in_array($key, self::$_config['evil']['event']['slices']))
                             $events[$oid]->incNode($key, $value);
 
                     $ui++;
