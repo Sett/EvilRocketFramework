@@ -12,7 +12,7 @@
         
         public static function encode($num, $base)
         {
-            $alphabet = substr(self::$alphabet, 0, $base);
+            $alphabet = substr(self::$alphabet, 0, $base-1);
             $base_count = strlen($alphabet);
             $encoded = '';
 
@@ -32,7 +32,7 @@
 
         public static function decode($num, $base)
         {
-            $alphabet = substr(self::$alphabet, 0, $base);
+            $alphabet = substr(self::$alphabet, 0, $base-1);
             $len = strlen($num);
             $decoded = 0;
             $multi = 1;
