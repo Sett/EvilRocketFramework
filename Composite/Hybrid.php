@@ -3,6 +3,7 @@
     class Evil_Composite_Hybrid extends Evil_Composite_Base implements Evil_Composite_Interface
     {
         private $_fixed;
+        private $_ids;
 
         public function __construct ($type)
         {
@@ -19,6 +20,20 @@
         {
             switch ($selector)
             {
+                case '*':
+                        $rows = $this->_fixed->fetchAll();
+
+                        $ids = $rows->toArray ();
+
+                        foreach ($ids as $id)
+                        {
+                            $id = $id['id'];
+                            $this->_ids[] = $id;
+                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
+                        }
+
+                break;
+                
                 case '=':
                     if (in_array ($key, $this->_fixedschema)) {
                         $rows = $this->_fixed->fetchAll (
@@ -35,6 +50,7 @@
                         foreach ($ids as $id)
                         {
                             $id = $id['id'];
+                            $this->_ids[] = $id;
                             $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
                         }
                     }
@@ -73,8 +89,7 @@
                                 ->from (
                                 $this->_fixed,
                                 array('id')
-                            )
-                                ->where ($key . ' IN (' . implode (',', $value) . ')'));
+                            )->where ($key . ' IN (' . implode (',', $value) . ')'));
 
 
                         $ids = $rows->toArray ();
@@ -104,7 +119,6 @@
 
                     break;
             }
-
             return $this;
         }
 
@@ -124,6 +138,8 @@
 
         public function load($ids = null)
         {
+            $data = array();
+            
             if ($ids !== null)
                 $this->_ids = $ids;
 
