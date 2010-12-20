@@ -9,9 +9,7 @@
 
     interface Evil_Composite_Interface
     {
-        public function data();
-
-        public function where($key, $selector, $value = null, $mode = 'new');
-
-        public function addDNode($key, $fn);
+        function data();
+        function where($key, $selector, $value = null, $mode = 'new');
+        function addDNode($key, $fn);
     }

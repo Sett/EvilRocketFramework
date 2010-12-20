@@ -155,4 +155,9 @@
 
             return $this;
         }
+
+        public function slice($start, $limit)
+        {
+            $this->_ids = array_slice($this->_ids, $start, $limit);
+        }
     }
