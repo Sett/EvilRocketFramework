@@ -51,7 +51,7 @@
 
             if (isset($_COOKIE['SCORETID']))
             {
-                if ($this->_ticket->load($_COOKIE['SCORETID']))
+                if ($this->_ticket->load($_COOKIE['SCORETSL']))
                 {
                     if (isset($_COOKIE['SCORETSL']))
                     {
@@ -82,7 +82,6 @@
                 }
                 else
                 {
-                    die('STOP!');
                     $logger->log('Ticket No Exist', Zend_Log::INFO);
                     $this->annulate();
                 }
