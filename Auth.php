@@ -106,12 +106,12 @@
 
             $prefix = $config['resources']['db']['prefix'];
 
-            $existed = $db->fetchRow($db->select()->from($prefix . 'tickets')->where('seal=?', $seal));
+            $existed = $db->fetchAll($db->select()->from($prefix . 'tickets')->where('seal=?', $seal));
             if(is_object($existed))
                 $existed = $existed->toArray();
 
             if(!empty($existed))
-                $db->update($prefix . 'tickets', array('created' => time()), 'id="' . $existed['id'] . '"');
+                $db->update($prefix . 'tickets', array('created' => time()), 'id="' . $existed[0]['id'] . '"');
             else{
                 $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
                 setcookie('SCORETID', $id, 0, '/');
