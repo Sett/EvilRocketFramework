@@ -99,6 +99,9 @@
             $id = uniqid(true);
             $seal = $this->_seal();
 
+            $logger = Zend_Registry::get('logger');
+            $logger->log('create ticket, now TID: ' . $_COOKIE['SCORETID'] . ' ; TSL: ' . $_COOKIE['SCORETSL'], Zend_Log::INFO);
+
             $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
             setcookie('SCORETID', $id, 0, '/');
             setcookie('SCORETSL', $seal, 0, '/');
