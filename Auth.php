@@ -100,10 +100,10 @@
             $seal = $this->_seal();
 
             $logger = Zend_Registry::get('logger');
-            if(isset($_COOKIE['SCORETID']) && isset($_COOKIE['SCORETSL']))
+            if(isset($_COOKIE['SCORETID']) || isset($_COOKIE['SCORETSL'])){
                 $logger->log('create ticket, now TID: ' . $_COOKIE['SCORETID'] . ' ; TSL: ' . $_COOKIE['SCORETSL'], Zend_Log::INFO);
-            else
-                $logger->log('no cookie', Zend_Log::INFO);
+                return false;
+            }
 
             $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
             setcookie('SCORETID', $id, 0, '/');
