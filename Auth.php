@@ -42,7 +42,7 @@
         {
             if (!isset($_SERVER['HTTP_USER_AGENT']))
                 $_SERVER['HTTP_USER_AGENT'] = '';
-            return 'seal'; //sha1(mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 32));
+            return sha1(mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 32));
         }
 
         public function audit ()
@@ -82,6 +82,7 @@
                 }
                 else
                 {
+                    die('STOP!');
                     $logger->log('Ticket No Exist', Zend_Log::INFO);
                     $this->annulate();
                 }
