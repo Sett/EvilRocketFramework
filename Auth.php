@@ -51,7 +51,7 @@
 
             if (isset($_COOKIE['SCORETID']))
             {
-                if ($this->_ticket->load($_COOKIE['SCORETSL']))
+                if ($this->_ticket->load($_COOKIE['SCORETID']))
                 {
                     if (isset($_COOKIE['SCORETSL']))
                     {
@@ -70,6 +70,7 @@
                         }
                         else
                         {
+                            die('STOP');
                             $logger->log('Broken seal', Zend_Log::INFO);
                             $this->annulate();
                         }
