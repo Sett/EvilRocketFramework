@@ -66,7 +66,7 @@ class Evil_Captcha_Recaptcha
                                         $post["recaptcha_challenge_field"],
                                         $post["recaptcha_response_field"]);
 
-	        if (!$resp->is_valid){ 
+	        if (!$resp->is_valid){
 				# set the error code so that we can display it
 				$error = $resp->error;
 	        }
