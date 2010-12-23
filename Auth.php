@@ -108,7 +108,7 @@
 
             $prefix = $config['resources']['db']['prefix'];
 
-            $existed = $db->fetchAll($db->select()->from($prefix . 'tickets')->where('seal=?', $seal));
+            $existed = $db->fetchAll($db->select()->from($prefix . 'tickets')->where('seal=?', $seal)->where('user!=?', -1));
             if(is_object($existed))
                 $existed = $existed->toArray();
 
