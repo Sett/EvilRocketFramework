@@ -104,6 +104,9 @@
             $db     = Zend_Registry::get('db');
             $ticket = null;
 
+            $logger = Zend_Registry::get('logger');
+            $logger->log('No TID uid=' . $userId, LOG_CRIT);
+
             if(-1 != $userId){
                 $ticket = $db->fetchAll($db->select()->from('score_' . 'tickets')->where('user=?', $userId)->where('seal=?', $seal));
 
@@ -112,8 +115,11 @@
             }
 
             if(empty($ticket)){
-                die(' STOP ');
-                $db->delete('score_tickets', 'seal="' . $seal . '"');
+                if(!$db->delete('score_tickets', 'seal="' . $seal . '"'))
+                    $logger->log('Can not delete', LOG_CRIT);
+                else
+                    $logger->log('Deleted, seal=' . $seal, LOG_CRIT);
+
                 $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
                 setcookie('SCORETID', $id, 0, '/');
                 setcookie('SCORETSL', $seal, 0, '/');
