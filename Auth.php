@@ -99,9 +99,22 @@
             $id = uniqid(true);
             $seal = $this->_seal();
 
-            $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
-            setcookie('SCORETID', $id, 0, '/');
-            setcookie('SCORETSL', $seal, 0, '/');
+
+            $userId = Zend_Registry::isRegistered('userId') ? Zend_Registry::get('userId') : -1;
+            $db     = Zend_Registry::get('db');
+
+            $ticket = $db->fetchAll($db->select()->from('score_' . 'tickets')->where('user=?', $userId)->where('seal=?', $seal));
+
+            if(is_object($ticket))
+                $ticket = $ticket->toArray();
+
+            if(empty($ticket)){
+                $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
+                setcookie('SCORETID', $id, 0, '/');
+                setcookie('SCORETSL', $seal, 0, '/');
+            }
+            else
+                $db->update('score_tickets', array('created' => time()), 'id="' . $ticket[0]['id'] . '"');
         }
 
         public function annulate()
