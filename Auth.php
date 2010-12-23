@@ -108,6 +108,14 @@
         {
             setcookie('SCORETID', '', 0, '/');
             setcookie('SCORETSL', '', 0, '/');
+
+            $db     = Zend_Registry::get('db');
+			$config = Zend_Registry::get('config');
+			if(is_object($config))
+				$config = $config->toArray();
+
+            $time = time() - 1800;
+			$db->delete($config['resources']['db']['prefix'] . 'tickets', 'created < "' . $time . '"');
         }
 
         public function attach($username)
