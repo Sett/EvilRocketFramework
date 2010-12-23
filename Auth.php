@@ -47,6 +47,22 @@
             return sha1($_SERVER['HTTP_USER_AGENT']);
         }
 
+        protected function _upTicket($user)
+        {
+            $config = Zend_Registry::get('config');
+            if(is_object($config))
+                $config = $config->toArray();
+
+            $prefix = $config['resources']['db']['prefix'];
+
+            $updated = Zend_Registry::get('db')->update($prefix . 'tickets',
+                                                        array('created' => time()),
+                                                        'user="' . $user . '"');
+
+            $logger = Zend_Registry::get('logger');
+            $logger->log('Updated ' . $updated . '; by user ' . $user, LOG_INFO);
+        }
+
         public function audit ()
         {
             $logger = Zend_Registry::get('logger');
@@ -62,6 +78,7 @@
                             if ($this->_seal(__METHOD__) == $_COOKIE['SCORETSL'])
                             {
                                 $logger->log('Audited ' . $this->_ticket->getValue('user'), Zend_Log::INFO);
+                                $this->_upTicket($this->_ticket->getValue('user'));
                                 Zend_Registry::set('userid', $this->_ticket->getValue('user'));
                             }
                             else
