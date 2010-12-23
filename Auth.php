@@ -99,8 +99,7 @@
             $id = uniqid(true);
             $seal = $this->_seal();
 
-
-            $userId = Zend_Registry::isRegistered('userid') ? Zend_Registry::get('userid') : -1;
+            $userId = Zend_Registry::get('userid');
             $db     = Zend_Registry::get('db');
             $ticket = null;
 
