@@ -59,7 +59,7 @@
                         {
                             if ($this->_seal() == $_COOKIE['SCORETSL'])
                             {
-                                $logger->log('Audited', Zend_Log::INFO);
+                                $logger->log('Audited ' . $this->_ticket->getValue('user'), Zend_Log::INFO);
                                 Zend_Registry::set('userid', $this->_ticket->getValue('user'));
                             }
                             else
