@@ -42,7 +42,7 @@
         {
             if (!isset($_SERVER['HTTP_USER_AGENT']))
                 $_SERVER['HTTP_USER_AGENT'] = '';
-            return sha1(mb_substr($_SERVER['HTTP_USER_AGENT'],0));
+            return sha1($_SERVER['HTTP_USER_AGENT']);
         }
 
         public function audit ()
