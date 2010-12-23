@@ -38,12 +38,12 @@
             parent::routeShutdown($request);
         }
 
-        private function _seal ()
+        private function _seal ($method = null)
         {
             if (!isset($_SERVER['HTTP_USER_AGENT']))
                 $_SERVER['HTTP_USER_AGENT'] = '';
             $logger = Zend_Registry::get('logger');
-            $logger->log('seal HUA: ' . $_SERVER['HTTP_USER_AGENT'] . '; sha1: ' . sha1($_SERVER['HTTP_USER_AGENT']), LOG_CRIT);
+            $logger->log($method . ' seal HUA: ' . $_SERVER['HTTP_USER_AGENT'] . '; sha1: ' . sha1($_SERVER['HTTP_USER_AGENT']), LOG_CRIT);
             return sha1($_SERVER['HTTP_USER_AGENT']);
         }
 
@@ -59,7 +59,7 @@
                     {
                         if ($this->_ticket->getValue('seal') == $_COOKIE['SCORETSL'])
                         {
-                            if ($this->_seal() == $_COOKIE['SCORETSL'])
+                            if ($this->_seal(__METHOD__) == $_COOKIE['SCORETSL'])
                             {
                                 $logger->log('Audited ' . $this->_ticket->getValue('user'), Zend_Log::INFO);
                                 Zend_Registry::set('userid', $this->_ticket->getValue('user'));
@@ -99,7 +99,7 @@
         public function register()
         {
             $id = uniqid(true);
-            $seal = $this->_seal();
+            $seal = $this->_seal(__METHOD__);
 
             $userId = Zend_Registry::get('userid');
             $db     = Zend_Registry::get('db');
