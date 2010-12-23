@@ -102,12 +102,14 @@
 
             $userId = Zend_Registry::isRegistered('userId') ? Zend_Registry::get('userId') : -1;
             $db     = Zend_Registry::get('db');
+            $ticket = null;
 
-            if(-1 != $userId)
+            if(-1 != $userId){
                 $ticket = $db->fetchAll($db->select()->from('score_' . 'tickets')->where('user=?', $userId)->where('seal=?', $seal));
 
-            if(is_object($ticket))
-                $ticket = $ticket->toArray();
+                if(is_object($ticket))
+                    $ticket = $ticket->toArray();
+            }
 
             if(empty($ticket)){
                 $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
