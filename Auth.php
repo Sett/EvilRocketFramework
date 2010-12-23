@@ -99,27 +99,9 @@
             $id = uniqid(true);
             $seal = $this->_seal();
 
-            // FIXME
-            // Кастыли {START}
-            $db     = Zend_Registry::get('db');
-            $config = Zend_Registry::get('config');
-            if(is_object($config))
-                $config = $config->toArray();
-
-            $prefix = $config['resources']['db']['prefix'];
-
-            $existed = $db->fetchAll($db->select()->from($prefix . 'tickets')->where('seal=?', $seal)->where('user!=?', -1));
-            if(is_object($existed))
-                $existed = $existed->toArray();
-
-            if(!empty($existed))
-                $db->update($prefix . 'tickets', array('created' => time()), 'id = "' . $existed[0]['id'] . '"');
-            else{
-            // Кастыли {END}
-                $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
-                setcookie('SCORETID', $id, 0, '/');
-                setcookie('SCORETSL', $seal, 0, '/');
-            }
+            $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
+            setcookie('SCORETID', $id, 0, '/');
+            setcookie('SCORETSL', $seal, 0, '/');
         }
 
         public function annulate()
