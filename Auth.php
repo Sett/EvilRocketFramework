@@ -100,7 +100,7 @@
             $seal = $this->_seal();
 
 
-            $userId = Zend_Registry::isRegistered('userId') ? Zend_Registry::get('userId') : -1;
+            $userId = Zend_Registry::isRegistered('userid') ? Zend_Registry::get('userid') : -1;
             $db     = Zend_Registry::get('db');
             $ticket = null;
 
