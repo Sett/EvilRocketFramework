@@ -38,12 +38,11 @@
             parent::routeShutdown($request);
         }
 
-        private function _seal ($method = null)
+        private function _seal ()
         {
             if (!isset($_SERVER['HTTP_USER_AGENT']))
                 $_SERVER['HTTP_USER_AGENT'] = '';
-            $logger = Zend_Registry::get('logger');
-            $logger->log($method . ' seal HUA: ' . $_SERVER['HTTP_USER_AGENT'] . '; sha1: ' . sha1($_SERVER['HTTP_USER_AGENT']), LOG_CRIT);
+
             return sha1($_SERVER['HTTP_USER_AGENT']);
         }
 
@@ -55,12 +54,12 @@
 
             $prefix = $config['resources']['db']['prefix'];
 
-            $updated = Zend_Registry::get('db')->update($prefix . 'tickets',
-                                                        array('created' => time()),
-                                                        'user="' . $user . '"');
+            Zend_Registry::get('db')->update($prefix . 'tickets',
+                                             array('created' => time()),
+                                             'user="' . $user . '"');
 
             $logger = Zend_Registry::get('logger');
-            $logger->log('Updated ' . $updated . '; by user ' . $user, LOG_INFO);
+            $logger->log('Updated', LOG_INFO);
         }
 
         public function audit ()
@@ -75,9 +74,9 @@
                     {
                         if ($this->_ticket->getValue('seal') == $_COOKIE['SCORETSL'])
                         {
-                            if ($this->_seal(__METHOD__) == $_COOKIE['SCORETSL'])
+                            if ($this->_seal() == $_COOKIE['SCORETSL'])
                             {
-                                $logger->log('Audited ' . $this->_ticket->getValue('user'), Zend_Log::INFO);
+                                $logger->log('Audited', Zend_Log::INFO);
                                 $this->_upTicket($this->_ticket->getValue('user'));
                                 Zend_Registry::set('userid', $this->_ticket->getValue('user'));
                             }
@@ -116,14 +115,11 @@
         public function register()
         {
             $id = uniqid(true);
-            $seal = $this->_seal(__METHOD__);
+            $seal = $this->_seal();
 
             $userId = Zend_Registry::get('userid');
             $db     = Zend_Registry::get('db');
             $ticket = null;
-
-            $logger = Zend_Registry::get('logger');
-            $logger->log('No TID uid=' . $userId, LOG_CRIT);
 
             if(-1 != $userId){
                 $ticket = $db->fetchAll($db->select()->from('score_' . 'tickets')->where('user=?', $userId)->where('seal=?', $seal));
@@ -133,11 +129,7 @@
             }
 
             if(empty($ticket)){
-                if(!$db->delete('score_tickets', 'seal="' . $seal . '"'))
-                    $logger->log('Can not delete', LOG_CRIT);
-                else
-                    $logger->log('Deleted, seal=' . $seal, LOG_CRIT);
-
+                $db->delete('score_tickets', 'seal="' . $seal . '"');
                 $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
                 setcookie('SCORETID', $id, 0, '/');
                 setcookie('SCORETSL', $seal, 0, '/');
