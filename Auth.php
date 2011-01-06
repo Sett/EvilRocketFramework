@@ -158,6 +158,7 @@
         {
             $authMethod = 'Evil_Auth_'.ucfirst($authMethod);
             return new $authMethod();
+            // FIXME Refactor to Evil_Factory
         }
 
         public static function stupidAuth()
@@ -171,7 +172,7 @@
                 exit;
             }
             else
-                return (($_SERVER['PHP_AUTH_USER'] == $config['stupid']['auth']['user']) &&
-                            (md5($_SERVER['PHP_AUTH_PW']) == $config['stupid']['auth']['password']));
+                return (($_SERVER['PHP_AUTH_USER'] == $config['evil']['auth']['stupid']['user']) &&
+                            (md5($_SERVER['PHP_AUTH_PW']) == $config['evil']['auth']['stupid']['password']));
         }
     }
