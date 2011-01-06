@@ -159,4 +159,19 @@
             $authMethod = 'Evil_Auth_'.ucfirst($authMethod);
             return new $authMethod();
         }
+
+        public static function stupidAuth()
+        {
+            $config = Zend_Registry::get('config');
+            
+            if (!isset($_SERVER['PHP_AUTH_USER']))
+            {
+                header('WWW-Authenticate: Basic realm="Login"');
+                header('HTTP/1.0 401 Unauthorized');
+                exit;
+            }
+            else
+                return (($_SERVER['PHP_AUTH_USER'] == $config['stupid']['auth']['user']) &&
+                            (md5($_SERVER['PHP_AUTH_PW']) == $config['stupid']['auth']['password']));
+        }
     }
