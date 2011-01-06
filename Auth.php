@@ -173,7 +173,7 @@
             }
             else
                 if (($_SERVER['PHP_AUTH_USER'] != $config['evil']['auth']['stupid']['user']) ||
-                            (md5($_SERVER['PHP_AUTH_PW']) != $config['evil']['auth']['stupid']['password']))
+                            (($_SERVER['PHP_AUTH_PW']) != $config['evil']['auth']['stupid']['password']))
                     die('403');
         }
     }
