@@ -17,11 +17,13 @@
         {
         	//  Не могу сказать почему, но на сервере это не работает
         	// Локально - работает. @Artemy
+            // Версия зенда, Zend_Config_Json только с ZF 1.11, @BreathLess
         	
             // $exceptionConfig = new Zend_Config_Json(APPLICATION_PATH.'/configs/exception.json');          
             // $exceptionConfig = $exceptionConfig->toArray();
-            
-            $exceptionConfig = json_decode(file_get_contents(APPLICATION_PATH.'/configs/exception.json'), true);
+
+            if (file_exists(APPLICATION_PATH.'/configs/exception.json'))
+                $exceptionConfig = json_decode(file_get_contents(APPLICATION_PATH.'/configs/exception.json'), true);
            	
             if(isset($exceptionConfig[$code]))
             {           		            	
