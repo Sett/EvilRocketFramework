@@ -20,17 +20,30 @@
 
         public static function run($call)
         {
-            list($group) = array_reverse(explode('.', $call['NS']));
+            $pieces = explode('.', $call['NS']);
+            
+            list($group) = array_reverse($pieces);
 
             $path = strtr($call['NS'],'.','/');
             if (isset($call['D']))
                 $driver = $call['D'];
             else
             {
-                if (isset(self::$_drivers[$path]))
-                    $driver = self::$_drivers[$path];
-                else
-                    $driver = $group;
+                $driver = $group;
+
+                if (isset(self::$_drivers[$pieces[0]]))
+                {
+                    $iter = self::$_drivers[$pieces[0]];
+                    $sz = sizeof($pieces);
+                    for($ic = 1; $ic<$sz; $ic++)
+                        if (isset($iter[$pieces[$ic]]))
+                            $iter = $iter[$pieces[$ic]];
+                        else
+                            $iter = null;
+
+                    if (null !== $iter)
+                        $driver = $iter;
+                }
             }
 
             self::$_domain = $path;
@@ -43,7 +56,7 @@
                 $closure = self::$_functions[self::$_domain][$call['F']];
                 return $closure ($call);
             }
-                else throw new Evil_Exception('driver '.$call['NS'].' not found');
+                else throw new Exception('driver '.'/functions/'.$path.'/'.$driver.'.php'.' not found');
         }
     }
 
