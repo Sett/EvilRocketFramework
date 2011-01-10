@@ -43,8 +43,11 @@
             return sha1($h);
         }
 
-        private static function _eventTime($time)
+        public static function eventTime($time = null)
         {
+            if (null == $time)
+                $time= time();
+            
         	return floor($time/self::$_config['evil']['event']['time']['resolution']);
         }
 
@@ -57,7 +60,7 @@
             if (!isset($options['date']))
                 $options['date'] = time();
 
-            $options['date'] = self::_eventTime($options['date']);
+            $options['date'] = self::eventTime($options['date']);
             return self::$_queue->send($options);
         }
 
