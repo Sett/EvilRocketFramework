@@ -176,4 +176,29 @@
                             (($_SERVER['PHP_AUTH_PW']) != $config['evil']['auth']['stupid']['password']))
                     die('403');
         }
+
+        public static function createAPIKey ($username, $password)
+        {
+            $user = Evil_Structure::getObject('user');
+
+            if ($user->load($username))
+            {
+                if (md5($user->getValue('password')) == $password)
+                {
+                    Evil_Fn::run(array(
+                        ''
+                    ));
+                }
+            }
+        }
+
+        public static function verifyAPIKey ($key)
+        {
+
+        }
+
+        public static function annulateAPIKey ($key)
+        {
+
+        }
     }
