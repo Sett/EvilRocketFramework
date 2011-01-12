@@ -10,8 +10,9 @@
            $front = $this->getResource('FrontController');
            header('Content-type: text/html;charset=utf-8');
 
-           foreach ($this->_config['bootstrap']['plugins'] as $plugin)
-                $front->registerPlugin(new $plugin);
+           if (isset($this->_config['bootstrap']['plugins']))
+               foreach ($this->_config['bootstrap']['plugins'] as $plugin)
+                    $front->registerPlugin(new $plugin);
 
            Zend_Controller_Front::run($this->_config['resources']['frontController']['controllerDirectory']);
         }
