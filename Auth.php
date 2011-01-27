@@ -21,6 +21,20 @@
         private $_ticket;
 
         /**
+         * Tickets table prefix
+         *
+         * @var string
+         */
+        protected $_prefix = '';
+
+        /**
+         * Application config
+         *
+         * @var string
+         */
+        protected $_config = '';
+
+        /**
          * @return void
          */
         public function init()
@@ -36,6 +50,12 @@
         public function routeStartup(Zend_Controller_Request_Abstract $request)
         {
             parent::routeStartup($request);
+            $config = Zend_Registry::get('config');
+            if(is_object($config))
+                $config = $config->toArray();
+
+            $this->_prefix = $config['resources']['db']['prefix'];
+            $this->_config = $config;
             $this->init();
             $this->audit();
         }
@@ -66,13 +86,7 @@
          */
         protected function _upTicket($user)
         {
-            $config = Zend_Registry::get('config');
-            if(is_object($config))
-                $config = $config->toArray();
-
-            $prefix = $config['resources']['db']['prefix'];
-
-            Zend_Registry::get('db')->update($prefix . 'tickets',
+            Zend_Registry::get('db')->update($this->_prefix . 'tickets',
                                              array('created' => time()),
                                              'user="' . $user . '"');
 
@@ -86,16 +100,17 @@
         public function audit ()
         {
             $logger = Zend_Registry::get('logger');
+            $cookiePrefix = strtoupper(rtrim($this->_prefix,'_'));
 
-            if (isset($_COOKIE['SCORETID']))
+            if (isset($_COOKIE[$cookiePrefix . 'TID']))
             {
-                if ($this->_ticket->load($_COOKIE['SCORETID']))
+                if ($this->_ticket->load($_COOKIE[$cookiePrefix . 'TID']))
                 {
-                    if (isset($_COOKIE['SCORETSL']))
+                    if (isset($_COOKIE[$cookiePrefix . 'TSL']))
                     {
-                        if ($this->_ticket->getValue('seal') == $_COOKIE['SCORETSL'])
+                        if ($this->_ticket->getValue('seal') == $_COOKIE[$cookiePrefix . 'TSL'])
                         {
-                            if ($this->_seal() == $_COOKIE['SCORETSL'])
+                            if ($this->_seal() == $_COOKIE[$cookiePrefix . 'TSL'])
                             {
                                 $logger->log('Audited', Zend_Log::INFO);
                                 $this->_upTicket($this->_ticket->getValue('user'));
@@ -146,20 +161,21 @@
             $ticket = null;
 
             if(-1 != $userId){
-                $ticket = $db->fetchAll($db->select()->from('score_' . 'tickets')->where('user=?', $userId)->where('seal=?', $seal));
+                $ticket = $db->fetchAll($db->select()->from($this->_prefix . 'tickets')->where('user=?', $userId)->where('seal=?', $seal));
 
                 if(is_object($ticket))
                     $ticket = $ticket->toArray();
             }
 
             if(empty($ticket)){
-                $db->delete('score_tickets', 'seal="' . $seal . '"');
+                $db->delete($this->_prefix . 'tickets', 'seal="' . $seal . '"');
                 $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
-                setcookie('SCORETID', $id, 0, '/');
-                setcookie('SCORETSL', $seal, 0, '/');
+                $cookiePrefix = strtoupper(rtrim($this->_prefix,'_'));
+                setcookie($cookiePrefix . 'TID', $id, 0, '/');
+                setcookie($cookiePrefix . 'TSL', $seal, 0, '/');
             }
             else
-                $db->update('score_tickets', array('created' => time()), 'id="' . $ticket[0]['id'] . '"');
+                $db->update($this->_prefix . 'tickets', array('created' => time()), 'id="' . $ticket[0]['id'] . '"');
         }
 
         /**
@@ -167,8 +183,9 @@
          */
         public function annulate()
         {
-            setcookie('SCORETID', '', 0, '/');
-            setcookie('SCORETSL', '', 0, '/');
+            $cookiePrefix = strtoupper(rtrim($this->_prefix,'_'));
+            setcookie($cookiePrefix . 'TID', '', 0, '/');
+            setcookie($cookiePrefix . 'TSL', '', 0, '/');
         }
 
         /**
@@ -195,9 +212,7 @@
          */
         public static function factory ($authMethod)
         {
-            $authMethod = 'Evil_Auth_'.ucfirst($authMethod);
-            return new $authMethod();
-            // FIXME Refactor to Evil_Factory
+            return Evil_Factory::make('Evil_Auth_'.ucfirst($authMethod));
         }
 
         /**
