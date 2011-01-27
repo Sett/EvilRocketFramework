@@ -20,12 +20,19 @@
          */
         private $_ticket;
 
+        /**
+         * @return void
+         */
         public function init()
         {
             $this->_ticket = Evil_Structure::getObject('ticket');
             Zend_Registry::set('userid', -1);
         }
 
+        /**
+         * @param Zend_Controller_Request_Abstract $request
+         * @return void
+         */
         public function routeStartup(Zend_Controller_Request_Abstract $request)
         {
             parent::routeStartup($request);
@@ -33,11 +40,18 @@
             $this->audit();
         }
 
+        /**
+         * @param Zend_Controller_Request_Abstract $request
+         * @return void
+         */
         public function routeShutdown(Zend_Controller_Request_Abstract $request)
         {
             parent::routeShutdown($request);
         }
 
+        /**
+         * @return string
+         */
         private function _seal ()
         {
             if (!isset($_SERVER['HTTP_USER_AGENT']))
@@ -46,6 +60,10 @@
             return sha1($_SERVER['HTTP_USER_AGENT']);
         }
 
+        /**
+         * @param  $user
+         * @return void
+         */
         protected function _upTicket($user)
         {
             $config = Zend_Registry::get('config');
@@ -62,6 +80,9 @@
             $logger->log('Updated', LOG_INFO);
         }
 
+        /**
+         * @return void
+         */
         public function audit ()
         {
             $logger = Zend_Registry::get('logger');
@@ -112,6 +133,9 @@
 
         }
 
+        /**
+         * @return void
+         */
         public function register()
         {
             $id = uniqid(true);
@@ -138,22 +162,37 @@
                 $db->update('score_tickets', array('created' => time()), 'id="' . $ticket[0]['id'] . '"');
         }
 
+        /**
+         * @return void
+         */
         public function annulate()
         {
             setcookie('SCORETID', '', 0, '/');
             setcookie('SCORETSL', '', 0, '/');
         }
 
+        /**
+         * @param  $username
+         * @return void
+         */
         public function attach($username)
         {
             $this->_ticket->setNode('user', $username);
         }
 
+        /**
+         * @return void
+         */
         public function detach()
         {
             $this->_ticket->setNode('user', -1);
         }
 
+        /**
+         * @static
+         * @param  $authMethod
+         * @return
+         */
         public static function factory ($authMethod)
         {
             $authMethod = 'Evil_Auth_'.ucfirst($authMethod);
@@ -161,6 +200,10 @@
             // FIXME Refactor to Evil_Factory
         }
 
+        /**
+         * @static
+         * @return void
+         */
         public static function stupidAuth()
         {
             $config = Zend_Registry::get('config');
@@ -177,6 +220,12 @@
                     die('403');
         }
 
+        /**
+         * @static
+         * @param  $username
+         * @param  $password
+         * @return void
+         */
         public static function createAPIKey ($username, $password)
         {
             $user = Evil_Structure::getObject('user');
@@ -192,11 +241,21 @@
             }
         }
 
+        /**
+         * @static
+         * @param  $key
+         * @return void
+         */
         public static function verifyAPIKey ($key)
         {
 
         }
 
+        /**
+         * @static
+         * @param  $key
+         * @return void
+         */
         public static function annulateAPIKey ($key)
         {
 

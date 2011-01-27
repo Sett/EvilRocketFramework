@@ -14,6 +14,11 @@
 
     class Evil_Controller extends Zend_Controller_Action 
     {
+        /**
+         * @param  $methodName
+         * @param  $args
+         * @return mixed
+         */
         public function __call($methodName, $args)
         {
             if (strpos($methodName, 'Action') !== false)

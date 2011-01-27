@@ -13,6 +13,10 @@
 
     class Evil_Exception extends Zend_Exception
     {
+        /**
+         * @param  $message
+         * @param int $code
+         */
         public function __construct($message, $code = 0)
         {
         	//  Не могу сказать почему, но на сервере это не работает

@@ -13,6 +13,11 @@
 
     class Evil_Sensor_WMMoney implements Evil_Sensor_Interface
     {
+        /**
+         * @param  $source
+         * @param null $args
+         * @return int
+         */
         public function track($source, $args = null)
         {
             $sales = Evil_Structure::getComposite('transfer');

@@ -5,12 +5,30 @@
 
     class Evil_Event
     {
+        /**
+         * @var
+         */
         protected static $_queue;
+
+        /**
+         * @var null
+         */
         protected static $_dynFields = null;
+
+        /**
+         * @var
+         */
         protected static $_lastOperation;
 
+        /**
+         * @var
+         */
         protected static $_config;
 
+        /**
+         * @static
+         * @return void
+         */
         public static function init()
         {
             self::$_config = Zend_Registry::get('config');
@@ -43,6 +61,11 @@
             return sha1($h);
         }
 
+        /**
+         * @static
+         * @param null $time
+         * @return float
+         */
         public static function eventTime($time = null)
         {
             if (null == $time)
@@ -51,6 +74,11 @@
         	return floor($time/self::$_config['evil']['event']['time']['resolution']);
         }
 
+        /**
+         * @static
+         * @param  $options
+         * @return
+         */
         public static function fire($options)
         {
             if (null !== self::$_dynFields)
@@ -64,6 +92,11 @@
             return self::$_queue->send($options);
         }
 
+        /**
+         * @static
+         * @param int $count
+         * @return array
+         */
         private static function _queue ($count = 1)
         {
             $queueKey = self::$_config['evil']['event']['slices']['default'];
@@ -95,6 +128,11 @@
             return $compilated;
         }
 
+        /**
+         * @static
+         * @param int $count
+         * @return array
+         */
         public static function inject ($count = 1)
         {
             $events = array();
@@ -144,6 +182,12 @@
 
         }
 
+        /**
+         * @static
+         * @param  $key
+         * @param  $fn
+         * @return void
+         */
         public static function addDynField ($key, $fn)
         {
             self::$_dynFields[$key] = $fn;

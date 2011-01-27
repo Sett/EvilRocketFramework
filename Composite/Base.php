@@ -13,10 +13,24 @@
 
     abstract class Evil_Composite_Base implements ArrayAccess, Countable, Iterator
     {
+        /**
+         * @var array
+         */
         private $_ids = array();
+
+        /**
+         * @var array
+         */
         public $_items = array(); // FIXME Private
+
+        /**
+         * @var
+         */
         private $_type;
-        
+
+        /**
+         * @return void
+         */
         public function count ()
         {
            // TODO: Implement count() method
@@ -133,7 +147,10 @@
             // TODO: Implement offsetUnset() method.
         }
 
-
+        /**
+         * @param null $key
+         * @return array
+         */
         public function data ($key = null)
         {
             $output = array();
@@ -148,6 +165,11 @@
             return $output;
         }
 
+        /**
+         * @param  $key
+         * @param  $fn
+         * @return Evil_Composite_Base
+         */
         public function addDNode ($key, $fn)
         {
             foreach ($this->_items as $item)
@@ -156,6 +178,11 @@
             return $this;
         }
 
+        /**
+         * @param  $start
+         * @param  $limit
+         * @return void
+         */
         public function slice($start, $limit)
         {
             $this->_ids = array_slice($this->_ids, $start, $limit);

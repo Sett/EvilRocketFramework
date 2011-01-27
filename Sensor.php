@@ -13,6 +13,12 @@
 
     class Evil_Sensor
     {
+        /**
+         * @static
+         * @param  $type
+         * @param  $source
+         * @return
+         */
         public static function track ($type, $source)
         {
             $sensor = Evil_Structure::getObject('sensor');
@@ -32,6 +38,12 @@
             return $value;
         }
 
+        /**
+         * @static
+         * @param  $type
+         * @param  $source
+         * @return array
+         */
         public static function get ($type, $source)
         {
             $sensors = Evil_Structure::getComposite('sensor');

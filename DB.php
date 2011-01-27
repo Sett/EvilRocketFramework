@@ -5,6 +5,10 @@
  
     class Evil_DB extends Zend_Controller_Plugin_Abstract
     {
+        /**
+         * @param Zend_Controller_Request_Abstract $request
+         * @return void
+         */
         public function routeStartup(Zend_Controller_Request_Abstract $request)
         {
             parent::routeStartup($request);
@@ -13,6 +17,10 @@
             $this->enableCache ();
         }
 
+        /**
+         * @param  $request
+         * @return void
+         */
         public function controllerDrivenDB($request)
         {
             $controller = $request->getControllerName();
@@ -45,21 +53,33 @@
             Zend_Db_Table_Abstract::setDefaultAdapter($db);
         }
 
+        /**
+         * @return void
+         */
         public function fallbackDB ()
         {
             // TODO: Fallback support
         }
 
+        /**
+         * @return void
+         */
         public function mirrorDB ()
         {
             // TODO: Mirroring support
         }
 
+        /**
+         * @return void
+         */
         public function shardDB ()
         {
             // TODO: Sharding support
         }
 
+        /**
+         * @return void
+         */
         public function enableCache()
         {
             if (extension_loaded('xcache'))
@@ -82,6 +102,12 @@
                 Evil_Log::info('xcache recommended');
         }
 
+        /**
+         * @static
+         * @param  $scope
+         * @param string $type
+         * @return string
+         */
         public static function scope2table($scope, $type = '')
         {
             $prefix = Zend_Registry::get ('db-prefix');

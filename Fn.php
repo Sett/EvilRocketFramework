@@ -1,11 +1,29 @@
 <?php
-
+/**
+ * @throws Exception
+ * @author BreathLess
+ */
     class Evil_Fn
     {
+        /**
+         * @var array
+         */
         protected static $_drivers = array();
+
+        /**
+         * @var array
+         */
         protected static $_functions = array();
+
+        /**
+         * @var
+         */
         protected static $_domain;
 
+        /**
+         * @static
+         * @return void
+         */
         public static function onInclude()
         {
             $config = Zend_Registry::get('config');
@@ -13,11 +31,23 @@
                 self::$_drivers = $config['evil']['fn'];
         }
 
+        /**
+         * @static
+         * @param  $fn
+         * @param null $code
+         * @return void
+         */
         public static function Fn($fn, $code = null)
         {
             self::$_functions[self::$_domain][$fn] = $code;
         }
 
+        /**
+         * @static
+         * @throws Exception
+         * @param  $call
+         * @return
+         */
         public static function run($call)
         {
             $pieces = explode('.', $call['NS']);

@@ -13,6 +13,10 @@
 
     class Evil_Exception_UserMessage implements Evil_Exception_Interface
     {
+        /**
+         * @param  $message
+         * @return void
+         */
         public function __invoke($message)
         {
 			$layout = new Zend_Layout();
