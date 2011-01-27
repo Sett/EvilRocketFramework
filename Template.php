@@ -13,10 +13,24 @@
 
     class Evil_Template
     {
+        /**
+         * @var string
+         */
         private $_template = '';
+
+        /**
+         * @var array
+         */
         private $_data = array();
+
+        /**
+         * @var array|null
+         */
         private $_fusers = array('key');
 
+        /**
+         * @param null $fusers
+         */
         public function __construct ($fusers = null)
         {
             if (null !== $fusers)
@@ -24,11 +38,20 @@
 
         }
 
+        /**
+         * @param  $template
+         * @return void
+         */
         private function _load ($template)
         {
             $this->_template = file_get_contents(Evil_Locator::ff('/views/templates/'.$template.'.phtml'));
         }
 
+        /**
+         * @param  $data
+         * @param null $template
+         * @return string
+         */
         public function mix ($data, $template = null)
         {
             $this->_data = $data;
@@ -48,6 +71,10 @@
 		// чуть проще и немного быстрее |@Artemy|
         // BreathLess. Fuser надо прописать было.
         // Artemy. Нет, надо было название метода поменять
+        /**
+         * @param  $body
+         * @return mixed
+         */
 		private function _keyTag ($body)
 		{
 			$d = $this->_data;

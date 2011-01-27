@@ -13,6 +13,10 @@
 
     class Evil_Layout extends Zend_Controller_Plugin_Abstract
     {
+        /**
+         * @param Zend_Controller_Request_Abstract $request
+         * @return void
+         */
         public function routeShutdown (Zend_Controller_Request_Abstract $request)
         {
             $layout = Zend_Layout::getMvcInstance();

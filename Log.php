@@ -1,7 +1,13 @@
 <?php
-
+/**
+ * @author BreathLess
+ */
     class Evil_Log extends Zend_Controller_Plugin_Abstract
     {
+        /**
+         * @param Zend_Controller_Request_Abstract $request
+         * @return void
+         */
         public function routeStartup(Zend_Controller_Request_Abstract $request)
         {
            $logger = new Zend_Log();
@@ -28,6 +34,11 @@
             Zend_Registry::set('logger',$logger);
         }
 
+        /**
+         * @static
+         * @param  $message
+         * @return void
+         */
         public static function info($message)
         {
             if (Zend_Registry::isRegistered('logger'))
