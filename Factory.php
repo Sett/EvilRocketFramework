@@ -35,7 +35,7 @@
          * @param null $args
          * @return
          */
-        public static function singletone($className, $args = null)
+        public static function singleton($className, $args = null)
         {
             if (isset(self::$_classes[$className]))
                 return self::$_classes[$className];
