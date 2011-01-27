@@ -13,6 +13,10 @@
 
     class Evil_Exception_RedirectToAuth implements Evil_Exception_Interface
     {
+        /**
+         * @param  $message
+         * @return void
+         */
         public function __invoke($message)
         {
             header('Location: http://'.$_SERVER['HTTP_HOST'].'/auth');

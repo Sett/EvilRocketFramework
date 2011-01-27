@@ -23,9 +23,22 @@
          */
         private   $_fluidschema = array();
 
+        /**
+         * @var null|Zend_Db_Table
+         */
         private   $_fixed   = null;
+
+        /**
+         * @var null|Zend_Db_Table
+         */
         private   $_fluid   = null;
 
+        /**
+         * @param  $type
+         * @param null $id
+         * @param null $data
+         *
+         */
         public function __construct ($type, $id = null, $data = null)
         {
            $this->type = $type;
@@ -48,6 +61,13 @@
            return true;
         }
 
+        /**
+         * @throws Exception
+         * @param  $key
+         * @param  $selector
+         * @param null $value
+         * @return null
+         */
         public function where ($key, $selector, $value = null)
         {
             switch ($selector)
@@ -78,6 +98,11 @@
 
         }
 
+        /**
+         * @param  $id
+         * @param  $data
+         * @return Evil_Object_Hybrid
+         */
         public function create ($id, $data)
         {
             $this->_id = $id;
@@ -95,11 +120,19 @@
             return $this;
         }
 
+        /**
+         * @return Evil_Object_Hybrid
+         */
         public function erase ()
         {
             return $this;
         }
 
+        /**
+         * @param  $key
+         * @param  $value
+         * @return Evil_Object_Hybrid
+         */
         public function addNode  ($key, $value)
         {
             if (is_array($key) and ($value === null))
@@ -118,6 +151,11 @@
             return $this;
         }
 
+        /**
+         * @param  $key
+         * @param null $value
+         * @return Evil_Object_Hybrid
+         */
         public function delNode  ($key, $value = null)
         {
             if (in_array($key, $this->_fluidschema) and in_array($value, $this->_data[$key]))
@@ -133,6 +171,12 @@
             return $this;
         }
 
+        /**
+         * @param  $key
+         * @param  $value
+         * @param null $oldvalue
+         * @return Evil_Object_Hybrid
+         */
         public function setNode  ($key, $value, $oldvalue = null)
         {
             if (!in_array($key, $this->_fixedschema))
@@ -156,6 +200,11 @@
             return $this;
         }
 
+        /**
+         * @param  $key
+         * @param  $increment
+         * @return Evil_Object_Hybrid
+         */
         public function incNode  ($key, $increment)
         {
             if (isset($this->_data[$key]))
@@ -164,6 +213,10 @@
                 return $this->addNode($key, $increment);
         }
 
+        /**
+         * @param null $id
+         * @return bool
+         */
         public function load($id = null)
         {
             if ($this->_loaded)

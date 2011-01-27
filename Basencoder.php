@@ -8,8 +8,17 @@
 
     class Evil_Basencoder
     {
+        /**
+         * @var string
+         */
         private static $alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-        
+
+        /**
+         * @static
+         * @param  $num
+         * @param  $base
+         * @return string
+         */
         public static function encode($num, $base)
         {
             $alphabet = substr(self::$alphabet, 0, $base-1);
@@ -30,6 +39,12 @@
             return $encoded;
         }
 
+        /**
+         * @static
+         * @param  $num
+         * @param  $base
+         * @return int
+         */
         public static function decode($num, $base)
         {
             $alphabet = substr(self::$alphabet, 0, $base-1);

@@ -1,10 +1,22 @@
 <?php
-
+/**
+ * @author BreathLess
+ */
     class Evil_Composite_Hybrid extends Evil_Composite_Base implements Evil_Composite_Interface
     {
+        /**
+         * @var Zend_Db_Table
+         */
         private $_fixed;
+
+        /**
+         * @var
+         */
         private $_ids;
 
+        /**
+         * @param  $type
+         */
         public function __construct ($type)
         {
             $this->_type = $type;
@@ -16,6 +28,13 @@
             $this->_fixedschema = $info['cols'];
         }
 
+        /**
+         * @param  $key
+         * @param  $selector
+         * @param null $value
+         * @param string $mode
+         * @return Evil_Composite_Hybrid
+         */
         public function where ($key, $selector, $value = null, $mode = 'new')
         {
             switch ($selector)
@@ -122,6 +141,10 @@
             return $this;
         }
 
+        /**
+         * @param null $key
+         * @return array
+         */
         public function data ($key = null)
         {
             $output = array();
@@ -136,6 +159,10 @@
             return $output;
         }
 
+        /**
+         * @param null $ids
+         * @return void
+         */
         public function load($ids = null)
         {
             $data = array();

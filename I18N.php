@@ -1,12 +1,21 @@
 <?php
- 
+ /**
+ * @author BreathLess
+ */
     class Evil_I18N extends Zend_Controller_Plugin_Abstract
     {
+        /**
+         * @param Zend_Controller_Request_Abstract $request
+         * @return void
+         */
         public function routeStartup(Zend_Controller_Request_Abstract $request)
         {
             $this->setLocale();
         }
 
+        /**
+         * @return void
+         */
         public function setLocale()
         {
             // putenv("LANG=ru_RU");

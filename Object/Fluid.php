@@ -17,8 +17,17 @@
          * @var <array>
          */
         private   $_fluidschema = array();
+
+        /**
+         * @var null|Zend_Db_Table
+         */
         private   $_fluid   = null;
 
+        /**
+         * @param  $type
+         * @param null $id
+         *
+         */
         public function __construct ($type, $id = null)
         {
            $this->type = $type;
@@ -31,6 +40,21 @@
            return true;
         }
 
+        /**
+         * @return void
+         */
+        public function erase()
+        {
+            
+        }
+
+        /**
+         * @throws Exception
+         * @param  $key
+         * @param  $selector
+         * @param null $value
+         * @return null
+         */
         public function where ($key, $selector, $value = null)
         {
             switch ($selector)
@@ -56,6 +80,11 @@
 
         }
 
+        /**
+         * @param  $id
+         * @param  $data
+         * @return Evil_Object_Fluid
+         */
         public function create ($id, $data)
         {
             $this->_id = $id;
@@ -66,6 +95,11 @@
             return $this;
         }
 
+        /**
+         * @param  $key
+         * @param null $value
+         * @return Evil_Object_Fluid
+         */
         public function addNode  ($key, $value = null)
         {
             if (is_array($key) and ($value === null))
@@ -79,6 +113,11 @@
             return $this;
         }
 
+        /**
+         * @param  $key
+         * @param null $value
+         * @return Evil_Object_Fluid
+         */
         public function delNode  ($key, $value = null)
         {
             if (null !== $value and !empty($value))
@@ -91,6 +130,12 @@
             return $this;
         }
 
+        /**
+         * @param  $key
+         * @param  $value
+         * @param null $oldvalue
+         * @return Evil_Object_Fluid
+         */
         public function setNode  ($key, $value, $oldvalue = null)
         {
             if (null !== $oldvalue and !empty($oldvalue))
@@ -113,6 +158,11 @@
             return $this;
         }
 
+        /**
+         * @param  $key
+         * @param  $increment
+         * @return Evil_Object_Fluid
+         */
         public function incNode  ($key, $increment)
         {
             if (isset($this->_data[$key]))
@@ -121,6 +171,10 @@
                 return $this->addNode($key, $increment);
         }
 
+        /**
+         * @param null $id
+         * @return bool
+         */
         public function load($id = null)
         {
             if (null !== $id)
