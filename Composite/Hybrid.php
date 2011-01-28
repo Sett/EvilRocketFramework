@@ -205,4 +205,13 @@
                 $this->_items[$id] = Evil_Structure::getObject($this->_type, $id, $data);
             
         }
+
+        /**
+		 * @author arslan
+         * @return bool
+         */
+		public function canBeLoaded()
+		{
+			return isset($this->_ids);
+		}
     }
