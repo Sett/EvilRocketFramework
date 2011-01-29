@@ -85,9 +85,10 @@
         {
             Zend_Registry::get('db')->update($this->_prefix . 'tickets',
                                              array('created' => time()),
-                                             '(user="' . $user . '")&&(seal="' . $seal . '")');
+                                             '(user="' . $user . '")&&(seal="'. $seal .'")');
 
-            Zend_Registry::get('logger')->log('Updated', LOG_INFO);
+            $logger = Zend_Registry::get('logger');
+            $logger->log('Updated', LOG_INFO);
         }
 
         /**
@@ -126,7 +127,7 @@
                     }
                     else
                     {
-                        $logger->log('No seal', Zend_Log::INFO);                        
+                        $logger->log('No seal', Zend_Log::INFO);
                         $this->annulate();
                     }
                 }
@@ -149,16 +150,29 @@
          */
         public function register()
         {
+            $id = md5(uniqid(true) . time() . mt_rand(0, 9999));
+            $seal = $this->_seal($id);
+
             $userId = Zend_Registry::get('userid');
-            $TID    = time() . $userId;
-            $seal   = $this->_seal($TID);
+            $db     = Zend_Registry::get('db');
+            $ticket = null;
 
-            $this->_ticket->create(array('seal' => $seal, 'user'=> $userId, 'created'=>time()));
+            if(-1 != $userId){
+                $ticket = $db->fetchAll($db->select()->from($this->_prefix . 'tickets')->where('user=?', $userId)->where('seal=?', $seal));
 
-            $cookiePrefix = strtoupper(rtrim($this->_prefix,'_'));// TODO: may be create "cookie.prefix" in the config?
+                if(is_object($ticket))
+                    $ticket = $ticket->toArray();
+            }
 
-            setcookie($cookiePrefix . 'TID', $TID, 0, '/');
-            setcookie($cookiePrefix . 'TSL', $seal, 0, '/');
+            if(null == $ticket){
+                $db->delete($this->_prefix . 'tickets', 'seal="' . $seal . '"');
+                $this->_ticket->create($id, array('seal' => $seal, 'user'=> $userId, 'created'=>time()));
+                $cookiePrefix = strtoupper(rtrim($this->_prefix,'_'));
+                setcookie($cookiePrefix . 'TID', $id, 0, '/');
+                setcookie($cookiePrefix . 'TSL', $seal, 0, '/');
+            }
+            else
+                $db->update($this->_prefix . 'tickets', array('created' => time()), 'id="' . $ticket[0]['id'] . '"');
         }
 
         /**
