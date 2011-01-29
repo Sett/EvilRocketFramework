@@ -210,7 +210,7 @@
         }
 
         /**
-         * Se#: WTF?
+         * Se#: путающее название метода
          *
 		 * @author arslan
          * @return bool
