@@ -150,11 +150,9 @@
          */
         public function register()
         {
-            $id = md5(uniqid(true) . time() . mt_rand(0, 9999));
-            $seal = $this->_seal($id);
-
             $userId = Zend_Registry::get('userid');
-            $ticket = null;
+            $id     = md5(uniqid(true) . time() . mt_rand(0, 9999) . $userId);
+            $seal   = $this->_seal($id);
 
             $this->_ticket->create($id, array('seal' => $seal, 'user'=> $userId, 'created'=>time()));
             $cookiePrefix = strtoupper(rtrim($this->_prefix,'_'));
