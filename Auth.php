@@ -154,25 +154,12 @@
             $seal = $this->_seal($id);
 
             $userId = Zend_Registry::get('userid');
-            $db     = Zend_Registry::get('db');
             $ticket = null;
 
-            if(-1 != $userId){
-                $ticket = $db->fetchAll($db->select()->from($this->_prefix . 'tickets')->where('user=?', $userId)->where('seal=?', $seal));
-
-                if(is_object($ticket))
-                    $ticket = $ticket->toArray();
-            }
-
-            if(null == $ticket){
-                $db->delete($this->_prefix . 'tickets', 'seal="' . $seal . '"');
-                $this->_ticket->create($id, array('seal' => $seal, 'user'=> $userId, 'created'=>time()));
-                $cookiePrefix = strtoupper(rtrim($this->_prefix,'_'));
-                setcookie($cookiePrefix . 'TID', $id, 0, '/');
-                setcookie($cookiePrefix . 'TSL', $seal, 0, '/');
-            }
-            else
-                $db->update($this->_prefix . 'tickets', array('created' => time()), 'id="' . $ticket[0]['id'] . '"');
+            $this->_ticket->create($id, array('seal' => $seal, 'user'=> $userId, 'created'=>time()));
+            $cookiePrefix = strtoupper(rtrim($this->_prefix,'_'));
+            setcookie($cookiePrefix . 'TID', $id, 0, '/');
+            setcookie($cookiePrefix . 'TSL', $seal, 0, '/');
         }
 
         /**
