@@ -83,11 +83,14 @@
          * @param  $data
          * @return Evil_Object_Fixed
          */
-        public function create ($id, $data)
+        public function create ($id, $data = null)
         {
-            $this->_id = $id;
+            if(is_array($id)){
+                $data = $id;
+                $id = null;
+            }
 
-            $fixedvalues = array('id' => $id);
+            $fixedvalues = (null == $id) ? array() : array('id' => $id);
 
             foreach ($data as $key => $value)
                 if (in_array($key, $this->_fixedschema))
@@ -96,6 +99,7 @@
                     $this->addNode ($key, $value);
 
             $this->_fixed->insert($fixedvalues);
+            $this->_id = (null == $id) ? $this->_fixed->lastInsertId() : $id;
 
             return $this;
         }

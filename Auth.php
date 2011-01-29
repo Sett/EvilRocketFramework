@@ -72,26 +72,22 @@
         /**
          * @return string
          */
-        private function _seal ()
+        private function _seal ($ticketID)
         {
-            if (!isset($_SERVER['HTTP_USER_AGENT']))
-                $_SERVER['HTTP_USER_AGENT'] = '';
-
-            return sha1($_SERVER['HTTP_USER_AGENT']);
+            return sha1($ticketID . $this->_config['evil']['ticket']['key']);
         }
 
         /**
          * @param  $user
          * @return void
          */
-        protected function _upTicket($user)
+        protected function _upTicket($user, $seal)
         {
             Zend_Registry::get('db')->update($this->_prefix . 'tickets',
                                              array('created' => time()),
-                                             'user="' . $user . '"');
+                                             '(user="' . $user . '")&&(seal="' . $seal . '")');
 
-            $logger = Zend_Registry::get('logger');
-            $logger->log('Updated', LOG_INFO);
+            Zend_Registry::get('logger')->log('Updated', LOG_INFO);
         }
 
         /**
@@ -110,10 +106,10 @@
                     {
                         if ($this->_ticket->getValue('seal') == $_COOKIE[$cookiePrefix . 'TSL'])
                         {
-                            if ($this->_seal() == $_COOKIE[$cookiePrefix . 'TSL'])
+                            if ($this->_seal($_COOKIE[$cookiePrefix . 'TID']) == $_COOKIE[$cookiePrefix . 'TSL'])
                             {
                                 $logger->log('Audited', Zend_Log::INFO);
-                                $this->_upTicket($this->_ticket->getValue('user'));
+                                $this->_upTicket($this->_ticket->getValue('user'), $_COOKIE[$cookiePrefix . 'TSL']);
                                 Zend_Registry::set('userid', $this->_ticket->getValue('user'));
                             }
                             else
@@ -153,29 +149,16 @@
          */
         public function register()
         {
-            $id = uniqid(true);
-            $seal = $this->_seal();
-
             $userId = Zend_Registry::get('userid');
-            $db     = Zend_Registry::get('db');
-            $ticket = null;
+            $TID    = time() . $userId;
+            $seal   = $this->_seal($TID);
 
-            if(-1 != $userId){
-                $ticket = $db->fetchAll($db->select()->from($this->_prefix . 'tickets')->where('user=?', $userId)->where('seal=?', $seal));
+            $this->_ticket->create(array('seal' => $seal, 'user'=> $userId, 'created'=>time()));
 
-                if(is_object($ticket))
-                    $ticket = $ticket->toArray();
-            }
+            $cookiePrefix = strtoupper(rtrim($this->_prefix,'_'));// TODO: may be create "cookie.prefix" in the config?
 
-            if(empty($ticket)){
-                $db->delete($this->_prefix . 'tickets', 'seal="' . $seal . '"');
-                $this->_ticket->create($id, array('seal' => $seal, 'user'=> -1, 'created'=>time()));
-                $cookiePrefix = strtoupper(rtrim($this->_prefix,'_'));
-                setcookie($cookiePrefix . 'TID', $id, 0, '/');
-                setcookie($cookiePrefix . 'TSL', $seal, 0, '/');
-            }
-            else
-                $db->update($this->_prefix . 'tickets', array('created' => time()), 'id="' . $ticket[0]['id'] . '"');
+            setcookie($cookiePrefix . 'TID', $TID, 0, '/');
+            setcookie($cookiePrefix . 'TSL', $seal, 0, '/');
         }
 
         /**
