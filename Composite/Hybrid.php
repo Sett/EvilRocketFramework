@@ -175,6 +175,9 @@
 
             $ids = $this->_ids;
 
+            if(empty($ids))
+                return false;
+
             foreach($ids as &$id) // Se#: WTF?
                 $id = '"'.$id.'"';// old-school
 
@@ -207,6 +210,8 @@
         }
 
         /**
+         * Se#: WTF?
+         *
 		 * @author arslan
          * @return bool
          */
