@@ -13,11 +13,6 @@
 
     class Evil_Auth_Basic implements Evil_Auth_Interface
     {
-        /**
-         * @throws Exception
-         * @param $controller
-         * @return
-         */
         public function doAuth($controller)
         {
             if (!isset($_SERVER['PHP_AUTH_USER']))
@@ -44,21 +39,11 @@
             }
         }
 
-        /**
-         * Hook
-         *
-         * @return void
-         */
         public function onFailure()
         {
             // TODO: Implement onFailure() method.
         }
 
-        /**
-         * Hook
-         *
-         * @return void
-         */
         public function onSuccess()
         {
             // TODO: Implement onSuccess() method.

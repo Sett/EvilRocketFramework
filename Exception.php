@@ -13,10 +13,6 @@
 
     class Evil_Exception extends Zend_Exception
     {
-        /**
-         * @param  $message
-         * @param int $code
-         */
         public function __construct($message, $code = 0)
         {
         	//  Не могу сказать почему, но на сервере это не работает
@@ -25,7 +21,6 @@
         	
             // $exceptionConfig = new Zend_Config_Json(APPLICATION_PATH.'/configs/exception.json');          
             // $exceptionConfig = $exceptionConfig->toArray();
-
             if (file_exists(APPLICATION_PATH.'/configs/exception.json'))
                 $exceptionConfig = json_decode(file_get_contents(APPLICATION_PATH.'/configs/exception.json'), true);
            	
@@ -39,6 +34,8 @@
                 // For compatibility with php 5.2 by #Artemy
                 elseif (method_exists($exceptionClass, '__invoke'))
                 	$exceptionClass->__invoke($message);
+            } else {
+            	parent::__construct($message, $code);
             }
         }
     }

@@ -1,21 +1,12 @@
 <?php
-/**
- * @author BreathLess
- */
+
     class Evil_IP extends Zend_Controller_Plugin_Abstract
     {
-        /**
-         * @param Zend_Controller_Request_Abstract $request
-         * @return void
-         */
         public function routeStartup(Zend_Controller_Request_Abstract $request)
         {
             $this->defineIP();
         }
 
-        /**
-         * @return void
-         */
         private function defineIP()
         {
             if (isset($_SERVER['HTTP_X_REAL_IP']))
@@ -24,10 +15,6 @@
                 define ('_IP', $_SERVER['REMOTE_ADDR']);
         }
 
-        /**
-         * @static
-         * @return string
-         */
         public static function geoIP()
         {
             switch (APPLICATION_ENV)

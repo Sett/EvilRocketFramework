@@ -9,9 +9,6 @@
  
     class Evil_Auth_Form_OpenID extends Zend_Form
     {
-        /**
-         * @return void
-         */
         public function init()
         {
             $username = $this->createElement('text', 'username', array(

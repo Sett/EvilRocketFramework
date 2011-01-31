@@ -9,10 +9,6 @@
 
     class Evil_Action_Show implements Evil_Action_Interface
     {
-        /**
-         * @param Zend_Controller_Action $controller
-         * @return void
-         */
         public function __invoke (Zend_Controller_Action $controller)
         {
             $template = new Evil_Template();

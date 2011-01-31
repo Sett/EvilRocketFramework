@@ -30,10 +30,11 @@ class Evil_Defense_Imito
             $config = $config->toArray();
 
         $table = $config['resources']['db']['prefix'] . self::$table;// create full name of a table
+        
         $hash  = sha1(json_encode($context) . $key . $table);// create hash
         
         if(self::_isNotExist($hash, $db, $table))
-            $db->insert(self::$table, array('hash' => $hash, 'date' => time()));
+            $db->insert($table, array('hash' => $hash, 'date' => time()));
         else
             return false;
 

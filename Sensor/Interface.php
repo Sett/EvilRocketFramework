@@ -13,11 +13,5 @@
 
     interface Evil_Sensor_Interface
     {
-        /**
-         * @abstract
-         * @param  $source
-         * @param null $args
-         * @return void
-         */
         public function track($source, $args = null);
     }

@@ -9,9 +9,6 @@
  
     class Evil_Auth_OpenID implements Evil_Auth_Interface
     {
-    	public function doAuth(){
-    		 // TODO: Implement doAuth() method.
-    	}
         public function authentificate()
         {
             // TODO: Implement authentificate() method.

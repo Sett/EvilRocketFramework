@@ -13,29 +13,21 @@
 
     abstract class Evil_Object_Base
     {
-        /**
-         * @var array
-         */
         protected   $_dnodes      = array();
 
-        /**
-         * @var bool
-         */
         protected $_loaded = false;
-
         /**
          * @var <string>
          * Type of object, entity name
          */
-        protected $type     = null;
 
+        protected $type     = null;
         /**
          *
          * @var <string>
          * ID of object
          */
         protected $_id       = null;
-
         /**
          *
          * @var <array>
@@ -43,10 +35,7 @@
          * Implements State Machine Pattern.
          */
         protected   $_data     = array ();
-
-        /**
-         * @return array
-         */
+        
         public function data()
         {
         	foreach ($this->_dnodes as $key => $fn)
@@ -55,9 +44,6 @@
         	return $this->_data;
         }
 
-        /**
-         * @return void
-         */
         public function reset()
         {
 
@@ -89,32 +75,18 @@
             return $this->_id;
         }
 
-        /**
-         * @param  $key
-         * @param  $fn
-         * @return Evil_Object_Base
-         */
+
         public function addDNode ($key, $fn)
         {
             $this->_dnodes[$key] = $fn;
             return $this;
         }
 
-        /**
-         * @param  $key
-         * @return
-         */
         protected function _getDValue ($key)
         {
         	return $this->_data[$key] = $this->_dnodes[$key]($this->_data);
         }
 
-        /**
-         * @param  $key
-         * @param string $return
-         * @param null $default
-         * @return array|null
-         */
         public function getValue  ($key, $return = 'var', $default = null)
         {
             if ($return == 'array' and $default == null)

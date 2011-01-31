@@ -10,14 +10,14 @@
      * @date 24.10.10
      * @time 14:20
      */
+
+  class Evil_Access extends Evil_Access_Weighted
+  {
+			// Class factory - coming soon
+  }    
+    
   class Evil_Access_Weighted extends Evil_Access_Abstract
   {
-        /**
-         * Initialize rules
-         *
-         * @throws Exception
-         * @return bool
-         */
         public function init ()
         {
             self::$_rules = json_decode(file_get_contents(APPLICATION_PATH.'/configs/access.json'), true);
@@ -27,16 +27,7 @@
             
             return true;
         }  	  	
-
-        /**
-         * Check access
-         *
-         * @throws Exception
-         * @param string $subject
-         * @param string $controller
-         * @param string $action
-         * @return
-         */
+  	
         public function _check ($subject, $controller, $action)
         {
             $decisions = array();
@@ -87,24 +78,12 @@
             Zend_Wildfire_Plugin_FirePhp::groupEnd('Access');
             return $decision;
         }
-
-        /**
-         * @param string $subject
-         * @param string $controller
-         * @param string $action
-         * @return
-         */
+        
         public function allowed($subject, $controller, $action)
         {
             return self::_check($subject, $controller, $action);
         }
 
-        /**
-         * @param string $subject
-         * @param string $controller
-         * @param string $action
-         * @return bool
-         */
         public function denied($subject, $controller, $action)
         {           
             return !self::_check($subject, $controller, $action);
