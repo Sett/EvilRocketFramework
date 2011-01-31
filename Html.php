@@ -116,24 +116,18 @@ class Evil_Html
         }
     }
 
-    /**
-     * @return string
-     */
     protected function _generateName()
     {
         return sha1(mt_rand(1,9999) . time() . mt_rand(0,99999)) . md5(mt_rand(0,99999));
     }
 
-    /**
-     * @return string
-     */
+
     public function __toString()
     {
         echo ' === START === <br/>' . self::$_head . ':';
         print_r(self::$_code);
         return ' === END === ';
     }
-
     /**
      * Add child for current element.
      * @param string $name
@@ -298,11 +292,6 @@ class Evil_Html
         return $this->_simpleTag(self::TD, $start, $options, true);
     }
 
-    /**
-     * @param  $start
-     * @param  $options
-     * @return string
-     */
     protected function _tagInput($start, $options)
     {
         if(false == $start)

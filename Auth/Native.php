@@ -10,11 +10,6 @@
     class Evil_Auth_Native implements Evil_Auth_Interface 
     {   
     	// Custom auth | Artemy
-        /**
-         * @param  $controller
-         * @param  $viewfile
-         * @return int
-         */
     	private function _doCustomAuth($controller, $viewfile)
     	{
     		$login_view = new Zend_View();
@@ -45,11 +40,7 @@
         	return -1;	
     	}
     	
-    	/**
-         * @throws Evil_Exception
-         * @param  $controller
-         * @return int
-         */
+    	    
         public function doAuth ($controller)
         {
         	// Support custom views for auth form
@@ -89,17 +80,11 @@
             return -1;
         }
 
-        /**
-         * @return void
-         */
         public function onFailure()
         {
             // TODO: Implement onFailure() method.
         }
 
-        /**
-         * @return void
-         */
         public function onSuccess()
         {
             // TODO: Implement onSuccess() method.

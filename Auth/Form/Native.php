@@ -9,12 +9,6 @@
  
     class Evil_Auth_Form_Native extends Zend_Form
     {
-        /**
-         * Initialize form.
-         * Se#: stupid, need config - not php
-         *
-         * @return void
-         */
         public function init()
         {
             $username = $this->createElement('text', 'username', array(

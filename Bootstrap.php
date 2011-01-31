@@ -1,17 +1,8 @@
 <?php
-/**
- * @author BreathLess
- */
+
     class Evil_Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
-        /**
-         * @var
-         */
         private $_config;
-
-        /**
-         * @return void
-         */
         public function run ()
         {
            Zend_Registry::set('config', $this->_config = parent::getOptions());
@@ -26,9 +17,6 @@
            Zend_Controller_Front::run($this->_config['resources']['frontController']['controllerDirectory']);
         }
 
-        /**
-         * @return
-         */
         protected function _initView()
         {
             Zend_Layout::startMvc(array(

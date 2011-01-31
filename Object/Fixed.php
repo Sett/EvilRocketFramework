@@ -18,17 +18,8 @@
          * @var <array>
          */
         private   $_fixedschema = array();
-
-        /**
-         * @var null|Zend_Db_Table
-         */
         private   $_fixed   = null;
 
-        /**
-         * @param  $type
-         * @param null $id
-         * 
-         */
         public function __construct ($type, $id = null)
         {
            $this->_type = $type;
@@ -44,13 +35,6 @@
            return true;
         }
 
-        /**
-         * @throws Exception
-         * @param  $key
-         * @param  $selector
-         * @param null $value
-         * @return null
-         */
         public function where ($key, $selector, $value = null)
         {
             switch ($selector)
@@ -78,77 +62,43 @@
 
         }
 
-        /**
-         * @param  $id
-         * @param  $data
-         * @return Evil_Object_Fixed
-         */
-        public function create ($id, $data = null)
+        public function create ($id, $data)
         {
-            if(is_array($id)){
-                $data = $id;
-                $id = null;
-            }
+            $this->_id = $id;
 
-            $fixedvalues = (null == $id) ? array() : array('id' => $id);
+            $fixedvalues = array('id' => $id);
 
             foreach ($data as $key => $value)
                 if (in_array($key, $this->_fixedschema))
                     $fixedvalues[$key] =  $value;
                 else
                     $this->addNode ($key, $value);
-
             $this->_fixed->insert($fixedvalues);
-            $this->_id = (null == $id) ? $this->_fixed->lastInsertId() : $id;
 
             return $this;
         }
 
-        /**
-         * @return Evil_Object_Fixed
-         */
         public function erase ()
         {
             return $this;
         }
 
-        /**
-         * @param  $key
-         * @param  $value
-         * @return Evil_Object_Fixed
-         */
         public function addNode  ($key, $value)
         {
             return $this;
         }
 
-        /**
-         * @param  $key
-         * @param null $value
-         * @return Evil_Object_Fixed
-         */
         public function delNode  ($key, $value = null)
         {
             return $this;
         }
 
-        /**
-         * @param  $key
-         * @param  $value
-         * @param null $oldvalue
-         * @return Evil_Object_Fixed
-         */
         public function setNode  ($key, $value, $oldvalue = null)
         {
             $this->_fixed->update(array($key => $value), array('id = "'.$this->_id.'"'));
             return $this;
         }
 
-        /**
-         * @param  $key
-         * @param  $increment
-         * @return Evil_Object_Fixed
-         */
         public function incNode  ($key, $increment)
         {
             if (isset($this->_data[$key]))
@@ -157,10 +107,6 @@
                 return $this->addNode($key, $increment);
         }
 
-        /**
-         * @param null $id
-         * @return bool
-         */
         public function load($id = null)
         {
             if ($this->_loaded)
