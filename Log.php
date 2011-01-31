@@ -1,13 +1,7 @@
 <?php
-/**
- * @author BreathLess
- */
+
     class Evil_Log extends Zend_Controller_Plugin_Abstract
     {
-        /**
-         * @param Zend_Controller_Request_Abstract $request
-         * @return void
-         */
         public function routeStartup(Zend_Controller_Request_Abstract $request)
         {
            $logger = new Zend_Log();
@@ -16,7 +10,6 @@
            $logger->addWriter(new Zend_Log_Writer_Firebug());
 
            $config = Zend_Registry::get('config');
-
            if (isset($config['evil']['log']['expose']['svn']) and $config['evil']['log']['expose']['svn'])
            {
                exec ('svn info', $svn);
@@ -34,11 +27,6 @@
             Zend_Registry::set('logger',$logger);
         }
 
-        /**
-         * @static
-         * @param  $message
-         * @return void
-         */
         public static function info($message)
         {
             if (Zend_Registry::isRegistered('logger'))

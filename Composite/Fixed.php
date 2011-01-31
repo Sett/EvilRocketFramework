@@ -1,17 +1,9 @@
 <?php
-/**
- * @author BreathLess
- */
+
     class Evil_Composite_Fixed extends Evil_Composite_Base implements Evil_Composite_Interface
     {
-        /**
-         * @var Zend_Db_Table
-         */
         private $_fixed;
 
-        /**
-         * @param  $type
-         */
         public function __construct ($type)
         {
             $this->_type = $type;
@@ -20,16 +12,8 @@
             $this->_fixedschema = $info['cols'];
         }
 
-        /**
-         * @param  $key
-         * @param  $selector
-         * @param null $value
-         * @param string $mode
-         * @return Evil_Composite_Fixed
-         */
         public function where ($key, $selector, $value = null,  $mode = 'new')
         {
-            //TODO: dynamic configure selectors (Se#)
             switch ($selector)
             {
                 case '=':
@@ -84,10 +68,6 @@
             return $this;
         }
 
-        /**
-         * @param  $ids
-         * @return void
-         */
         public function load($ids)
         {
             foreach ($ids as $id)

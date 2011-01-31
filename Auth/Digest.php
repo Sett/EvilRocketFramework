@@ -13,10 +13,6 @@
 
     class Evil_Auth_Digest implements Evil_Auth_Interface
     {
-        /**
-         * @param string $txt
-         * @return array|bool
-         */
         private function _http_digest_parse ($txt)
         {
             $needed_parts = array('nonce'=>1, 'nc'=>1, 'cnonce'=>1, 'qop'=>1, 'username'=>1, 'uri'=>1, 'response'=>1);
@@ -33,11 +29,6 @@
             return $needed_parts ? false : $data;
         }
 
-        /**
-         * @throws Exception
-         * @param  $controller
-         * @return
-         */
         public function doAuth($controller)
         {
             if (!isset($_SERVER['PHP_AUTH_USER']))
@@ -73,21 +64,11 @@
             }
         }
 
-        /**
-         * Hook
-         *
-         * @return void
-         */
         public function onFailure()
         {
             // TODO: Implement onFailure() method.
         }
 
-        /**
-         * Hook
-         *
-         * @return void
-         */
         public function onSuccess()
         {
             // TODO: Implement onSuccess() method.

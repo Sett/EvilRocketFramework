@@ -13,12 +13,6 @@
 
   class Evil_Access_RBAC extends Evil_Access_Abstract
   {
-        /**
-         * Initialize rules
-         *
-         * @throws Exception
-         * @return bool
-         */
         public function init ()
         {
             self::$_rules = json_decode(file_get_contents(APPLICATION_PATH.'/configs/roles.json'), true);
@@ -30,14 +24,6 @@
         }  	
   	
         // by Artemy
-        /**
-         * Check access
-         *
-         * @param string $subject
-         * @param string $controller
-         * @param string $action
-         * @return bool
-         */
         public function _check ($subject, $controller, $action)
         {
         	$decision	= false;
@@ -75,24 +61,12 @@
             
             return $decision;
         }
-
-        /**
-         * @param string $subject
-         * @param string $controller
-         * @param string $action
-         * @return bool
-         */
+        
         public function allowed($subject, $controller, $action)
         {
             return self::_check($subject, $controller, $action);
         }
 
-        /**
-         * @param string $subject
-         * @param string $controller
-         * @param string $action
-         * @return bool
-         */
         public function denied($subject, $controller, $action)
         {           
             return !self::_check($subject, $controller, $action);
