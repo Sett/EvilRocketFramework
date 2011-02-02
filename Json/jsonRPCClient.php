@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @author sergio <jsonrpcphp@inservibile.org>
  */
-class jsonRPCClient {
+class Evil_Json_jsonRPCClient {
 	
 	/**
 	 * Debug state
@@ -127,10 +127,13 @@ class jsonRPCClient {
 							'content' => $request
 							));
 		$context  = stream_context_create($opts);
-		if ($fp = fopen($this->url, 'r', false, $context)) {
+		$fp = fopen($this->url, 'r', false, $context);
+		if ($fp) {
 			$response = '';
-			while($row = fgets($fp)) {
+			$row = fgets($fp);
+			while($row) {
 				$response.= trim($row)."\n";
+				$row = fgets($fp);
 			}
 			$this->debug && $this->debug.='***** Server response *****'."\n".$response.'***** End of server response *****'."\n";
 			$response = json_decode($response,true);
@@ -145,15 +148,16 @@ class jsonRPCClient {
 		
 		// final checks and return
 		if (!$this->notification) {
+			return $response;
 			// check
 			if ($response['id'] != $currentId) {
 				throw new Exception('Incorrect response id (request id: '.$currentId.', response id: '.$response['id'].')');
 			}
 			if (!is_null($response['error'])) {
-				throw new Exception('Request error: '.$response['error']);
+				throw  new Exception($response['error']['message'],$response['error']['code']);
 			}
 			
-			return $response['result'];
+			return $response;
 			
 		} else {
 			return true;
