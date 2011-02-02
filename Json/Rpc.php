@@ -27,20 +27,20 @@ class Evil_Json_Rpc
          * Create rpc client
          * @var jsonRPCClient
          */
-    	include 'jsonRPCClient.php';
-        $client = new jsonRPCClient($url);
+        $client = new Evil_Json_jsonRPCClient($url);
+        $client->setRPCNotification(false);
         try {
             //	Generate checksum of given data
             $checksum = self::getHash($data, $secretKey);
             /**
              * calling remote procedure store
-             * Enter description here ...
              * @var unknown_type
              */
-            $response = $client->store($data, $checksum);
-            return $response;
+          return $client->store($data, $checksum);
+            return $client;
         } catch (Exception $e) {
-        	throw new Evil_Exception($e->getMessage(),$e->getCode());
+        	return $e;
+        	//throw new Evil_Exception($e->getMessage(),$e->getCode());
         }
     }
 }
