@@ -31,7 +31,7 @@
                 break;
 
                 case 'development':
-					$countries = array('186.122.153.245','209.159.156.154','86.122.153.245');
+					$countries = array('186.122.153.245','86.134.153.24','86.122.153.245');
                     $result = geoip_country_code_by_name($countries[array_rand($countries)]);
                 break;
 
