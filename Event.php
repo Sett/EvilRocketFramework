@@ -109,7 +109,7 @@
 
                 if (!isset($events[$oid]))
                 {
-                   $events[$oid] = Evil_Structure::getObject('event', $oid);
+                   $events[$oid] = Evil_Structure::getObject('event');
 
                    if ($events[$oid]->load($oid))
                     {
