@@ -116,7 +116,7 @@
                             array('i'=> $this->_id, 'k'=>$key,'v'=>$value)
                         );
                 }
-
+            $this->_data[$key] = $value;
             return $this;
         }
 
