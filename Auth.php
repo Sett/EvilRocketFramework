@@ -24,9 +24,12 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
     }
     public function routeStartup (Zend_Controller_Request_Abstract $request)
     {
+        
         parent::routeStartup($request);
         $this->init();
-        $this->audit();
+        //TODO:fix this
+        if('/api' != $request->getRequestUri())
+            $this->audit();
     }
     public function routeShutdown (Zend_Controller_Request_Abstract $request)
     {
@@ -44,8 +47,7 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
         if (is_object($config))
             $config = $config->toArray();
         $prefix = $config['resources']['db']['prefix'];
-        Zend_Registry::get('db')->update($prefix . 'tickets', 
-        array('created' => time()), 'user="' . $user . '"');
+        Zend_Registry::get('db')->update($prefix . 'tickets', array('created' => time()), 'user="' . $user . '"');
         $logger = Zend_Registry::get('logger');
         $logger->log('Updated', LOG_INFO);
     }
@@ -59,8 +61,7 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
                         if ($this->_seal() == $_COOKIE['SCORETSL']) {
                             $logger->log('Audited', Zend_Log::INFO);
                             $this->_upTicket($this->_ticket->getValue('user'));
-                            Zend_Registry::set('userid', 
-                            $this->_ticket->getValue('user'));
+                            Zend_Registry::set('userid', $this->_ticket->getValue('user'));
                         } else {
                             $logger->log('Stolen seal', Zend_Log::INFO);
                             $this->annulate();
@@ -86,6 +87,7 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
     {
         $id = uniqid(true);
         $seal = $this->_seal();
+        
         $userId = Zend_Registry::get('userid');
         $db = Zend_Registry::get('db');
         $ticket = null;
@@ -102,15 +104,19 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
             if (is_object($ticket))
                 $ticket = $ticket->toArray();
         }
+        
         if (empty($ticket)) {
             $db->delete($prefix . 'tickets', 'seal="' . $seal . '"');
-            $this->_ticket->create($id, 
-            array('seal' => $seal, 'user' => - 1, 'created' => time()));
+            $this->_ticket->create($id, array('seal' => $seal, 'user' => $userId, 'created' => time()));
             setcookie('SCORETID', $id, 0, '/');
             setcookie('SCORETSL', $seal, 0, '/');
+            return $this->_ticket->getId();
         } else
-            $db->update($prefix . 'tickets', array('created' => time()), 
-            'id="' . $ticket[0]['id'] . '"');
+        {
+            $db->update($prefix . 'tickets', array('created' => time()), 'id="' . $ticket[0]['id'] . '"');
+       //var_dump($ticket);
+       return  $ticket[0]['id'];
+        }
     }
     public function annulate ()
     {
@@ -142,53 +148,39 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
             header('HTTP/1.0 401 Unauthorized');
             exit();
         } else 
-            if (($_SERVER['PHP_AUTH_USER'] !=
-             $config['evil']['auth']['stupid']['user']) || (($_SERVER['PHP_AUTH_PW']) !=
+            if (($_SERVER['PHP_AUTH_USER'] != $config['evil']['auth']['stupid']['user']) || (($_SERVER['PHP_AUTH_PW']) !=
              $config['evil']['auth']['stupid']['password']))
                 die('403');
     }
-    
     /**
      * 
      * verify username and password
      * on success create session and return apiKEY
      * @param string $username
      * @param string $password
-     * @throws Evil_Exception
+     * @return array
      */
-    public static function createAPIKey ($username, $password)
+    public function createAPIKey ($username, $password, $delayStart = 0)
     {
         $user = Evil_Structure::getObject('user');
-        $user->where('nickname', '=', $username);
-        $db = Zend_Registry::get('db');
-        $config = Zend_Registry::get('config');
-        if (is_object($config))
-            $config = $config->toArray();
-        $prefix = $config['resources']['db']['prefix'];
-        $sessionLifetime = $config['api']['sessionlifetime'];
-        if ($user->load()) {
-            if ($user->getValue('password') == md5($password)) {
-                $apiSession = Evil_Structure::getObject('apisessions');
-                $apiSession->where('userid', '=', $user->getId());
-                if ($apiSession->load()) {
-                    /**
-                     * delete existing session
-                     */
-                    $db->delete($prefix . 'apisessions', 
-                    'userid="' . $user->getId() . '"');
-                }
-                $id = uniqid(true);
-                $sSessionId = md5($user->getId() . $id . $username);
-                $apiSession->create(null, 
-                array('apisession' => $sSessionId, 'userid' => $user->getId(), 
-                'expiration' => time() + $sessionLifetime));
-                return $sSessionId;
-            } else {
-                throw  new Evil_Exception('Password Incorrect', 4043);
+        $user->where('nickname','=',$username);
+        if($user->load())
+        {
+            if($user->getValue('password') == md5($password))
+            {
+                $userId = $user->getId();
+                Zend_Registry::set('userid',$userId);
+                $this->attach($userId);
+                $ticketID = $this->register();
+                return $ticketID;
+            } else 
+            {
+                throw new Evil_Exception('Password incorrect');
             }
         } else {
-            throw new Evil_Exception('Unknown user', 4043);
+            throw new Evil_Exception('User not found',4043);
         }
+
     }
     /**
      * 
@@ -196,18 +188,21 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
      * @throws Evil_Exception
      * return userID on success
      */
-    public static function verifyAPIKey ($key)
+    public  function verifyAPIKey ($key)
     {
-        $apiSession = Evil_Structure::getObject('apisessions');
-        $apiSession->where('apisession', '=', $key);
-        if ($apiSession->load()) {
-            if ($apiSession->getValue('expiration') > time()) {
-                return $apiSession->getValue('userid');
-            } else {
-                throw new Evil_Exception('Session expired', 4043);
-            }
-        } else
-            throw new Evil_Exception('Sessoin not found', 4043);
+        
+        $ticket = Evil_Structure::getObject('ticket',$key);
+        if($ticket->load())
+        {
+            $userId = $ticket->getValue('user');
+            Zend_Registry::set('userid', $userId);
+            $this->attach($userId);
+            $this->register();
+            return $userId;
+        } else {
+           return false;
+        }
+        
     }
     /**
      * 
