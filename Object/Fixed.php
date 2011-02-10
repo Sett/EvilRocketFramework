@@ -85,6 +85,7 @@
 
         public function addNode  ($key, $value)
         {
+            $this->_data[$key] = $value;
             return $this;
         }
 
@@ -130,5 +131,14 @@
 
             $this->_loaded = true;
             return true;
+        }
+        
+        public function update (array $data, $id = null)
+        {
+            if (null == $id) {
+                $id = $this->getId();
+            }
+            $where = $this->_fixed->getAdapter()->quoteInto('id = ?', $id);
+            $this->_fixed->update($data, $where);
         }
     }

@@ -90,8 +90,8 @@
                 else
                     $this->addNode ($key, $value);
 
-            $this->_fixed->insert($fixedvalues);
-
+            $id = $this->_fixed->insert($fixedvalues);
+            $this->setId($id);
             return $this;
         }
 
