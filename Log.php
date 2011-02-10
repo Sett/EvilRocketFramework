@@ -32,7 +32,7 @@
             if (Zend_Registry::isRegistered('logger'))
             {
                 $logger = Zend_Registry::get('logger');
-                $logger->log($message, Zend_Log::Info);
+                $logger->log($message, Zend_Log::INFO);
             }
         }
     }
