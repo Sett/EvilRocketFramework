@@ -9,10 +9,13 @@
 
         private function defineIP()
         {
-            if (isset($_SERVER['HTTP_X_REAL_IP']))
-                define ('_IP', $_SERVER['HTTP_X_REAL_IP']);
-            else
-                define ('_IP', $_SERVER['REMOTE_ADDR']);
+        	if(false == defined('_IP'))
+        	{
+	            if (isset($_SERVER['HTTP_X_REAL_IP']))
+	                define ('_IP', $_SERVER['HTTP_X_REAL_IP']);
+	            else
+	                define ('_IP', $_SERVER['REMOTE_ADDR']);
+        	}
         }
 
         public static function geoIP()
