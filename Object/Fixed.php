@@ -20,6 +20,7 @@
         private   $_fixedschema = array();
         private   $_fixed   = null;
 
+
         public function __construct ($type, $id = null)
         {
            $this->_type = $type;
@@ -27,6 +28,7 @@
            $this->_fixed = new Zend_Db_Table(Evil_DB::scope2table($type));
            
            $info = $this->_fixed->info();
+           $this->_info = $info;
            $this->_fixedschema = $info['cols'];
 
            if (null !== $id)
@@ -121,24 +123,28 @@
             // Find fixed row, and extract data from
 
             $data = $this->_fixed->find($this->_id)->toArray();
-                        
-            if (!empty($data))
-            {
-                $this->_data = $data[0];
-            }
-            else
-                return false;
-
-            $this->_loaded = true;
-            return true;
+        if (! empty($data)) {
+            $this->_data = $data[0];
+        } else
+            return false;
+        $this->_loaded = true;
+        return true;
+    }
+    public function update (array $data, $id = null)
+    {
+        if (null == $id) {
+            $id = $this->getId();
         }
-        
-        public function update (array $data, $id = null)
-        {
-            if (null == $id) {
-                $id = $this->getId();
-            }
-            $where = $this->_fixed->getAdapter()->quoteInto('id = ?', $id);
-            $this->_fixed->update($data, $where);
+        $where = $this->_fixed->getAdapter()->quoteInto('id = ?', $id);
+        $filtered = array();
+        foreach ($data as $key => $value){
+              if (in_array($key, $this->_fixedschema))
+              {
+                  $filtered[$key] = $value;
+              } 
+           }
+                
+            $this->_fixed->update($filtered, $where);
+            $this->_loaded = false;
         }
     }
