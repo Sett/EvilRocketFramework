@@ -34,6 +34,7 @@
            $this->_fluid = new Zend_Db_Table(Evil_DB::scope2table($type,'-fluid'));
 
            $info = $this->_fixed->info();
+           $this->_info = $info;
            $this->_fixedschema = $info['cols'];
 
            if ($data !== null)

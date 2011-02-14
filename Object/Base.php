@@ -34,8 +34,16 @@
          * Internal data cache. Populating by load() method.
          * Implements State Machine Pattern.
          */
+        
+        
         protected   $_data     = array ();
         
+        protected $_info = null;
+        
+        public function getInfo()
+        {
+            return $this->_info;
+        }
         public function data()
         {
         	foreach ($this->_dnodes as $key => $fn)
