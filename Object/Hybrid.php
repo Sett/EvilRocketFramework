@@ -81,17 +81,20 @@
         public function create ($id, $data)
         {
             $this->_id = $id;
-
+            $nodes = array();
             $fixedvalues = array('id' => $id);
 
             foreach ($data as $key => $value)
                 if (in_array($key, $this->_fixedschema))
                     $fixedvalues[$key] =  $value;
                 else
-                    $this->addNode ($key, $value);
+                    $nodes[$key] = $value;
+                   
 
             $id = $this->_fixed->insert($fixedvalues);
             $this->setId($id);
+            if(count($nodes) > 0)
+                $this->addNode ($nodes);
             return $this;
         }
 
