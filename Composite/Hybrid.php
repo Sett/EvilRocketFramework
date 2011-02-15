@@ -16,12 +16,12 @@
             $this->_fixedschema = $info['cols'];
         }
 
-        public function where ($key, $selector, $value = null, $mode = 'new')
+        public function where ($key, $selector, $value = null, $offset = null, $count = null, $mode = 'new')
         {
             switch ($selector)
             {
                 case '*':
-                        $rows = $this->_fixed->fetchAll();
+                        $rows = $this->_fixed->fetchAll(null, null, $count, $offset); //count and offset only for selector==*
 
                         $ids = $rows->toArray ();
 
@@ -177,5 +177,11 @@
             foreach ($data as $id => $data)
                 $this->_items[$id] = Evil_Structure::getObject($this->_type, $id, $data);
             
+        }
+
+        public function clear()
+        {
+            $this->_ids = array();
+            $this->_items = array();
         }
     }
