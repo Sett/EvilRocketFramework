@@ -106,7 +106,7 @@
             return $this;
         }
 
-        public function addNode  ($key, $value)
+        public function addNode  ($key, $value = null)
         {
             if (is_array($key) and ($value === null))
                 {
