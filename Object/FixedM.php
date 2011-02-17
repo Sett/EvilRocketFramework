@@ -18,6 +18,7 @@ class Evil_Object_FixedM extends Evil_Object_Fixed
     private $_fixedschema = array();
     private $_fixed = null;
     private $_select = null;
+    
     public function __construct ($type, $id = null)
     {
         $this->_type = $type;
@@ -42,7 +43,7 @@ class Evil_Object_FixedM extends Evil_Object_Fixed
                 break;
             default:
                 throw new Exception('Unknown selector ' . $selector);
-                break;
+            break;
         }
         return $this;
     }
@@ -56,12 +57,44 @@ class Evil_Object_FixedM extends Evil_Object_Fixed
             $this->_id = $id;
         }
         $this->_data = array();
-        $data = $this->_fixed->fetchRow($this->_select)->toArray();
-        if (! empty($data)) {
-            $this->_data = $data;
+        $data = $this->_fixed->fetchRow($this->_select);
+        if ( null !== $data ) {
+            $this->_data = $data->toArray();
         } else
             return false;
         $this->_loaded = true;
         return true;
+    }
+    
+    public function loadAll ($id = null)
+    {
+        if ($this->_loaded)
+            return true;
+        if (null !== $id)
+        {
+            self::where('id', '=', $id);
+            $this->_id = $id;
+        }
+        $this->_data = array();
+        $data = $this->_fixed->fetchAll($this->_select);
+        if (! empty($data)) {
+            $this->_data = $data->toArray();;
+        } else
+            return false;
+        $this->_loaded = true;
+        return true;
+    }
+    
+    public function create ($id, $data)
+    {
+        $this->_id = $id;
+        $fixedvalues = array('id' => $id);
+        foreach ($data as $key => $value)
+            if (in_array($key, $this->_fixedschema))
+                $fixedvalues[$key] = $value;
+            else
+                $this->addNode($key, $value);
+        $this->_fixed->insert($fixedvalues);
+        return $this;
     }
 }

@@ -1,128 +1,105 @@
 <?php
-
+/**
+ * @author BreathLess
+ * @name Evil_Object_Fixed
+ * @description: Fixed implementation of ORM, classical table interface  
+ * @package Evil
+ * @subpackage ORM
+ * @version 0.1
+ * @date 24.10.10
+ * @time 12:43
+ */
+class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interface
+{
     /**
-     * @author BreathLess
-     * @name Evil_Object_Fixed
-     * @description: Fixed implementation of ORM, classical table interface  
-     * @package Evil
-     * @subpackage ORM
-     * @version 0.1
-     * @date 24.10.10
-     * @time 12:43
+     * List of fixed table keys
+     * @var <array>
      */
-
-    class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interface
+    private $_fixedschema = array();
+    private $_fixed = null;
+    public function __construct ($type, $id = null)
+    {   
+        $this->_type = $type;
+        $this->_fixed = new Zend_Db_Table(Evil_DB::scope2table($type));
+        $info = $this->_fixed->info();
+        $this->_info = $info;
+        $this->_fixedschema = $info['cols'];
+        if (null !== $id)
+            $this->load($id);
+        return true;
+    }
+    public function where ($key, $selector, $value = null)
     {
-        /**
-         * List of fixed table keys
-         * @var <array>
-         */
-        private   $_fixedschema = array();
-        private   $_fixed   = null;
-
-
-        public function __construct ($type, $id = null)
-        {
-           $this->_type = $type;
-
-           $this->_fixed = new Zend_Db_Table(Evil_DB::scope2table($type));
-           
-           $info = $this->_fixed->info();
-           $this->_info = $info;
-           $this->_fixedschema = $info['cols'];
-
-           if (null !== $id)
-                $this->load($id);
-
-           return true;
+        switch ($selector) {
+            case '=':
+            case '<':
+            case '>':
+            case '<=':
+            case '>=':
+                $data = $this->_fixed->fetchRow($this->_fixed->select()
+                    ->where($key . ' ' . $selector . ' ?', $value));
+                break;
+            default:
+                throw new Exception('Unknown selector ' . $selector);
+                break;
         }
-
-        public function where ($key, $selector, $value = null)
-        {
-            switch ($selector)
-            {
-                case '=':
-                        $data = $this->_fixed->fetchRow(
-                                        $this->_fixed->select()->where($key.' = ?', $value)
-                                                       );
-                break;
-
-                default:
-                    throw new Exception('Unknown selector '.$selector);
-                break;
-            }
-
-
-
-            if (empty($data))
-                return null;
+        if (empty($data))
+            return null;
+        else {
+            $data = $data->toArray();
+            $this->_data = $data;
+            return $this->_id = $data['id'];
+        }
+    }
+    
+    
+    public function create ($id, $data)
+    {
+        $this->_id = $id;
+        $fixedvalues = array('id' => $id);
+        foreach ($data as $key => $value)
+            if (in_array($key, $this->_fixedschema))
+                $fixedvalues[$key] = $value;
             else
-            {
-                $data = $data->toArray();
-                return $this->_id = $data['id'];
-            }
-
-        }
-
-        public function create ($id, $data)
-        {
+                $this->addNode($key, $value);
+        $this->_fixed->insert($fixedvalues);
+        return $this;
+    }
+    public function erase ()
+    {
+       $this->_fixed->delete($this->_fluid->getAdapter()->quoteInto(array('id = ?'), array($this->_id)));
+       return  $this;
+    }
+    public function addNode ($key, $value)
+    {
+        $this->_data[$key] = $value;
+        return $this;
+    }
+    public function delNode ($key, $value = null)
+    {
+        return $this;
+    }
+    public function setNode ($key, $value, $oldvalue = null)
+    {
+        $this->_fixed->update(array($key => $value), array('id = "' . $this->_id . '"'));
+        return $this;
+    }
+    public function incNode ($key, $increment)
+    {
+        if (isset($this->_data[$key]))
+            return $this->setNode($key, $this->_data[$key] + $increment);
+        else
+            return $this->addNode($key, $increment);
+    }
+    public function load ($id = null)
+    {
+        if ($this->_loaded)
+            return true;
+        if (null !== $id)
             $this->_id = $id;
-
-            $fixedvalues = array('id' => $id);
-
-            foreach ($data as $key => $value)
-                if (in_array($key, $this->_fixedschema))
-                    $fixedvalues[$key] =  $value;
-                else
-                    $this->addNode ($key, $value);
-            $this->_fixed->insert($fixedvalues);
-
-            return $this;
-        }
-
-        public function erase ()
-        {
-            return $this;
-        }
-
-        public function addNode  ($key, $value)
-        {
-            $this->_data[$key] = $value;
-            return $this;
-        }
-
-        public function delNode  ($key, $value = null)
-        {
-            return $this;
-        }
-
-        public function setNode  ($key, $value, $oldvalue = null)
-        {
-            $this->_fixed->update(array($key => $value), array('id = "'.$this->_id.'"'));
-            return $this;
-        }
-
-        public function incNode  ($key, $increment)
-        {
-            if (isset($this->_data[$key]))
-                return $this->setNode($key, $this->_data[$key]+$increment);
-            else
-                return $this->addNode($key, $increment);
-        }
-
-        public function load($id = null)
-        {
-            if ($this->_loaded)
-                return true;
-
-            if (null !== $id)
-                $this->_id = $id;
-
-            $this->_data = array();
-
-            // Find fixed row, and extract data from
-
-            $data = $this->_fixed->find($this->_id)->toArray();
+        $this->_data = array();
+        // Find fixed row, and extract data from
+        $data = $this->_fixed->find($this->_id)->toArray();
         if (! empty($data)) {
             $this->_data = $data[0];
         } else
@@ -137,14 +114,14 @@
         }
         $where = $this->_fixed->getAdapter()->quoteInto('id = ?', $id);
         $filtered = array();
-        foreach ($data as $key => $value){
-              if (in_array($key, $this->_fixedschema))
-              {
-                  $filtered[$key] = $value;
-              } 
-           }
-                
-            $this->_fixed->update($filtered, $where);
-            $this->_loaded = false;
-        }
-    }
+        foreach ($data as $key => $value) {
+            if (in_array($key, $this->_fixedschema))
+                  {
+                      $filtered[$key] = $value;
+                  } 
+               }
+                    
+                $this->_fixed->update($filtered, $where);
+                $this->_loaded = false;
+          }
+       }
