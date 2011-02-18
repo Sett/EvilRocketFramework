@@ -114,13 +114,16 @@
                         $this->addNode($k, $v);
                 }
             else
+            {
                 if (!in_array($key, $this->_fixedschema))
                 {
                     $this->_fluid->insert(
                             array('i'=> $this->_id, 'k'=>$key,'v'=>$value)
                         );
                 }
-            $this->_data[$key] = $value;
+                $this->_data[$key] = $value;
+            }
+            
             return $this;
         }
 
