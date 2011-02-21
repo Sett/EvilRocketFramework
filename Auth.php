@@ -24,11 +24,10 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
     }
     public function routeStartup (Zend_Controller_Request_Abstract $request)
     {
-        
         parent::routeStartup($request);
         $this->init();
         //TODO:fix this
-        if('/api' != $request->getRequestUri())
+        if ('/api' != $request->getRequestUri())
             $this->audit();
     }
     public function routeShutdown (Zend_Controller_Request_Abstract $request)
@@ -54,11 +53,15 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
     public function audit ()
     {
         $logger = Zend_Registry::get('logger');
-        if (isset($_COOKIE['SCORETID'])) {
-            if ($this->_ticket->load($_COOKIE['SCORETID'])) {
-                if (isset($_COOKIE['SCORETSL'])) {
-                    if ($this->_ticket->getValue('seal') == $_COOKIE['SCORETSL']) {
-                        if ($this->_seal() == $_COOKIE['SCORETSL']) {
+        $_request = Zend_Controller_Front::getInstance()->getRequest();
+        $ticketId = $_request->getCookie('SCORETID'); //  $_COOKIE['SCORETID'];
+        $ticketSalt = $_request->getCookie('SCORETSL');
+        $getTicketID = $_request->getParam('token');
+        if (null !== $ticketId) {
+            if ($this->_ticket->load($ticketId)) {
+                if (null !== $ticketSalt) {
+                    if ($this->_ticket->getValue('seal') == $ticketSalt) {
+                        if ($this->_seal() == $ticketSalt) {
                             $logger->log('Audited', Zend_Log::INFO);
                             $this->_upTicket($this->_ticket->getValue('user'));
                             Zend_Registry::set('userid', $this->_ticket->getValue('user'));
@@ -78,16 +81,32 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
                 $logger->log('Ticket No Exist', Zend_Log::INFO);
                 $this->annulate();
             }
+        }
+        if (null !== $getTicketID) {
+            $_ticket = Evil_Structure::getObject('ticket',$getTicketID);
+            if ($_ticket->load()) {
+                if ($_ticket->getValue('seal') == '') {
+                    Zend_Registry::set('userid', $_ticket->getValue('user'));
+                    $_ticket->erase();
+                    $this->register();
+                } else 
+                {
+                     $logger->log('Used ticket', Zend_Log::INFO);
+                }
+            }
         } else {
             $logger->log('No TID', Zend_Log::INFO);
             $this->register();
         }
     }
-    public function register ()
+    public function register ($useSeal = true)
     {
         $id = uniqid(true);
-        $seal = $this->_seal();
-        
+        if ($useSeal) {
+            $seal = $this->_seal();
+        } else {
+            $seal = '';
+        }
         $userId = Zend_Registry::get('userid');
         $db = Zend_Registry::get('db');
         $ticket = null;
@@ -104,18 +123,16 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
             if (is_object($ticket))
                 $ticket = $ticket->toArray();
         }
-        
         if (empty($ticket)) {
             $db->delete($prefix . 'tickets', 'seal="' . $seal . '"');
             $this->_ticket->create($id, array('seal' => $seal, 'user' => $userId, 'created' => time()));
             setcookie('SCORETID', $id, 0, '/');
             setcookie('SCORETSL', $seal, 0, '/');
             return $this->_ticket->getId();
-        } else
-        {
+        } else {
             $db->update($prefix . 'tickets', array('created' => time()), 'id="' . $ticket[0]['id'] . '"');
-       //var_dump($ticket);
-       return  $ticket[0]['id'];
+            //var_dump($ticket);
+            return $ticket[0]['id'];
         }
     }
     public function annulate ()
@@ -163,24 +180,20 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
     public function createAPIKey ($username, $password, $delayStart = 0)
     {
         $user = Evil_Structure::getObject('user');
-        $user->where('nickname','=',$username);
-        if($user->load())
-        {
-            if($user->getValue('password') == md5($password))
-            {
+        $user->where('nickname', '=', $username);
+        if ($user->load()) {
+            if ($user->getValue('password') == md5($password)) {
                 $userId = $user->getId();
-                Zend_Registry::set('userid',$userId);
+                Zend_Registry::set('userid', $userId);
                 $this->attach($userId);
-                $ticketID = $this->register();
+                $ticketID = $this->register(false);
                 return $ticketID;
-            } else 
-            {
+            } else {
                 throw new Evil_Exception('Password incorrect');
             }
         } else {
-            throw new Evil_Exception('User not found',4043);
+            throw new Evil_Exception('User not found', 4043);
         }
-
     }
     /**
      * 
@@ -188,21 +201,18 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
      * @throws Evil_Exception
      * return userID on success
      */
-    public  function verifyAPIKey ($key)
+    public function verifyAPIKey ($key)
     {
-        
-        $ticket = Evil_Structure::getObject('ticket',$key);
-        if($ticket->load())
-        {
+        $ticket = Evil_Structure::getObject('ticket', $key);
+        if ($ticket->load()) {
             $userId = $ticket->getValue('user');
             Zend_Registry::set('userid', $userId);
             $this->attach($userId);
             $this->register();
             return $userId;
         } else {
-           return false;
+            return false;
         }
-        
     }
     /**
      * 
