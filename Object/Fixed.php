@@ -67,7 +67,7 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
     }
     public function erase ()
     {
-       $this->_fixed->delete($this->_fluid->getAdapter()->quoteInto(array('id = ?'), array($this->_id)));
+       $this->_fixed->delete($this->_fixed->getAdapter()->quoteInto(array('id = ?'), array($this->_id)));
        return  $this;
     }
     public function addNode ($key, $value)
