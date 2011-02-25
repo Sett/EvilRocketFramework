@@ -14,7 +14,8 @@
 	            if (isset($_SERVER['HTTP_X_REAL_IP']))
 	                define ('_IP', $_SERVER['HTTP_X_REAL_IP']);
 	            else
-	                define ('_IP', $_SERVER['REMOTE_ADDR']);
+	            
+	                define ('_IP', (isset($_SERVER['REMOTE_ADDR']))?$_SERVER['REMOTE_ADDR']:'');
         	}
         }
 
