@@ -3,7 +3,6 @@
  * 
  * Посмотровщик массивов
  * @author nur
- *
  */
 class Evil_Array
 {
@@ -19,6 +18,7 @@ class Evil_Array
      */
     public static function get ($path, array $inputArray,$default = null, $detelminer = '.')
     {
+        // TODO: $arrayOfPath = is_array($path) ? $path : explode($delimeter, $path);
         $arrayOfPath = explode($detelminer, $path);
         $value = $inputArray;
         foreach ($arrayOfPath as $index)
