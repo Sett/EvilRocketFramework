@@ -35,6 +35,10 @@
                 break;
                 
                 case '=':
+                case '>':
+                case '<':
+                case '>=':
+                case '<=':
                     if (in_array ($key, $this->_fixedschema)) {
                         $rows = $this->_fixed->fetchAll (
                             $this->_fixed
@@ -43,7 +47,7 @@
                                 $this->_fixed,
                                 array('id')
                             )
-                                ->where ($key . ' = ?', $value));
+                                ->where ($key . ' '.$selector.' ?', $value));
 
                         $ids = $rows->toArray ();
 
@@ -56,6 +60,7 @@
                     }
                     else
                     {
+                       
                         $rows = $this->_fluid->fetchAll (
                             $this->_fluid
                                 ->select ()
@@ -63,14 +68,14 @@
                                 $this->_fluid,
                                 array('i')
                             )
-                                ->where ('k = ?', $key)
-                                ->where ('v = ?', $value));
+                                ->where ('k '. $selector .' ?', $key)
+                                ->where ('v '. $selector .' ?', $value));
 
                         $ids = $rows->toArray ();
-
                         foreach ($ids as $id)
                         {
                             $id = $id['i'];
+                            $this->_ids[] = $id;
                             $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
                         }
                     }
@@ -118,6 +123,10 @@
                     }
 
                     break;
+                    
+                    default:
+                        throw new Exception('Unknown selector');
+                        break;
             }
             return $this;
         }
@@ -139,18 +148,18 @@
         public function load($ids = null)
         {
             $data = array();
-            
             if ($ids !== null)
                 $this->_ids = $ids;
 
             $this->_items = array();
             $this->_data = array();
 
-            $ids = $this->_ids;
-
+            $ids = (array) $this->_ids;
+            
             foreach($ids as &$id) // Se#: WTF?
                 $id = '"'.$id.'"';// old-school
-
+            //  die('`id` IN (' . implode (',', $ids) . ')');  
+               
             $fixedRows = $this->_fixed->fetchAll (
                             $this->_fixed
                                 ->select ()
