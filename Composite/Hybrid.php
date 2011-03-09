@@ -68,7 +68,7 @@
                                 $this->_fluid,
                                 array('i')
                             )
-                                ->where ('k '. $selector .' ?', $key)
+                                ->where ('k = ?', $key)
                                 ->where ('v '. $selector .' ?', $value));
 
                         $ids = $rows->toArray ();
