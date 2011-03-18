@@ -13,6 +13,18 @@
     class Evil_Object_Hybrid extends Evil_Object_Base implements Evil_Object_Interface
     {
         /**
+         * @description Dynamic User-Selectors
+         * @author Se#
+         * @version 0.0.1
+         * @var array
+         */
+        protected $_selectors = array(
+            // 'example' - selector
+            'example' => array('Evil_Object_Hybrid',// class where selector realization is placed
+                               'where')// method, will get (array func_get_args(), object $fixed, object $fluid)
+        );
+
+        /**
          * List of fixed table keys
          * @var <array> 
          */
@@ -26,9 +38,10 @@
         private   $_fixed   = null;
         private   $_fluid   = null;
 
-        public function __construct ($type, $id = null, $data = null)
+        public function __construct ($type, $id = null, $data = null, $selectors = array())
         {
            $this->type = $type;
+           $this->_selectors = $selectors;// dynamic personal selectors
 
            $this->_fixed = new Zend_Db_Table(Evil_DB::scope2table($type,'-fixed'));
            $this->_fluid = new Zend_Db_Table(Evil_DB::scope2table($type,'-fluid'));
@@ -65,7 +78,19 @@
                 break;
 
                 default:
-                    throw new Exception('Unknown selector '.$selector);
+                    // Check for Dynamic User-Selectors
+                    $sls = is_array($this->_selectors) ? $this->_selectors : array();// for shorthand
+                    if(isset($sls[$selector]) && is_array($sls[$selector]) && (count($sls[$selector]) == 2))
+                    {// check correction of the passing information
+                        if(method_exists($sls[$selector][0], $sls[$selector][1]))
+                        {
+                            $data = call_user_func_array($sls[$selector],
+                                // we can pass more than 3 parameters
+                                                         array(func_get_args(), $this->_fixed, $this->_fluid));
+                        }
+                    }
+                    else
+                        throw new Exception('Unknown selector '.$selector);
                 break;
             }
             
