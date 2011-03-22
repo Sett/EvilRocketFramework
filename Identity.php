@@ -174,15 +174,31 @@ class Evil_Identity
         return null;
     }
 
-    public static function delete($title, $identity, $uid)
+    /**
+     * Delete an identity. May get an array('title' => , 'identity' =>, 'uid' => )
+     *
+     * @static
+     * @param string|array $title
+     * @param string $identity
+     * @param string $uid
+     * @return bool|null
+     */
+    public static function delete($title, $identity = '', $uid = '')
     {
         $db = Zend_Registry::get('db');
         self::$prefix = empty(self::$prefix) ? Zend_Registry::get('db-prefix') : self::$prefix;
 
+        if(is_array($title))
+        {
+            $uid      = isset($title['uid']) ? $title['uid'] : -1;
+            $identity = isset($title['identity']) ? $title['identity'] : '';
+            $title    = isset($title['title']) ? $title['title'] : '';
+        }
+
         $existed = new self($identity);
 
-        if(null != $existed->uid)
-            return $existed;
+        if(null == $existed->uid)
+            return null;
 
         $where =  '(title="' . htmlspecialchars($title) . '")
                  &&(identity="' . self::encrypt($identity) . '")
