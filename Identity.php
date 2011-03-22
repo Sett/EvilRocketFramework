@@ -76,6 +76,17 @@ class Evil_Identity
     }
 
     /**
+     * @description public alias for _encrypt
+     * @static
+     * @param  $identity
+     * @return string
+     */
+    public static function encrypt($identity)
+    {
+        return self::_encrypt($identity);
+    }
+
+    /**
      * Get a record attribute
      *
      * @param string $name
@@ -119,6 +130,22 @@ class Evil_Identity
     public static function get($identity)
     {
         return new self($identity);
+    }
+
+    public static function where($field, $selector, $value)
+    {
+        $db = Zend_Registry::get('db');
+        $select = $db->select()->from(self::$prefix . self::$table);
+
+        if(is_array($field) && is_array($selector) && is_array($value))
+        {
+            foreach($field as $index => $name)
+                $select->where($name . $selector[$index] . '?',$value[$index]);
+        }
+        elseif(is_string($field) && is_string($selector) && is_string($value))
+            $select->where($field . $selector . '?', $value);
+
+        return $db->fetchAll($select);
     }
 
     /**
