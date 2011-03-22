@@ -173,4 +173,24 @@ class Evil_Identity
 
         return null;
     }
+
+    public static function delete($title, $identity, $uid)
+    {
+        $db = Zend_Registry::get('db');
+        self::$prefix = empty(self::$prefix) ? Zend_Registry::get('db-prefix') : self::$prefix;
+
+        $existed = new self($identity);
+
+        if(null != $existed->uid)
+            return $existed;
+
+        $where =  '(title="' . htmlspecialchars($title) . '")
+                 &&(identity="' . self::encrypt($identity) . '")
+                 &&(uid="' . htmlspecialchars($uid) . '")';
+
+        if($db->delete(self::$prefix . self::$table, $where))
+            return true;
+
+        return null;
+    }
 }
