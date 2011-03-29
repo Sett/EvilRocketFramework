@@ -16,8 +16,7 @@
         public function routeShutdown (Zend_Controller_Request_Abstract $request)
         {
             $layout = Zend_Layout::getMvcInstance();
-
-            $layoutConfig = json_decode(file_get_contents(APPLICATION_PATH.'/configs/layout.json'), true);
+            $layoutConfig = Zend_Json::decode(file_get_contents(APPLICATION_PATH.'/configs/layout.json'), true);
             $layoutName = 'layout';
 
             if (isset($layoutConfig[$request->getControllerName()]))
