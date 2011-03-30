@@ -101,7 +101,7 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
     }
     public function register ($useSeal = true)
     {
-        $id = uniqid(true);
+        $id = uniqid(true,true);
         if ($useSeal) {
             $seal = $this->_seal();
         } else {
