@@ -30,8 +30,7 @@ class Evil_Config extends Zend_Config
         switch ($type) {
             case 'array':
                 $config = new Zend_Config($config);
-                break;
-            
+                //and then merge
             case 'Zend_Config':
                 $this->merge($config);
                 break;
