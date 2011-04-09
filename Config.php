@@ -13,7 +13,7 @@ class Evil_Config extends Zend_Config
 {
     protected $_separator = '.';
 
-    public function __construct(array $array, $allowModifications = true)
+    public function __construct(array $array = array(), $allowModifications = true)
     {
         parent::__construct($array, $allowModifications);
     }
