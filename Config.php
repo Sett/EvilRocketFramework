@@ -67,6 +67,8 @@ class Evil_Config extends Zend_Config
 
         $mess = $this->_messageWalker($this, $keys);
 
+        ///TODO возможно не только создание класса но и вызов к-л. функционального обработчика
+        
         if(empty($mess)) {
             $result = class_exists((string)$default, $load) ? new $default : $default;
         } else {
