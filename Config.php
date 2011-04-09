@@ -50,12 +50,14 @@ class Evil_Config extends Zend_Config
     /**
      * Get key by recursive search
      *
-     * @param  $search
-     * @param string $default
-     * @param null $messages
+     * if $default is an existing class name, the object of this class will be returned
+     *
+     * @param  string $search
+     * @param  mixed $default
+     * @param  boolean $load. Try to load class name
      * @return mixed
      */
-    public function getKey($search, $default = '')
+    public function getKey($search, $default = '', $load = false)
     {
         $separator = empty($this->_separator)
                 ? '.'
@@ -66,13 +68,17 @@ class Evil_Config extends Zend_Config
         $mess = $this->_messageWalker($this, $keys);
 
         if(empty($mess)) {
-            $mess = $default;
+            $result = class_exists((string)$default, $load) ? new $default : $default;
+        } else {
+            $result = $mess instanceof Zend_Config
+                    ? $mess->toArray()
+                    : $mess;
         }
 
         return
-                $mess instanceof Zend_Config
-                        ? $mess->toArray()
-                        : $mess;
+                class_exists((string)$default, $load)
+                        ? new $default($result, true)
+                        : $result;
     }
 
     /**
