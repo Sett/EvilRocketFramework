@@ -30,7 +30,6 @@ class Evil_Config extends Zend_Config
      */
     public function append($config, $type = 'array')
     {
-        var_dump(1);
         switch ($type) {
             case 'array':
                 $config = new Zend_Config($config);
@@ -138,9 +137,10 @@ class Evil_Config extends Zend_Config
     {
         foreach ($this->_data as $key => $value) {
             $namespace = explode(':', $key);
-            //print_r($namespace);
             if (count($namespace) >= 2) {
-                $this->setExtend(trim($namespace[0]), $namespace[1]);
+                $this->_data[trim($namespace[0])] = $value;
+                $this->setExtend(trim($namespace[0]), trim($namespace[1]));
+                unset($this->_data[$key]);
             }
         }
     }
