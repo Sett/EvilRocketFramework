@@ -13,9 +13,12 @@ class Evil_Config extends Zend_Config
 {
     protected $_separator = '.';
 
-    public function __construct(array $array = array(), $allowModifications = true)
+    public function __construct($config = null, $type='array', $allowModifications = true)
     {
-        parent::__construct($array, $allowModifications);
+        parent::__construct(array(), $allowModifications);
+        if (!is_null($config)) {
+            $this->append($config, $type);
+        }
     }
 
     /**
@@ -27,16 +30,18 @@ class Evil_Config extends Zend_Config
      */
     public function append($config, $type = 'array')
     {
+        var_dump(1);
         switch ($type) {
             case 'array':
                 $config = new Zend_Config($config);
-                //and then merge
+                ///and then merge
             case 'Zend_Config':
                 $this->merge($config);
                 break;
             
             case 'json':
                 $this->merge(new Zend_Config_Json($config));
+                $this->_extendAsIni();
                 break;
 
             case 'ini':
@@ -122,5 +127,21 @@ class Evil_Config extends Zend_Config
         }
 
         return $this->_messageWalker($messages->$keys[$index], $keys, $index+1);
+    }
+
+    /**
+     * Parse config to find extend ini notation
+     *
+     * @return void
+     */
+    protected function _extendAsIni()
+    {
+        foreach ($this->_data as $key => $value) {
+            $namespace = explode(':', $key);
+            //print_r($namespace);
+            if (count($namespace) >= 2) {
+                $this->setExtend(trim($namespace[0]), $namespace[1]);
+            }
+        }
     }
 }
