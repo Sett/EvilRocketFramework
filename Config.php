@@ -12,6 +12,7 @@
 class Evil_Config extends Zend_Config
 {
     protected $_separator = '.';
+    protected $_sectionSeparator = ':';
 
     public function __construct($config = null, $type='array', $allowModifications = true)
     {
@@ -143,10 +144,35 @@ class Evil_Config extends Zend_Config
         foreach ($this->_data as $key => $value) {
             $namespace = explode(':', $key);
             if (count($namespace) >= 2) {
-                $this->_data[trim($namespace[0])] = $value;
-                $this->setExtend(trim($namespace[0]), trim($namespace[1]));
+                $nsp0 = trim($namespace[0]);
+                $nsp1 = trim($namespace[1]);
+                $this->_data[$nsp0] = $value;
+                $this->$nsp0->merge($this->$nsp1);
                 unset($this->_data[$key]);
             }
         }
+        reset($this->_data);
+        /*
+        $iniArray = array();
+        foreach ($this->_data as $key => $data)
+        {
+            $pieces = explode($this->_sectionSeparator, $key);
+            $thisSection = trim($pieces[0]);
+            switch (count($pieces)) {
+                case 1:
+                    $iniArray[$thisSection] = $data;
+                    break;
+
+                case 2:
+                    $extendedSection = trim($pieces[1]);
+                    $iniArray[$thisSection] = array_merge(array(';extends'=>$extendedSection), $data);
+                    break;
+
+                default:
+                    require_once 'Zend/Config/Exception.php';
+                    throw new Zend_Config_Exception("Section '$thisSection' may not extend multiple sections in $filename");
+            }
+        }
+        var_dump($iniArray);*/
     }
 }
