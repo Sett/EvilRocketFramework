@@ -102,6 +102,11 @@ class Evil_Config extends Zend_Config
         return $this;
     }
 
+    public function toArray()
+    {
+        return parent::toArray();
+    }
+
     /**
      * Get message from messages array by recursive search into deeper arrays
      *
