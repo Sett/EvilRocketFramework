@@ -25,6 +25,7 @@ class Evil_Config extends Zend_Config
     /**
      * Merge configs
      *
+     * @throws Zend_Exception
      * @param  mixed $config
      * @param string $type
      * @return Evil_Config
@@ -40,7 +41,7 @@ class Evil_Config extends Zend_Config
             case 'inc':
                 $config = include $config;
                 if (!is_array($config)) {
-                    throw new Zend_Application_Exception('Invalid configuration file provided; PHP file does not return array value');
+                    throw new Zend_Exception('Invalid configuration file provided; PHP file does not return array value');
                 }
                 ///and then as Zend_Config
 
@@ -66,7 +67,7 @@ class Evil_Config extends Zend_Config
                 break;
 
             default:
-                throw new Zend_Application_Exception('Invalid configuration file provided; unknown config type');
+                throw new Zend_Exception('Invalid configuration file provided; unknown config type');
         }
         
         return $this;
