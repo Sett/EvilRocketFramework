@@ -31,10 +31,23 @@ class Evil_Config extends Zend_Config
      */
     public function append($config, $type = 'array')
     {
+        if (is_string($config) && file_exists($config)) {
+            $type = strtolower(pathinfo($config, PATHINFO_EXTENSION));
+        }
+
         switch ($type) {
+            case 'php':
+            case 'inc':
+                $config = include $config;
+                if (!is_array($config)) {
+                    throw new Zend_Application_Exception('Invalid configuration file provided; PHP file does not return array value');
+                }
+                ///and then as Zend_Config
+
             case 'array':
                 $config = new Zend_Config($config);
                 ///and then merge
+
             case 'Zend_Config':
                 $this->merge($config);
                 break;
@@ -47,6 +60,13 @@ class Evil_Config extends Zend_Config
             case 'ini':
                 $this->merge(new Zend_Config_Ini($config));
                 break;
+
+            case 'yaml':
+                $this->merge(new Zend_Config_Yaml($config));
+                break;
+
+            default:
+                throw new Zend_Application_Exception('Invalid configuration file provided; unknown config type');
         }
         
         return $this;
@@ -103,6 +123,11 @@ class Evil_Config extends Zend_Config
         return $this;
     }
 
+    /**
+     * Convert object to array
+     *
+     * @return array
+     */
     public function toArray()
     {
         return parent::toArray();
