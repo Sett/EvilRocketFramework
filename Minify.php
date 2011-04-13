@@ -6,5 +6,4 @@ class Evil_Minify extends Minify
 {
     
 }
-//Minify::setCache( APPLICATION_PATH . '/cache/', true);
-//Minify_Minify::setCache( APPLICATION_PATH . '/cache/', true);
+Minify::setCache( APPLICATION_PATH . '/cache/', true);
