@@ -33,6 +33,8 @@ class Evil_Config extends Zend_Config
     {
         if (is_string($config) && file_exists($config)) {
             $type = strtolower(pathinfo($config, PATHINFO_EXTENSION));
+        } else if (is_object($config)) {
+            $type = get_class($config);
         }
 
         switch ($type) {
@@ -48,6 +50,7 @@ class Evil_Config extends Zend_Config
                 $config = new Zend_Config($config);
                 ///and then merge
 
+            case 'Evil_Config':
             case 'Zend_Config':
                 $this->merge($config);
                 break;
@@ -104,7 +107,7 @@ class Evil_Config extends Zend_Config
 
         return
                 class_exists((string)$default, $load)
-                        ? new $default($result, true)
+                        ? new $default($result)
                         : $result;
     }
 
