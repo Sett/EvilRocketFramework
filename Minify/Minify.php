@@ -290,7 +290,7 @@ class Minify {
                 }
                 self::$_cache->store($cacheId, $content);
                 if (function_exists('gzencode')) {
-                    self::$_cache->store($cacheId . '.gz', gzencode($content, self::$_options['encodeLevel']));
+                    //self::$_cache->store($cacheId . '.gz', gzencode($content, self::$_options['encodeLevel']));
                 }
             }
         } else {
