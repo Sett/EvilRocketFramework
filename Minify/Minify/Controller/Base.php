@@ -41,9 +41,9 @@ abstract class Minify_Controller_Base {
     public function getDefaultMinifyOptions() {
         return array(
             'isPublic' => true
-            ,'encodeOutput' => false// function_exists('gzdeflate')
+            ,'encodeOutput' => function_exists('gzdeflate')
             ,'encodeMethod' => null // determine later
-            ,'encodeLevel' => 9
+            ,'encodeLevel' => 4
             ,'minifierOptions' => array() // no minifier options
             ,'contentTypeCharset' => 'utf-8'
             ,'maxAge' => 1800 // 30 minutes
