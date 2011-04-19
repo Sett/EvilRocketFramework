@@ -65,7 +65,7 @@ class Evil_Json_jsonRPCClient {
 		// server URL
 		$this->url = $url;
 		// debug state
-		empty($debug) ? $this->debug = false : $this->debug = true;
+		$this->debug = $debug;
 		// message id
 		$this->id = 1;
 	}
@@ -75,11 +75,8 @@ class Evil_Json_jsonRPCClient {
 	 *
 	 * @param boolean $notification
 	 */
-	public function setRPCNotification($notification) {
-		empty($notification) ?
-							$this->notification = false
-							:
-							$this->notification = true;
+	public function setRPCNotification($notification = false) {
+							$this->notification = $notification;
 	}
 	
 	/**
