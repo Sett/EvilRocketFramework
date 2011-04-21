@@ -23,7 +23,7 @@ class Evil_Array
         $value = $inputArray;
         foreach ($arrayOfPath as $index)
         {
-            if(is_array($value))
+            if(is_array($value) && isset($value[$index]))
             {
                 $value = $value[$index];
             }
