@@ -25,28 +25,43 @@ class Evil_Object_Readable
      *
      * @var array
      */
-    static protected $_functions = array();
+    protected $_functions = array();
 
     /**
      * Constructor
+     * NOTE: see Evil_Object_Readable::create() for optimization & avoid errors while passing
+     * nulls by reference
      *
-     * @param array|null $params
-     * @param array|null $functions
+     * @param array $params
+     * @param array& $functions
      */
-    public function __construct(array $params = null, array $functions = null)
+    public function __construct(array $params, array &$functions)
     {
+        if (!is_null($functions)) {
+            $this->_functions =& $functions;
+        }
+
         if (!is_null($params)) {
             foreach ($params as $key => $value) {
                 if (is_array($value)) {
-                    $this->_data[$key] = new self($value);
+                    $this->_data[$key] = new self($value, $functions);
                 } else
                     $this->_data[$key] = $value;
             }
         }
+    }
 
-        if (!is_null($functions)) {
-            self::$_functions = $functions;
-        }
+    /**
+     * To construct one functions for all in one copy
+     *
+     * @static
+     * @param array|null $params
+     * @param array $functions
+     * @return Evil_Object_Readable
+     */
+    public static function create(array $params = null, array $functions = array())
+    {
+        return new self($params, $functions);
     }
 
     /**
@@ -58,8 +73,8 @@ class Evil_Object_Readable
      */
     public function __call($function, $params = array())
     {
-        if (isset(self::$_functions[$function]) && is_callable(self::$_functions[$function])) {
-            return call_user_func(self::$_functions[$function], $this->_data, $params);
+        if (isset($this->_functions[$function]) && is_callable($this->_functions[$function])) {
+            return call_user_func($this->_functions[$function], $this->_data, $params);
         }
         return null;
     }
