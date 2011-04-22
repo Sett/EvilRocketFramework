@@ -16,27 +16,27 @@
         protected   $_dnodes      = array();
 
         protected $_loaded = false;
+
         /**
          * @var <string>
          * Type of object, entity name
          */
+        protected $type = null;
 
-        protected $type     = null;
         /**
          *
          * @var <string>
          * ID of object
          */
-        protected $_id       = null;
+        protected $_id = null;
+
         /**
          *
          * @var <array>
          * Internal data cache. Populating by load() method.
          * Implements State Machine Pattern.
          */
-        
-        
-        protected   $_data     = array ();
+        protected $_data = array ();
         
         protected $_info = null;
         
@@ -44,6 +44,7 @@
         {
             return $this->_info;
         }
+
         public function data()
         {
         	foreach ($this->_dnodes as $key => $fn)
@@ -57,14 +58,13 @@
 
         }
 
-         /**
+        /**
          *
          * @param <string> $id
          * @return ObjectH3D
          *
          * Setter for ID
          */
-
         public function setId ($id)
         {
             $this->_id = $id;
@@ -77,12 +77,10 @@
          * @return <string>
          * Getter for ID
          */
-
         public function getId ()
         {
             return $this->_id;
         }
-
 
         public function addDNode ($key, $fn)
         {
