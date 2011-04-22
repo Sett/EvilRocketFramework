@@ -58,7 +58,7 @@ class Evil_Object_Readable
      */
     public function __call($function, $params = array())
     {
-        if (isset($this->_functions[$function])) {
+        if (isset($this->_functions[$function]) && is_callable($this->_functions[$function])) {
             return call_user_func($this->_functions[$function], $this->_data, $params);
         }
         return null;
