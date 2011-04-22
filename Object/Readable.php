@@ -28,6 +28,8 @@ class Evil_Object_Readable
     protected $_functions = array();
 
     /**
+     * Constructor
+     *
      * @param array|null $params
      * @param array|null $functions
      */
@@ -45,12 +47,13 @@ class Evil_Object_Readable
         if (!is_null($functions)) {
             $this->_functions = $functions;
         }
-
     }
 
     /**
+     * Implements one point call
+     *
      * @param string $function
-     * @param array $params
+     * @param mixed $params
      * @return mixed|null
      */
     public function __call($function, $params = array())
@@ -62,14 +65,37 @@ class Evil_Object_Readable
     }
 
     /**
-     * @return null
+     * Rewrite __clone() magic method
+     *
+     * @return void
      */
-    public function __clone()
+    protected function __clone()
+    {}
+
+    /**
+     * Rewrite __toString() magic method
+     *
+     * @return mixed|null
+     */
+    public function __toString()
     {
-        return null;
+        return $this->__call('__toString');
     }
 
     /**
+     * Rewrite __invoke() magic method
+     *
+     * @param null $params
+     * @return mixed|null
+     */
+    public function __invoke()
+    {
+        return $this->__call('__invoke', func_get_args());
+    }
+
+    /**
+     * Rewrite __get() magic method
+     *
      * @param  string $name
      * @return array|Evil_Object_Readable|null
      */
@@ -82,6 +108,8 @@ class Evil_Object_Readable
     }
 
     /**
+     * Rewrite __set() magic method
+     *
      * @param  string $name
      * @param  mixed $value
      * @return null
@@ -89,5 +117,27 @@ class Evil_Object_Readable
     public function __set($name, $value)
     {
         return null;
+    }
+
+    /**
+     * Rewrite __isset() magic method
+     *
+     * @param  string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return isset($this->_data[$name]);
+    }
+
+    /**
+     * Rewrite __unset() magic method
+     *
+     * @param  string $name
+     * @return
+     */
+    public function __unset($name)
+    {
+        return;
     }
 }
