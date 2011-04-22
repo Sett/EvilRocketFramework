@@ -25,7 +25,7 @@ class Evil_Object_Readable
      *
      * @var array
      */
-    protected $_functions = array();
+    static protected $_functions = array();
 
     /**
      * Constructor
@@ -38,14 +38,14 @@ class Evil_Object_Readable
         if (!is_null($params)) {
             foreach ($params as $key => $value) {
                 if (is_array($value)) {
-                    $this->_data[$key] = new self($value, $functions);
-                }
-                $this->_data[$key] = $value;
+                    $this->_data[$key] = new self($value);
+                } else
+                    $this->_data[$key] = $value;
             }
         }
 
         if (!is_null($functions)) {
-            $this->_functions = $functions;
+            self::$_functions = $functions;
         }
     }
 
@@ -58,8 +58,8 @@ class Evil_Object_Readable
      */
     public function __call($function, $params = array())
     {
-        if (isset($this->_functions[$function]) && is_callable($this->_functions[$function])) {
-            return call_user_func($this->_functions[$function], $this->_data, $params);
+        if (isset(self::$_functions[$function]) && is_callable(self::$_functions[$function])) {
+            return call_user_func(self::$_functions[$function], $this->_data, $params);
         }
         return null;
     }
