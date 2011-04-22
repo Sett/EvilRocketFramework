@@ -23,7 +23,7 @@ class Evil_Object_Readable
     /**
      * Some functions to implement on _data before return it
      *
-     * @var array|null
+     * @var array
      */
     protected $_functions = array();
 
