@@ -37,11 +37,11 @@ class Evil_Object_Readable
      */
     public function __construct(array $params, array &$functions)
     {
-        if (!is_null($functions)) {
+        if (!empty($functions)) {
             $this->_functions =& $functions;
         }
 
-        if (!is_null($params)) {
+        if (!empty($params)) {
             foreach ($params as $key => $value) {
                 if (is_array($value)) {
                     $this->_data[$key] = new self($value, $functions);
@@ -55,11 +55,11 @@ class Evil_Object_Readable
      * To construct one functions for all in one copy
      *
      * @static
-     * @param array|null $params
+     * @param array $params
      * @param array $functions
      * @return Evil_Object_Readable
      */
-    public static function create(array $params = null, array $functions = array())
+    public static function create(array $params, array $functions = array())
     {
         return new self($params, $functions);
     }
