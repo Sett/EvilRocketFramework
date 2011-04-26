@@ -1,7 +1,14 @@
 <?php
-
+/**
+ * 
+ * Json rpc клиент
+ * @author nur
+ *
+ */
 class Evil_Json_Rpc
 {
+    
+     public static $rpcUrl = null;
 	
     /**
      * 
@@ -14,6 +21,7 @@ class Evil_Json_Rpc
         return sha1(implode('', $data) . $secretKey);
     }
     /**
+     * TODO:: надо переписать это
      * 
      * Send data to server
      * @param array $data
@@ -42,5 +50,57 @@ class Evil_Json_Rpc
         	return $e;
         	//throw new Evil_Exception($e->getMessage(),$e->getCode());
         }
+    }
+    
+    
+  
+    
+    /**
+     * 
+     * Меджик метод для вызова удаленных процедур
+     * @param string $methodName
+     * @param array $params
+     * @return array
+     * @author NuR
+     * @throws Zend_Http_Client_Exception
+     * @example
+     * 
+     *      $data = array(
+     *      			  'Service' => 'Citizen',
+                          'Method' => 'showOrderList',
+                          'userid' => 1
+                          );
+        
+        Evil_Json_Rpc::make($data);
+     */
+    
+    public static function __callStatic ($methodName,$params)
+    {
+        
+        static $requestId = 1; 
+        static $client = null;
+        if(null == $client)
+        {
+            /**
+             * дефолтный адрес
+             */
+            if(null == self::$rpcUrl)
+            {
+                $config = Zend_Registry::get('config');
+                
+                self::$rpcUrl = isset($config['jsonrpc']['url']) ? $config['jsonrpc']['url'] :null;
+            }
+             $client = new Zend_Http_Client(self::$rpcUrl);
+        }
+       
+        $requestParams = array(
+    						'method' => $methodName,
+    						'params' => $params,
+                            'id' => $requestId++
+						);
+		$request = Zend_Json::encode($requestParams);
+		$client->setHeaders('Content-type','application/json');
+		$client->setRawData($request);
+		return Zend_Json::decode($client->request('POST')->getBody());
     }
 }
