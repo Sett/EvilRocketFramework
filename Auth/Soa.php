@@ -15,8 +15,17 @@
     		$login_view = new Zend_View();
         	$login_view->setScriptPath(APPLICATION_PATH.dirname($viewfile));
         	
-//        	$config = Zend_Registry::get('config');
-//        	$config = (is_object($config)) ? $config->toArray() : $config;
+        	$config = Zend_Registry::get('config');
+        	$config = (is_object($config)) ? $config->toArray() : $config;
+        	
+        	if (isset($config['resources']['auth']['namespace']) 
+        	    && !empty($config['resources']['auth']['namespace']))
+        	{
+        	    $namespace = $config['resources']['auth']['namespace'];
+        	} else {
+        	    $namespace = 'Auth';
+        	}
+        	
         	
             if ($controller->getRequest()->isPost())
             {
@@ -40,7 +49,7 @@
                     && $result['result'][0] == 'Success'
                     && isset($result['result'][2]['key']))
                 {
-                    $session = new Zend_Session_Namespace('Auth');
+                    $session = new Zend_Session_Namespace($namespace);
                     $session->key = $result['result'][2]['key'];
                     // FIXME
                     $session->setExpirationSeconds($result['result'][2]['endtime'] - microtime(true));
