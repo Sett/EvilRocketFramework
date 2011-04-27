@@ -9,7 +9,11 @@
  
     class Evil_Auth_Soa implements Evil_Auth_Interface 
     {   
-    	// Custom auth | Artemy
+    	/**
+    	 * Custom Auth
+    	 * @param Zend_Controller_Action $controller
+    	 * @param String $viewfile
+    	 */ 
     	private function _doCustomAuth($controller, $viewfile)
     	{
     		$login_view = new Zend_View();
@@ -18,6 +22,7 @@
         	$config = Zend_Registry::get('config');
         	$config = (is_object($config)) ? $config->toArray() : $config;
         	
+        	// FIXME get it from controller
         	if (isset($config['resources']['auth']['namespace']) 
         	    && !empty($config['resources']['auth']['namespace']))
         	{
@@ -26,7 +31,7 @@
         	    $namespace = 'Auth';
         	}
         	
-        	
+        	// require http post method
             if ($controller->getRequest()->isPost())
             {
                 $data = $controller->getRequest()->getPost();
@@ -34,7 +39,7 @@
                 // @todo create new method
                 // auth on SOA_Service_Auth
                 $call = array(
-	                'service' => 'Auth',
+	                'service' => 'Auth', // FIXME $namespace
 	                'method' => 'keyGet',
 	                'data' => array(
 	                    'login' => $data['username'],
@@ -56,7 +61,7 @@
                     
                     // get user info
                     $call = array(
-	                	'service' => 'Auth',
+	                	'service' => 'Auth', // FIXME $namespace
 	                	'method' => 'userInfo',
 	                	'data' => array(
 	                    	'key' => $result['result'][2]['key'],
@@ -117,6 +122,10 @@
     	}
     	
     	    
+    	/**
+    	 * Auth user
+    	 * @param Zend_Controller_Action $controller
+    	 */
         public function doAuth ($controller)
         {
         	// Support custom views for auth form
@@ -163,6 +172,48 @@
         	}
             
             return -1;
+        }
+        
+        /**
+         * @todo make more normal name
+         * Unauth user
+         * @param Zend_Controller_Action $controller
+         */
+        public function doUnAuth($controller) {
+            
+            // FIXME get it from controller
+            if (isset($config['resources']['auth']['namespace']) 
+        	    && !empty($config['resources']['auth']['namespace']))
+        	{
+        	    $namespace = $config['resources']['auth']['namespace'];
+        	} else {
+        	    $namespace = 'Auth';
+        	}
+        	
+        	$session = new Zend_Session_Namespace($namespace);
+        	
+            if (!empty($session->key))
+            {
+                $call = array(
+                	'service' => 'Auth', // FIXME $namespace
+                	'method' => 'keyBreak',
+                    'data' => array('key' => $session->key)
+                );
+                $result = $controller->rpc->make($call);
+                                
+//                if (isset($result['result'][0]) 
+//                    && $result['result'][0] == 'Success')
+//                {}                    
+                if(isset($session->user['login']))
+                {
+                    $evilUser = Evil_Structure::getObject('user');
+                    $evilUser->where('nickname', '=', $session->user['login']);
+                    
+                    return $evilUser->getId();
+                }
+                
+            }
+            return -1; 
         }
 
         public function onFailure()
