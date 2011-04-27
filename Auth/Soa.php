@@ -126,6 +126,7 @@
         	else
         	{
         	    // FIXME
+        	    /*
         		$form = new Evil_Auth_Form_Native();           
         		$controller->view->form = $form;
         		
@@ -149,6 +150,7 @@
 	                    print __METHOD__ . "\n";
 	                    var_dump($result);
 	                }
+	                */
         	}
             
             return -1;
