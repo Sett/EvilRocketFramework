@@ -1,4 +1,4 @@
- <?php
+<?php
  /**
   * 
   * Плугин для автоматической подргурзки ресурсов
@@ -19,6 +19,7 @@ class Evil_Autoloader extends Zend_Controller_Plugin_Abstract
         $config = Zend_Registry::get('config');
         $params = isset($config[$this->_configKey][$controller]) ? $config[$this->_configKey][$controller] : null;
         if (null !== $params) {
+            
             $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             if (null === $viewRenderer->view) {
                 $viewRenderer->initView();
