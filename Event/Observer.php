@@ -13,5 +13,5 @@
  
 class Evil_Event_Observer 
 {
-    
+    //
 }

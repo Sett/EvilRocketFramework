@@ -155,4 +155,15 @@ class Evil_Object_Readable
     {
         return;
     }
+
+    /**
+     * For serialization
+     *
+     * @return mixed|array
+     */
+    public function __sleep()
+    {
+        $result = $this->__call('__sleep', func_get_args());
+        return is_null($result) ? array() : $result;
+    }
 }
