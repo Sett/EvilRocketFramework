@@ -38,7 +38,7 @@ class Evil_Event_Slot
     }
 
     /**
-     * Execute the event handler
+     * Execute the event handler 
      *
      * @param array $args
      * @return mixed|null

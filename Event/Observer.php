@@ -33,7 +33,7 @@ class Evil_Event_Observer
     }
 
     /**
-     * Init observers
+     * Init observers 
      *
      * @param Evil_Config $events
      * @param null $object
