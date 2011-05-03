@@ -33,8 +33,22 @@ class Evil_Event_Slot
     public function __construct($signal, $handler, $object)
     {
         $this->_object = $object;
-        $this->_handler = $handler;
         $this->_signal = $signal;
+
+        try {
+
+            if (class_exists($handler->handler)) {
+
+                $this->_handler = isset($handler->handler->constructor)
+                        ? new $handler->handler($handler->handler->constructor)
+                        : new $handler->handler;
+            }
+
+        } catch (Exception $e) {
+            if (is_callable($handler->handler) || $this->_initFunction($handler)) {
+                $this->_handler = $handler->handler;
+            }
+        }
     }
 
     /**
@@ -64,5 +78,27 @@ class Evil_Event_Slot
             return $this->$name;
 
         return null;
+    }
+
+    /**
+     * Load handler function file
+     *
+     * @param  Zend_Config $handler
+     * @param  Zend_Config $events
+     * @return bool
+     */
+    protected function _initFunction(Zend_Config $handler)
+    {
+        $handlerName = $handler->prefix . $handler->handler . $handler->suffix;
+
+        var_dump($handlerName);
+
+        //try {
+            if (Zend_Loader::loadFile($handlerName, array($handler->src, '../../tests/library'))) {
+                return true;
+            }
+        //} catch (Exception $e) {}
+
+        return false;
     }
 }
