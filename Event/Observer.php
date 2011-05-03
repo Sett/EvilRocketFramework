@@ -13,5 +13,58 @@
  
 class Evil_Event_Observer 
 {
-    //
+    /**
+     * Array of handlers
+     *
+     * @var array of Evil_Event_Slot
+     */
+    protected $_handlers = array();
+
+    public function init(Evil_Config $events, $object = null)
+    {
+        if (!isset($events->defaultPath))
+            $events->defaultPath = './';
+
+        foreach ($events as $event) {
+            
+        }
+    }
+
+    /**
+     * Добавляет обработчик события
+     *
+     * @param  string $event
+     * @param  Evil_Event_Slot $handler
+     * @return int
+     */
+    public function addHandler($event, Evil_Event_Slot $handler)
+    {
+        if (!isset($this->_handlers[$event]) or !is_array($this->_handlers[$event]))
+            $this->_handlers[$event] = array($handler);
+        else
+            $this->_handlers[$event][] = $handler;
+
+        return count($this->_handlers);
+    }
+
+    /**
+     * Выбрасывает событие
+     *
+     * @param string|int $event
+     * @param mixed|null $args
+     * @return void
+     */
+    public function on($event, $args = null)
+    {
+        $result = null;
+
+        if (isset($this->_handlers[$event]) && is_array($this->_handlers[$event]))
+        {
+            $result = array();
+            foreach ($this->_handlers[$event] as $handler)
+                $result[] = $handler->dispatch($args);
+        }
+
+        return $result;
+    }
 }
