@@ -22,6 +22,23 @@ class Evil_Event_Observer
 
     const DS = DIRECTORY_SEPARATOR;
 
+    /**
+     * Implements factory interface
+     *
+     * @static
+     * @return Evil_Event_Observer
+     */
+    public static function factory() {
+        return new self;
+    }
+
+    /**
+     * Init observers
+     *
+     * @param Evil_Config $events
+     * @param null $object
+     * @return void
+     */
     public function init(Evil_Config $events, $object = null)
     {
         if (!isset($events->defaultPath))
@@ -30,6 +47,7 @@ class Evil_Event_Observer
         foreach ($events->observers as $name => $body) {
 
             foreach ($body as $handler) {
+                
                 if (!empty($handler->src)) {
                     $path = $handler->src;
                 } else {
@@ -44,7 +62,7 @@ class Evil_Event_Observer
 
                 if (file_exists($handlerName)) {
                     include_once($handlerName);
-                    $this->_handlers[$name][] = new Evil_Event_Slot($handler->handler, $object);
+                    $this->_handlers[$name][] = new Evil_Event_Slot($name, $handler->handler, $object);
                 }
             }
         }
@@ -89,6 +107,13 @@ class Evil_Event_Observer
         return $result;
     }
 
+    /**
+     * Overload for use object as function
+     *
+     * @param  string $event
+     * @param null $args
+     * @return array() | null @see on()
+     */
     public function __invoke($event, $args = null)
     {
         return $this->on($event, $args);
