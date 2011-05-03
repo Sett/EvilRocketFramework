@@ -21,16 +21,7 @@
         	
         	$config = Zend_Registry::get('config');
         	$config = (is_object($config)) ? $config->toArray() : $config;
-        	
-        	// FIXME get it from controller
-        	if (isset($config['resources']['auth']['namespace']) 
-        	    && !empty($config['resources']['auth']['namespace']))
-        	{
-        	    $namespace = $config['resources']['auth']['namespace'];
-        	} else {
-        	    $namespace = 'Auth';
-        	}
-        	
+        	        	
         	// require http post method
             if ($controller->getRequest()->isPost())
             {
