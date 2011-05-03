@@ -54,10 +54,14 @@
                     && $result['result'][0] == 'Success'
                     && isset($result['result'][2]['key']))
                 {
-                    $session = new Zend_Session_Namespace($namespace);
-                    $session->key = $result['result'][2]['key'];
-                    // FIXME
-                    $session->setExpirationSeconds($result['result'][2]['endtime'] - microtime(true));
+//                    $session = array();
+//                    $session['key'] = $result['result'][2]['key'];
+//                    $session['setExpirationSeconds'] = $result['result'][2]['endtime'] - microtime(true);
+//                    Zend_Registry::set('session');
+//                    $session = new Zend_Session_Namespace($namespace);
+//                    $session->key = $result['result'][2]['key'];
+//                    // FIXME
+//                    $session->setExpirationSeconds($result['result'][2]['endtime'] - microtime(true));
                     
                     // get user info
                     $call = array(
@@ -77,7 +81,7 @@
                         // insert into local users table
                         $user = $result['result'][2]['user'];
 
-                        $session->user = $user;
+//                        $session->user = $user;
                         
                         // FIXME $role = (empty($user['role']) ? $config['evil']['auth']['soa']['defaultrole'] : $user['role']);
                         $role = (empty($user['role']) ? 'citizen' : $user['role']);
@@ -88,7 +92,7 @@
                         
                         $data = array(
     						'nickname' => $login,
-                        	'password' => 'do not store any password on local system',
+                        	'password' => $result['result'][2]['key'],//'do not store any password on local system',
                         	'role' => $role
                         );
                         
@@ -182,36 +186,53 @@
         public function doUnAuth($controller) {
             
             // FIXME get it from controller
-            if (isset($config['resources']['auth']['namespace']) 
-        	    && !empty($config['resources']['auth']['namespace']))
-        	{
-        	    $namespace = $config['resources']['auth']['namespace'];
-        	} else {
-        	    $namespace = 'Auth';
-        	}
+//            if (isset($config['resources']['auth']['namespace']) 
+//        	    && !empty($config['resources']['auth']['namespace']))
+//        	{
+//        	    $namespace = $config['resources']['auth']['namespace'];
+//        	} else {
+//        	    $namespace = 'Auth';
+//        	}
+
+            $uid = Zend_Registry::get('userid');
+            
+            var_dump($uid);
+        
+            if (!isset($uid))
+            {
+                // FIXME redirect to error page
+                return;
+            }
+        
+            $evilUser = Evil_Structure::getObject('user');
+            $evilUser->where('id', '=', $uid);
+            if (!$evilUser->load())
+            {
+                return -1;
+            }
+        
+            $key = $evilUser->getValue('password');
+            $login = $evilUser->getValue('nickname');
+            
+            var_dump($key, $login);
         	
-        	$session = new Zend_Session_Namespace($namespace);
+//        	$session = new Zend_Session_Namespace($namespace);
         	
-            if (!empty($session->key))
+            if (!empty($key) && !empty($login))
             {
                 $call = array(
                 	'service' => 'Auth', // FIXME $namespace
                 	'method' => 'keyBreak',
-                    'data' => array('key' => $session->key)
+                    'data' => array('key' => $key)
                 );
                 $result = $controller->rpc->make($call);
-                                
+
+                var_dump($result);
+                // FIXME
 //                if (isset($result['result'][0]) 
 //                    && $result['result'][0] == 'Success')
 //                {}                    
-                if(isset($session->user['login']))
-                {
-                    $evilUser = Evil_Structure::getObject('user');
-                    $evilUser->where('nickname', '=', $session->user['login']);
-                    
-                    return $evilUser->getId();
-                }
-                
+                return $evilUser->getId();
             }
             return -1; 
         }
