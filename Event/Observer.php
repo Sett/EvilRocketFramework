@@ -47,22 +47,21 @@ class Evil_Event_Observer
         foreach ($events->observers as $name => $body) {
 
             foreach ($body as $handler) {
-                
-                if (!empty($handler->src)) {
-                    $path = $handler->src;
-                } else {
-                    $path = $events->defaultPath;
-                }
+                try {
+                    
+                    if (class_exists($handler->handler)) {
+                    
+                        $oHandler = isset($handler->handler->constructor)
+                                ? new $handler->handler($handler->handler->constructor)
+                                : new $handler->handler;
+                        $this->_handlers[$name][] = new Evil_Event_Slot($name, $oHandler, $object);
 
-                $handlerName = $path
-                               . self::DS
-                               . $events->handler->prefix
-                               . $handler->handler
-                               . $events->handler->suffix;
+                    }
 
-                if (file_exists($handlerName)) {
-                    include_once($handlerName);
-                    $this->_handlers[$name][] = new Evil_Event_Slot($name, $handler->handler, $object);
+                } catch (Exception $e) {
+                    if (is_callable($handler->handler) || $this->_initFunction($handler, $events)) {
+                        $this->_handlers[$name][] = new Evil_Event_Slot($name, $handler->handler, $object);
+                    }
                 }
             }
         }
@@ -117,5 +116,33 @@ class Evil_Event_Observer
     public function __invoke($event, $args = null)
     {
         return $this->on($event, $args);
+    }
+
+    /**
+     * Load handler function file
+     *
+     * @param  Zend_Config $handler
+     * @param  Zend_Config $events
+     * @return bool
+     */
+    protected function _initFunction(Zend_Config $handler, Zend_Config $events)
+    {
+        if (!empty($handler->src)) {
+            $path = $handler->src;
+        } else {
+            $path = $events->defaultPath;
+        }
+
+        $handlerName = $path
+                       . self::DS
+                       . $events->handler->prefix
+                       . $handler->handler
+                       . $events->handler->suffix;
+        
+        if (file_exists($handlerName)) {
+            include_once($handlerName);
+            return true;
+        }
+        return false;
     }
 }
