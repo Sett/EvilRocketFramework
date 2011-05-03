@@ -24,8 +24,18 @@ class Evil_Event_Slot
         $this->_handler = $handler;
     }
 
-    public function dispatch(array $args)
+    /**
+     * Execute the event handler
+     *
+     * @param array $args
+     * @return mixed|null
+     */
+    public function dispatch(array $args = null)
     {
-        
+        if (is_callable($this->_handler)) {
+            return call_user_func($this->_handler, $args, $this->_object);
+        }
+
+        return null;
     }
 }

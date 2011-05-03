@@ -20,13 +20,33 @@ class Evil_Event_Observer
      */
     protected $_handlers = array();
 
+    const DS = DIRECTORY_SEPARATOR;
+
     public function init(Evil_Config $events, $object = null)
     {
         if (!isset($events->defaultPath))
-            $events->defaultPath = './';
+            $events->defaultPath = '';
 
-        foreach ($events as $event) {
-            
+        foreach ($events->observers as $name => $body) {
+
+            foreach ($body as $handler) {
+                if (!empty($handler->src)) {
+                    $path = $handler->src;
+                } else {
+                    $path = $events->defaultPath;
+                }
+
+                $handlerName = $path
+                               . self::DS
+                               . $events->handler->prefix
+                               . $handler->handler
+                               . $events->handler->suffix;
+
+                if (file_exists($handlerName)) {
+                    include_once($handlerName);
+                    $this->_handlers[$name][] = new Evil_Event_Slot($handler->handler, $object);
+                }
+            }
         }
     }
 
@@ -61,10 +81,16 @@ class Evil_Event_Observer
         if (isset($this->_handlers[$event]) && is_array($this->_handlers[$event]))
         {
             $result = array();
-            foreach ($this->_handlers[$event] as $handler)
+            foreach ($this->_handlers[$event] as $handler) {
                 $result[] = $handler->dispatch($args);
+            }
         }
 
         return $result;
+    }
+
+    public function __invoke($event, $args = null)
+    {
+        return $this->on($event, $args);
     }
 }
