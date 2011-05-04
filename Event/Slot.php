@@ -30,23 +30,23 @@ class Evil_Event_Slot
 
     protected $_signal = '';
 
+    protected $_config = null;
+
     public function __construct($signal, $handler, $object)
     {
         $this->_object = $object;
         $this->_signal = $signal;
+        $this->_config = $handler;
 
-        try {
+        $this->_init($handler);
 
-            if (class_exists($handler->handler)) {
-
-                $this->_handler = isset($handler->handler->constructor)
-                        ? new $handler->handler($handler->handler->constructor)
-                        : new $handler->handler;
-            }
-
-        } catch (Exception $e) {
-
-            if ($this->_initFunction($handler) || is_callable($handler->handler, true)) {
+        if (class_exists($handler->handler, false)) {
+//print 1;
+            $this->_handler = isset($handler->handler->constructor)
+                    ? new $handler->handler($handler->handler->constructor, $object)
+                    : new $handler->handler($object);
+        }else {
+            if (is_callable($handler->handler, true)) {
                 $this->_handler = $handler->handler;
             }
         }
@@ -62,7 +62,11 @@ class Evil_Event_Slot
     {
         if (is_callable($this->_handler)) {
             return call_user_func($this->_handler, $args, $this->_object);
-        }
+        } else
+            if (is_object($this->_handler) && is_callable(array($this->_handler, $this->_config->method))) {
+                $method = $this->_config->method;
+                $this->_handler->$method($args);
+            }
 
         return null;
     }
@@ -88,14 +92,15 @@ class Evil_Event_Slot
      * @param  Zend_Config $events
      * @return bool
      */
-    protected function _initFunction(Zend_Config $handler)
+    protected function _init(Zend_Config $handler)
     {
         $handlerName = $handler->prefix . $handler->handler . $handler->suffix;
-
         foreach ($handler->src as $path)
         {
+//            var_dump($path . DIRECTORY_SEPARATOR . $handlerName);
             try {
                 if (include_once ($path . DIRECTORY_SEPARATOR . $handlerName)) {
+//print 2;
                     return true;
                 }
             } catch (Exception $e) {}
