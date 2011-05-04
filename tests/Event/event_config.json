@@ -8,15 +8,12 @@
         "onUpdate": [
             {
                 "handler":"helloWorld",
-                "src":[]
+                "src":["Evil/tests/Event"]
             }
         ],
         "onStart": [
             {
-                "handler":"SOA_Call::make"
-            },
-            {
-
+                "handler": "SOA_Call::make"
             }
         ]
     }

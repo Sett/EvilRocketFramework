@@ -45,7 +45,8 @@ class Evil_Event_Slot
             }
 
         } catch (Exception $e) {
-            if (is_callable($handler->handler) || $this->_initFunction($handler)) {
+
+            if ($this->_initFunction($handler) || is_callable($handler->handler, true)) {
                 $this->_handler = $handler->handler;
             }
         }
@@ -91,13 +92,14 @@ class Evil_Event_Slot
     {
         $handlerName = $handler->prefix . $handler->handler . $handler->suffix;
 
-        var_dump($handlerName);
-
-        try {
-            if (Zend_Loader::loadFile($handlerName, $handler->src)) {
-                return true;
-            }
-        } catch (Exception $e) {}
+        foreach ($handler->src as $path)
+        {
+            try {
+                if (include_once ($path . DIRECTORY_SEPARATOR . $handlerName)) {
+                    return true;
+                }
+            } catch (Exception $e) {}
+        }
 
         return false;
     }
