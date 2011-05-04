@@ -9,9 +9,11 @@
  * @time 9:35
  */
 
+define('DS', DIRECTORY_SEPARATOR);
+
 // Define path to application directory
 defined('APPLICATION_PATH')
-    || define('APPLICATION_PATH', realpath(dirname(__FILE__)) . '/../../');
+    || define('APPLICATION_PATH', realpath(dirname(__FILE__)) . DS. '..' . DS . '..' . DS);
 
 // Define application environment
 defined('APPLICATION_ENV')
@@ -25,7 +27,7 @@ set_include_path(implode(PATH_SEPARATOR, array(
 
 function testAutoLoader($name)
 {
-    include_once(str_replace('_', DIRECTORY_SEPARATOR, $name) . '.php');
+    include_once(str_replace('_', DS, $name) . '.php');
 }
 
 spl_autoload_register('testAutoLoader');

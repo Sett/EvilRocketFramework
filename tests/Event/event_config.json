@@ -2,12 +2,13 @@
     "handler":{
         "prefix":"",
         "suffix":".php",
-        "src": "."
+        "src": []
     },
     "observers": {
         "onUpdate": [
             {
-                "handler":"helloWorld"
+                "handler":"helloWorld",
+                "src":[]
             }
         ],
         "onStart": [

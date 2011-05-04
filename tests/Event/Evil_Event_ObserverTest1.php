@@ -48,12 +48,11 @@ class Evil_Event_ObserverTest extends PHPUnit_Framework_TestCase
     public function testOn()
     {
         $config = new Evil_Config(dirname(__FILE__) . '/event_config.json');
-        $config->defaultPath = dirname(__FILE__);
         $this->object->init($config);
         $ev = $this->object;
         $ev('onUpdate');
 
-        var_dump($ev('onStart',
+        /*var_dump($ev('onStart',
             array(
                 'S' => 'GeoLocator',
                 'M'=> 'locate',
@@ -61,7 +60,7 @@ class Evil_Event_ObserverTest extends PHPUnit_Framework_TestCase
                 'housenumber' => 77,
                 'fields' => array('caddr'),
                 'plugin' => 'GoogleGeo'
-            )));
+            )));*/
     }
 }
 ?>

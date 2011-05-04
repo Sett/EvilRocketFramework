@@ -93,11 +93,11 @@ class Evil_Event_Slot
 
         var_dump($handlerName);
 
-        //try {
-            if (Zend_Loader::loadFile($handlerName, array($handler->src, '../../tests/library'))) {
+        try {
+            if (Zend_Loader::loadFile($handlerName, $handler->src)) {
                 return true;
             }
-        //} catch (Exception $e) {}
+        } catch (Exception $e) {}
 
         return false;
     }
