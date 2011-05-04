@@ -9,11 +9,9 @@
  * @time 9:35
  */
 
-<?php
-
 // Define path to application directory
 defined('APPLICATION_PATH')
-    || define('APPLICATION_PATH', realpath(dirname(__FILE__)) . '../');
+    || define('APPLICATION_PATH', realpath(dirname(__FILE__)) . '/../../');
 
 // Define application environment
 defined('APPLICATION_ENV')
@@ -24,7 +22,6 @@ set_include_path(implode(PATH_SEPARATOR, array(
     realpath(APPLICATION_PATH),
     get_include_path(),
 )));
-
 
 function testAutoLoader($name)
 {

@@ -1,0 +1,22 @@
+{
+    "handler":{
+        "prefix":"",
+        "suffix":".php",
+        "src": "."
+    },
+    "observers": {
+        "onUpdate": [
+            {
+                "handler":"helloWorld"
+            }
+        ],
+        "onStart": [
+            {
+                "handler":"SOA_Call::make"
+            },
+            {
+
+            }
+        ]
+    }
+}
