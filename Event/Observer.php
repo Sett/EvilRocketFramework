@@ -41,15 +41,21 @@ class Evil_Event_Observer
     {
         foreach ($events->observers as $name => $body) {
             foreach ($body as $handler) {
-                $handler->merge($events->handler);
-
-                $this->_handlers[$name][] = new Evil_Event_Slot(
+                /// соединяем настройки по умолчанию с настройками текущего handler, в т.ч. src
+                /// т.к. Zend_Config v1.11.4 не умеет рекурсивно мержить конфиги
+                $handler = new Zend_Config(
+                            array_merge_recursive($events->handler->toArray(), $handler->toArray())
+                );
+//                print_r($events->handler->toArray());
+//                print_r($handler->toArray());
+                $this->addHandler(new Evil_Event_Slot(
                     $name,
                     $handler,
                     $object
-                );
+                ));
             }
         }
+//        var_dump($this->_handlers);
     }
 
     /**
@@ -59,12 +65,12 @@ class Evil_Event_Observer
      * @param  Evil_Event_Slot $handler
      * @return int
      */
-    public function addHandler($event, Evil_Event_Slot $handler)
+    public function addHandler(Evil_Event_Slot $handler)
     {
-        if (!isset($this->_handlers[$event]) or !is_array($this->_handlers[$event]))
-            $this->_handlers[$event] = array($handler);
+        if (!isset($this->_handlers[$handler->getSignal()]) or !is_array($this->_handlers[$handler->getSignal()]))
+            $this->_handlers[$handler->getSignal()] = array($handler);
         else
-            $this->_handlers[$event][] = $handler;
+            $this->_handlers[$handler->getSignal()][] = $handler;
 
         return count($this->_handlers);
     }

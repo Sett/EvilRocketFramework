@@ -6,6 +6,9 @@
  * @author Alexander M Artamonov <a2m@ruimperium.ru>
  * @date 08.04.11
  * @time 14:16
+ *
+ * //@todo расширить фунукционал до рекурсивного смерживания конфигов (array_merge_recursive())
+ * //@todo переписать алгоритм для рекурсивного переопределения конфига (exp. Evil_Config of Evil_Config)
  */
  
 class Evil_Config extends Zend_Config

@@ -4,24 +4,19 @@
         "suffix":".php",
         "src": [
                 "SOA/Service/GeoLocator/Hook",
-                "SOA/Service/Hook",
-                "Evil/tests/Event"
+                "SOA/Service/Hook"
         ]
     },
     "observers": {
         "onUpdate": [
             {
                 "handler":"helloWorld",
-                "src":[]
+                "src":["Evil/tests/Event"]
             }
         ],
         "onStart": [
             {
                 "handler": "SOA_Call::make"
-            },
-            {
-                "handler": "TestCall",
-                "method" : "helloWorld"
             }
         ]
     }
