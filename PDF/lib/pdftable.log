@@ -1,0 +1,39 @@
+Version 1.9: 20 Jul 2010
+		- Fix some errors, thanks to Rácz Tibor Zoltán
+Version 1.8b: 26 May 2010
+		- Support <img src='' width='' height=''> tag inside a <td>
+Version 1.8: 30 October 2009
+		- Support <img> tag inside a <td>
+		- Add function SetHeaderFooter() for customable Header and Footer of
+		each page
+		- Fix default font is not used
+		- Allow change Bottom Margin
+		- Support attribute nobreak of table tag, a table with nobreak property
+		will not be broken in many pages
+Version 1.7: 10 January 2009
+		- Fix wrong margins in Landscape pages
+Version 1.6: 17 December 2008
+		- Change some functions for compatibility with FPDF 1.6
+		- Fix _tableWriteRow() when calls getLineHeight()
+Version 1.5: 15 October 2008
+		- Fix cellheight doesn't correspond font style
+Version 1.4: 26 March 2007
+		- Fix error cellwidth is not exactly when use font/size/style
+		- Increase height of line 1 user unit
+Version 1.3: 19 Dec 2006
+		Thanks to Vincent Tomi (a czech), he improved my class from May-2005
+		- Support many tables (but not inside other table)
+		- Support font/size/style for each cell
+		- Border width can be changed
+Version 1.2 (18 Nov 2004):
+		- Fix some errors
+Edited: 25 Feb 2005
+		- In function _tableWriteRow(): correct $this-> after each row
+Edited: 24 Apr 2005
+		- Replace form 'foreach($array as $value)' to form
+		'foreach($array as $index=>$value)'
+Version 1.1 (2-Nov-2004):
+		- Support long table in many page. Repeatable for some rows on each
+		page.
+		Limitation: The height of each row can't great than the page height
+		-the height of repeat title
