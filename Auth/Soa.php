@@ -26,6 +26,12 @@
             if ($controller->getRequest()->isPost())
             {
                 $data = $controller->getRequest()->getPost();
+
+                $timeout = 3000;
+                if (isset($config['evil']['auth']['soa']['timeout']))
+                {
+                    $timeout = $config['evil']['auth']['soa']['timeout'];
+                }
                 
                 // @todo create new method
                 // auth on SOA_Service_Auth
@@ -36,7 +42,7 @@
 	                    'login' => $data['username'],
 	                    'password' => $data['password'],
 	                    // FIXME change to 'timeout' => $config['evil']['auth']['soa']['timeout']
-	                    'timeout' => 3000
+	                    'timeout' => $timeout
 	                 )
                 );
                 $result = $controller->rpc->make($call);
