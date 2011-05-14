@@ -26,7 +26,8 @@ class Evil_Event_Observer
      * @static
      * @return Evil_Event_Observer
      */
-    public static function factory() {
+    public static function factory()
+    {
         return new self;
     }
 

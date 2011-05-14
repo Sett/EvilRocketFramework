@@ -52,6 +52,11 @@ class Evil_Event_Slot
      */
     public function dispatch(array $args = null)
     {
+        /// set default argument values
+        if (isset($this->_config->default)) {
+            $args = array_merge_recursive($this->_config->default, $args);
+        }
+
         if (is_callable($this->_handler)) {
             return call_user_func($this->_handler, $args, $this->_object);
         } else

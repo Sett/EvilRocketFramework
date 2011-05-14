@@ -25,6 +25,8 @@ set_include_path(implode(PATH_SEPARATOR, array(
     get_include_path(),
 )));
 
+//var_dump(get_include_path());
+
 function testAutoLoader($name)
 {
     include_once(str_replace('_', DS, $name) . '.php');

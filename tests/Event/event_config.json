@@ -16,7 +16,11 @@
         ],
         "onStart": [
             {
-                "handler": "SOA_Call::make"
+                "handler": "SOA_Call::make",
+                "default": {
+                    "service": "GeoLocator",
+                    "method": "locate"
+                }
             }
         ]
     }
