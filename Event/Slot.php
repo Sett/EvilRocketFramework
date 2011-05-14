@@ -52,7 +52,7 @@ class Evil_Event_Slot
      */
     public function dispatch(array $args = null)
     {
-        /// set default argument values
+        /// Set default argument values
         if (isset($this->_config->default)) {
             $args = array_merge_recursive($this->_config->default, $args);
         }
@@ -103,11 +103,15 @@ class Evil_Event_Slot
                        . $handler->suffix;
 
         if (!empty($handler->src))
-            foreach ($handler->src as $path)
+
+            /// List paths from last to fist, because last is more probable
+            $path = $handler->src->toArray();
+            $pathIndex = count($path);
+
+            while (--$pathIndex >= 0)
             {
-//                var_dump($path . DIRECTORY_SEPARATOR . $handlerName);
                 try {
-                    if (include_once ($path . DIRECTORY_SEPARATOR . $handlerName)) {
+                    if (include_once ($path[$pathIndex] . DIRECTORY_SEPARATOR . $handlerName)) {
                         return true;
                     }
                 } catch (Exception $e) {}
