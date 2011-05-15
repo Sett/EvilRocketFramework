@@ -79,9 +79,9 @@ class Evil_Event_Observer
     /**
      * Выбрасывает событие
      *
-     * @param string|int $event
+     * @param string $event
      * @param mixed|null $args
-     * @return void
+     * @return mixed
      */
     public function on($event, $args = null)
     {
