@@ -50,7 +50,7 @@ class Evil_Event_ObserverTest extends PHPUnit_Framework_TestCase
         $config = new Evil_Config(dirname(__FILE__) . '/event_config.json');
         $this->object->init($config);
         $ev = $this->object;
-        $ev('onUpdate');
+        $ev('onUpdate',array('hi'));
 
         /*var_dump($ev('onStart',
             array(

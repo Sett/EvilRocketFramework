@@ -54,7 +54,16 @@ class Evil_Event_Slot
     {
         /// Set default argument values
         if (isset($this->_config->default)) {
-            $args = array_merge_recursive($this->_config->default->toArray(), $args);
+
+            if (!is_object($this->_config->default)) {
+                $default = array($this->_config->default);
+            } else {
+                $default = $this->_config->default->toArray();
+            }
+
+            $args = !is_null($args)
+                    ? array_merge_recursive($default, $args)
+                    : $default;
         }
 
         if (is_callable($this->_handler)) {

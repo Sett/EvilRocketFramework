@@ -80,10 +80,10 @@ class Evil_Event_Observer
      * Выбрасывает событие
      *
      * @param string $event
-     * @param mixed|null $args
-     * @return mixed
+     * @param array|null $args
+     * @return array|null
      */
-    public function on($event, $args = null)
+    public function on($event, array $args = null)
     {
         $result = null;
 

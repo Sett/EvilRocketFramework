@@ -11,7 +11,8 @@
         "onUpdate": [
             {
                 "handler":"helloWorld",
-                "src":["Evil/tests/Event"]
+                "src":["Evil/tests/Event"],
+                "default": "Default value"
             }
         ],
         "onStart": [
