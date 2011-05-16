@@ -18,9 +18,15 @@
         {
             if (strpos($methodName, 'Action') !== false)
             {
+                $config = Zend_Registry::get('config');
+                if(isset($config['evil']['controller']['action']['extension']))
+                    $ext = $config['evil']['controller']['action']['extension'];
+                else
+                    $ext = 'ini';
+
                 $methodClass = 'Evil_Action_'.ucfirst(substr($methodName, 0, strpos($methodName, 'Action')));
                 $method = new $methodClass();
-                $method ($this);
+                $method ($this, $ext, $this->_getAllParams());
             }
             else
                 return call_user_func_array(array(&$this, $methodName), $args);
