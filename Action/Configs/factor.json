@@ -1,0 +1,18 @@
+{
+    "factors" :
+    {
+        "s" : "Strength",
+        "w" : "Weakness",
+        "o" : "Opportune",
+        "t" : "Threat"
+    },
+
+    "s" :
+    {
+        "style" :
+        {
+            "background" : "#678FDF",
+            "color" : "#ffffff"
+        }
+    }
+}

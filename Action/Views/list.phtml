@@ -1,0 +1,31 @@
+<?php
+
+if(isset($this->list))
+{
+    if(isset($this->fields))
+    {
+        $html = '<table><tr>';
+        foreach($this->fields as $field => $options)
+            $html .= '<td>' .  ucfirst($field) . '</td>';
+        $html .= '</tr>';
+
+        foreach($this->list as $item)
+        {
+            $html .= '<tr>';
+
+            foreach($this->fields as $field => $options)
+                $html .= '<td>' . $item[$field] . '</td>';
+
+            $html .= 
+                 '<td><a href="http://' . $_SERVER['SERVER_NAME'] . '/' . $this->controllerName . '/update/id/' . $item['id'] . '">Up</a> '.
+                 '<a href="http://' . $_SERVER['SERVER_NAME'] . '/' . $this->controllerName . '/delete/id/' . $item['id'] . '">Del</a>
+                 '.
+                 '<a href="http://' . $_SERVER['SERVER_NAME'] . '/' . $this->controllerName . '/show/id/' . $item['id'] . '">Look</a>' .
+                 '<a href="http://' . $_SERVER['SERVER_NAME'] . '/' . $this->controllerName . '/vote/inc/1/id/' . $item['id'] . '">+</a> ' .
+                 '<a href="http://' . $_SERVER['SERVER_NAME'] . '/' . $this->controllerName . '/vote/id/' . $item['id'] . '">-</a>' . '</td>'. '</tr>';
+        }
+        $html .= '</table>' . '<a href="http://' . $_SERVER['SERVER_NAME'] . '/' . $this->controllerName . '/create">Add</a>';
+
+        echo $html;
+    }
+}

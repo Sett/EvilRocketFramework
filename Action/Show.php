@@ -1,21 +1,18 @@
 <?php
 
-    /* Zend Show Action
-     * @author BreathLess
-     * @type Zend Action
-     * @date 29.10.10
-     * @time 14:16
-     */
-
-    class Evil_Action_Show implements Evil_Action_Interface
+/**
+ * @author BreathLess, Se#
+ * @description Show action
+ * @type Zend Action
+ * @version 0.0.2
+ */
+class Evil_Action_Show extends Evil_Action_Abstract implements Evil_Action_Interface
+{
+    protected function _actionDefault($params, $table, $config, $controller)
     {
-        public function __invoke (Zend_Controller_Action $controller)
-        {
-            $template = new Evil_Template();
-            $entity = $controller->getRequest()->getControllerName();
+        if(!isset($params['id']))
+            $controller->_redirect('/');
 
-            $object = Evil_Structure::getObject($entity , $controller->_getParam('id'));
-            $controller->view->assign('body', $template->mix($object->data(), $entity.'/show'));
-        }
-        
+        return $table->fetchRow($table->select()->from($table)->where('id=?', $params['id']));
     }
+}

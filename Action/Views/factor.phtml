@@ -1,0 +1,42 @@
+<?php
+
+echo $this->form;
+foreach($this->evilAutoloads as $name => $function)
+{
+    if(isset($this->$name))
+        echo call_user_func($function, $this->$name);
+}
+
+if(isset($this->factors))
+{
+    $legend = array();
+
+    echo '<table class="factors">
+            <tr class="head">
+                <td class="author">Author</td>
+                <td class="content">Content</td>
+                <td class="content">Created at</td>
+                <td class="content">Votes</td>
+            </tr>';
+
+    $factors = '';
+
+    foreach($this->factors as $factor)
+    {
+        $legend[$factor['type']] = '<div class="' . $factor['type'] . '" style="width:100px; display: inline;"> ' .
+                                   ucfirst($this->factorsList[$factor['type']]) . ' </div>';
+
+        $factors .= '<tr class="' . $factor['type'] . '">
+                        <td class="author">' . $factor['author'] . '</td>' .
+                        '<td class="content">' . $factor['content'] . '</td>' .
+                        '<td class="created">' . date('Y-m-d H:i', $factor['ctime']) . '</td>' .
+                        '<td class="votes">' . $factor['votes'] . '</td>' .
+                    '</tr>';
+
+    }
+
+    echo $factors;
+
+    echo '</table>';
+    echo '<span class="legend">Legend:</span><div class="factor-legend">' . implode('', $legend) . '</div>';
+}

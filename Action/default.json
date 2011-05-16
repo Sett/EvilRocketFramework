@@ -1,0 +1,9 @@
+{
+    "show" :
+    {
+        "default" :
+        {
+            "readOnly" : true
+        }
+    }
+}

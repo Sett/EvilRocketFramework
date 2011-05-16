@@ -1,0 +1,15 @@
+<div class="language">
+    <?php
+        if(isset($this->langList))
+        {
+            foreach($this->langList as $lang)
+                echo '<span class="item">' .
+                         '<a href="' . $this->url(array('controller'=>$this->controllerName,
+                                                       'action'=>'language',
+                                                       'lang' => $lang,
+                                                       'prevAction' => $this->actionName)) . '">' .
+                         Evil_Action_Language::isA($lang) . '</a>' .
+                     '</span>';
+        }
+    ?>
+</div>

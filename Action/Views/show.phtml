@@ -1,0 +1,8 @@
+<?php
+echo $this->form;
+
+foreach($this->evilAutoloads as $name => $function)
+{
+    if(isset($this->$name))
+        echo call_user_func($function, $this->$name);
+}
