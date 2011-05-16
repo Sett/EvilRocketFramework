@@ -106,11 +106,20 @@
                 $login_view->error_message = _('User not found');
                 
                 $login_view->username = $login_view->escape($data['username']);
-            }       	  	
+            }
+
+            $userid = Zend_Registry::get('userid');
+            $evilUser = Evil_Structure::getObject('user');
+            $evilUser->where('id', '=', $userid);
+            if ($evilUser->load())
+            {
+                $login_view->username = $evilUser->getValue('nickname');
+            }
 
         	$controller->view->form = $login_view->render(basename($viewfile));  	
-        	
-        	return -1;	
+
+            return $userid;
+        	//return -1;	
     	}
     	
     	    
