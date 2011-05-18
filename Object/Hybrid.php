@@ -190,6 +190,19 @@
             return $this;
         }
 
+        /**
+         * 
+         * Обновление данных
+         * @param array $data
+         * @author NuR
+         */
+        public function update($data)
+        {
+            foreach ($data as $key => $value)
+            {
+                $this->setNode($key, $value, $this->getValue($key) );
+            }
+        }
         public function incNode  ($key, $increment)
         {
             if (isset($this->_data[$key]))

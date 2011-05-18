@@ -78,11 +78,17 @@
                         $evilUser = Evil_Structure::getObject('user');
                         $evilUser->where('nickname', '=', $user['login']);
                         
-                        $data = array(
+                        /**
+                         * 
+                         * возьмем все данные что пришли нам от сервиса
+                         * @author NuR
+                         * @var array
+                         */
+                        $data = array_merge($user,array(
     						'nickname' => $login,
                         	'password' => $key, //'do not store any password on local system',
                         	'role' => $role
-                        );
+                        ));
                         
                         // cache user info in local system 
                         if ($evilUser->load())
