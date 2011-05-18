@@ -235,7 +235,7 @@
                     {
                         unset ($row['u']);
                         //$this->_fluidnodes[$row['k']] = $row['k'];
-                        $this->_data[$row['k']][] = $row['v'];
+                        $this->_data[$row['k']] = $row['v'];
                     }
             }
             else
