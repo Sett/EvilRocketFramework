@@ -81,7 +81,8 @@
                         $data = array(
     						'nickname' => $login,
                         	'password' => $key, //'do not store any password on local system',
-                        	'role' => $role
+                            'role' => $role,
+                            'userinfo' => json_encode($user)
                         );
                         
                         // cache user info in local system 
@@ -212,11 +213,12 @@
                 );
                 $result = $controller->rpc->make($call);
 
-//                var_dump($result);
-                // FIXME
+                // FIXME if result is not Success must we remove row from users?
 //                if (isset($result['result'][0]) 
 //                    && $result['result'][0] == 'Success')
 //                {}                    
+                // Note method erase do not return status of erase operation
+                $evilUser->erase();
                 return $evilUser->getId();
             }
             return -1; 
