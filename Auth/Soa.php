@@ -70,7 +70,6 @@
                     {
                         // insert into local users table
                         $user = $result['result'][2]['user'];
-
                         // FIXME $role = (empty($user['role']) ? $config['evil']['auth']['soa']['defaultrole'] : $user['role']);
                         $role = (empty($user['role']) ? 'citizen' : $user['role']);
                         $login = $user['login'];                        
@@ -95,7 +94,8 @@
                             return $evilUser->getId();
                         } else {
                             $data['uid'] = uniqid();
-                            $evilUser->create(null, $data);
+                          //  var_dump($user);die();
+                            $evilUser->create($data['id'], $data);
                             
                             // reload for get id
                             $evilUser->where('nickname', '=', $user['login']);
