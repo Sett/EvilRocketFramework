@@ -14,7 +14,7 @@
  *
  */
 //TODO: NuR:бОльшая конфигурабельность кода
-class Evil_Call
+class Evil_Call implements Evil_TransportInterface
 {
 
     /**
@@ -94,12 +94,43 @@ class Evil_Call
     {
         $lameCmd = 'lame --decode --mp3input ' . escapeshellarg($file);
         ob_start();
-        system($lameCmd, $status);
+            system($lameCmd, $status);
         $output = ob_get_clean();
+        
         unlink($file);
         if (0 == $status) {
             return $file . '.wav';
         }
         return false;
+    }
+    
+    /**
+     * отправка сообщения
+     * @see Evil_TransportInterface::send()
+     */
+    public function send($to, $message)
+    {
+        return $this->Call($to, $message);
+    }
+    
+    /**
+     * (non-PHPdoc)
+     * @see Evil_TransportInterface::init()
+     */
+    public function init(array $config)
+    {
+        
+    }
+    
+    /**
+     * 
+     * валидация номера телефона
+     * @param string $phoneNumber
+     * @return bool
+     */
+    private function _validate($phoneNumber)
+    {
+        $pattern = '/(7|8)/';
+        $vlidator = new Zend_Validate_Regex($pattern);
     }
 }

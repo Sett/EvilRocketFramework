@@ -35,4 +35,14 @@
                 $logger->log($message, Zend_Log::INFO);
             }
         }
+        
+        public static function log($message,$levl)
+        {
+            die($message);
+            if (Zend_Registry::isRegistered('logger'))
+            {
+                $logger = Zend_Registry::get('logger');
+                $logger->log($message, $levl);
+            }
+        }
     }
