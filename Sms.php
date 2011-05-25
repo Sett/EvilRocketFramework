@@ -41,9 +41,15 @@ class Evil_Sms implements Evil_TransportInterface
     public function send ($to, $message)
     {
         /**
+         * ели телефон верный
+         */
+        if($this->_validate($to))
+        {
+        /**
          * отправка сообщения через транспорт
          */
          return $this->_transportInstance->send($to, $message);
+        }
     }
     /**
      * инициализация транспорта класса
@@ -65,5 +71,16 @@ class Evil_Sms implements Evil_TransportInterface
             throw new Zend_Exception(
             $this->_transport . ' not instace of Evil_Sms_Interface');
         }
+    }
+    
+     /* валидация номера телефона
+     * @param string $phoneNumber
+     * @return bool
+     */
+    private function _validate ($phoneNumber)
+    {
+        $pattern = '/^([0-9]+)([0-9]+)$/';
+        $vlidator = new Zend_Validate_Regex($pattern);
+        return $vlidator->isValid($phoneNumber);
     }
 }

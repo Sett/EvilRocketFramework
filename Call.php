@@ -16,7 +16,6 @@
 //TODO: NuR:бОльшая конфигурабельность кода
 class Evil_Call implements Evil_TransportInterface
 {
-
     /**
      * Звонок через VOIP
      * @param string $phone
@@ -25,52 +24,58 @@ class Evil_Call implements Evil_TransportInterface
      */
     public static function Call ($phone, $messageToSay)
     {
-        $tmpFile = tempnam('', __CLASS__ . '_');
-        /**
-         * перегоняем текст в mp3
-         */
-        if (Evil_Speech::textToSpeech($messageToSay, $tmpFile)) {
+        if (self::_validate($phone)) {
+            $tmpFile = tempnam('', __CLASS__ . '_');
             /**
-             * 
-             * перегоняем mp3 в wav
-             * @var string
+             * перегоняем текст в mp3
              */
-            $prepearedFile = self::_prepareFile($tmpFile);
-            /**
-             * если файл сконвертился успешно пытаемся позвонить
-             */
-            if (false !== $prepearedFile) {
+            if (Evil_Speech::textToSpeech($messageToSay, $tmpFile)) {
                 /**
-                 * делаем звонок
+                 * 
+                 * перегоняем mp3 в wav
+                 * @var string
                  */
-                $folderName = pathinfo(__FILE__, PATHINFO_DIRNAME) . '/Call/';
-                chdir($folderName);
-                $linphoneCmd = sprintf('perl %slinphone.pl %s %s', $folderName, escapeshellarg($phone), $prepearedFile);
+                $prepearedFile = self::_prepareFile($tmpFile);
                 /**
-                 * системный вызов нашего скрипта для звонка
+                 * если файл сконвертился успешно пытаемся позвонить
                  */
-                ob_start();
-                system($linphoneCmd, $status);
-                $output = ob_get_clean();
-                //echo $output;
-                // Zend_Debug::dump($status);
-                unlink($prepearedFile);
-                if (0 == $status) {
-                    return true;
+                if (false !== $prepearedFile) {
+                    /**
+                     * делаем звонок
+                     */
+                    $folderName = pathinfo(__FILE__, PATHINFO_DIRNAME) . '/Call/';
+                    chdir($folderName);
+                    $linphoneCmd = sprintf('perl %slinphone.pl %s %s', 
+                    $folderName, escapeshellarg($phone), $prepearedFile);
+                    /**
+                     * системный вызов нашего скрипта для звонка
+                     */
+                    ob_start();
+                    system($linphoneCmd, $status);
+                    $output = ob_get_clean();
+                    unlink($prepearedFile);
+                    if (0 == $status) {
+                        return true;
+                    } else {
+                        Evil_Log::log(__CLASS__ . ': ' . $output, 
+                        Zend_Log::CRIT);
+                        return false;
+                    }
                 } else {
-                    Evil_Log::log(__CLASS__ . ': ' . $output, Zend_log::CRIT);
+                    Evil_Log::log(
+                    __CLASS__ . ': не смогли сконвертировать mp3 в wav', 
+                    Zend_Log::CRIT);
                     return false;
                 }
             } else {
-                Evil_Log::log(__CLASS__ . ': не смогли сконвертировать mp3 в wav', Zend_log::CRIT);
+                Evil_Log::log(
+                __CLASS__ .
+                 ': не смогли сконвертировать текст в звуковое сообщение', 
+                Zend_Log::CRIT);
                 return false;
             }
-        } else {
-            Evil_Log::log(__CLASS__ . ': не смогли сконвертировать текст в звуковое сообщение', Zend_log::CRIT);
-            return false;
         }
     }
-
     /**
      * 
      * Звонок для сообщения что осталось жить 7 дней
@@ -82,7 +87,6 @@ class Evil_Call implements Evil_TransportInterface
     {
         return self::Call($phone, 'Тебе осталось жить 7 дней');
     }
-
     /**
      * 
      * подготовка файла
@@ -94,43 +98,38 @@ class Evil_Call implements Evil_TransportInterface
     {
         $lameCmd = 'lame --decode --mp3input ' . escapeshellarg($file);
         ob_start();
-            system($lameCmd, $status);
+        system($lameCmd, $status);
         $output = ob_get_clean();
-        
         unlink($file);
         if (0 == $status) {
             return $file . '.wav';
         }
         return false;
     }
-    
     /**
      * отправка сообщения
      * @see Evil_TransportInterface::send()
      */
-    public function send($to, $message)
+    public function send ($to, $message)
     {
         return $this->Call($to, $message);
     }
-    
     /**
      * (non-PHPdoc)
      * @see Evil_TransportInterface::init()
      */
-    public function init(array $config)
-    {
-        
-    }
-    
+    public function init (array $config)
+    {}
     /**
      * 
      * валидация номера телефона
      * @param string $phoneNumber
      * @return bool
      */
-    private function _validate($phoneNumber)
+    private function _validate ($phoneNumber)
     {
-        $pattern = '/(7|8)/';
+        $pattern = '/^([0-9]+)([0-9]+)$/';
         $vlidator = new Zend_Validate_Regex($pattern);
+        return $vlidator->isValid($phoneNumber);
     }
 }

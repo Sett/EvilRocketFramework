@@ -92,18 +92,18 @@ enabled=1
 
 [call_log_0]
 dir=0
-status=0
+status=1
 from=<sip:ocweb@sipnet.ru>
-to=<sip:79655869137@sipnet.ru>
-start_date=Fri May 13 12:40:47 2011
-duration=19
+to=<sip:79625552986@sipnet.ru>
+start_date=Wed May 25 11:59:50 2011
+duration=40
 
 [call_log_1]
 dir=0
 status=1
 from=<sip:ocweb@sipnet.ru>
 to=<sip:79625552986@sipnet.ru>
-start_date=Fri May 13 11:57:20 2011
+start_date=Wed May 25 11:58:13 2011
 duration=40
 
 [call_log_2]
@@ -111,10 +111,66 @@ dir=0
 status=1
 from=<sip:ocweb@sipnet.ru>
 to=<sip:79625552986@sipnet.ru>
+start_date=Wed May 25 11:55:53 2011
+duration=33
+
+[call_log_3]
+dir=0
+status=1
+from=<sip:ocweb@sipnet.ru>
+to=<sip:79625552986@sipnet.ru>
+start_date=Wed May 25 11:54:37 2011
+duration=12
+
+[call_log_4]
+dir=0
+status=0
+from=<sip:ocweb@sipnet.ru>
+to=<sip:79625552986@sipnet.ru>
+start_date=Tue May 24 16:54:01 2011
+duration=15
+
+[call_log_5]
+dir=0
+status=0
+from=<sip:ocweb@sipnet.ru>
+to=<sip:79625552986@sipnet.ru>
+start_date=Tue May 24 13:33:19 2011
+duration=17
+
+[call_log_6]
+dir=0
+status=1
+from=<sip:ocweb@sipnet.ru>
+to=<sip:79625552986@sipnet.ru>
+start_date=Tue May 24 12:45:26 2011
+duration=13
+
+[call_log_7]
+dir=0
+status=0
+from=<sip:ocweb@sipnet.ru>
+to=<sip:79655869137@sipnet.ru>
+start_date=Fri May 13 12:40:47 2011
+duration=19
+
+[call_log_8]
+dir=0
+status=1
+from=<sip:ocweb@sipnet.ru>
+to=<sip:79625552986@sipnet.ru>
+start_date=Fri May 13 11:57:20 2011
+duration=40
+
+[call_log_9]
+dir=0
+status=1
+from=<sip:ocweb@sipnet.ru>
+to=<sip:79625552986@sipnet.ru>
 start_date=Fri May 13 11:56:31 2011
 duration=26
 
-[call_log_3]
+[call_log_10]
 dir=0
 status=1
 from=<sip:ocweb@sipnet.ru>
@@ -122,7 +178,7 @@ to=<sip:79625552986@sipnet.ru>
 start_date=Fri May 13 11:52:12 2011
 duration=21
 
-[call_log_4]
+[call_log_11]
 dir=0
 status=0
 from=<sip:ocweb@sipnet.ru>
@@ -130,7 +186,7 @@ to=<sip:79655869137@sipnet.ru>
 start_date=Fri May 13 11:50:30 2011
 duration=28
 
-[call_log_5]
+[call_log_12]
 dir=0
 status=0
 from=<sip:ocweb@sipnet.ru>
@@ -138,7 +194,7 @@ to=<sip:79655869137@sipnet.ru>
 start_date=Fri May 13 11:49:15 2011
 duration=33
 
-[call_log_6]
+[call_log_13]
 dir=0
 status=1
 from=<sip:ocweb@sipnet.ru>
@@ -146,74 +202,13 @@ to=<sip:79655869137@sipnet.ru>
 start_date=Fri May 13 11:48:16 2011
 duration=51
 
-[call_log_7]
+[call_log_14]
 dir=0
 status=0
 from=<sip:ocweb@sipnet.ru>
 to=<sip:79655869137@sipnet.ru>
 start_date=Fri May 13 11:45:45 2011
 duration=27
-
-[call_log_8]
-dir=0
-status=0
-from=<sip:ocweb@sipnet.ru>
-to=<sip:79655869137@sipnet.ru>
-start_date=Fri May 13 11:44:49 2011
-duration=28
-
-[call_log_9]
-dir=0
-status=0
-from=<sip:ocweb@sipnet.ru>
-to=<sip:79655869137@sipnet.ru>
-start_date=Fri May 13 11:23:59 2011
-duration=16
-
-[call_log_10]
-dir=0
-status=0
-from=<sip:ocweb@sipnet.ru>
-to=<sip:79655869137@sipnet.ru>
-start_date=Fri May 13 11:22:12 2011
-duration=17
-
-[call_log_11]
-dir=0
-status=0
-from=<sip:ocweb@sipnet.ru>
-to=<sip:79047649803@sipnet.ru>
-start_date=Fri May 13 11:03:21 2011
-duration=17
-
-[call_log_12]
-dir=0
-status=0
-from=<sip:ocweb@sipnet.ru>
-to=<sip:79047649803@sipnet.ru>
-start_date=Fri May 13 11:02:36 2011
-duration=20
-
-[call_log_13]
-dir=0
-status=0
-from=<sip:ocweb@sipnet.ru>
-to=<sip:79047649803@sipnet.ru>
-start_date=Fri May 13 11:01:10 2011
-duration=18
-
-[call_log_14]
-dir=0
-status=0
-from=<sip:ocweb@sipnet.ru>
-to=<sip:79625552986@sipnet.ru>
-start_date=Fri May 13 10:59:32 2011
-duration=21
-
-[auth_info_0]
-username=ocweb
-passwd=1q2w3e4r
-realm="etc.tario.ru"
 
 [proxy_0]
 reg_proxy=sip:sipnet.ru
@@ -222,4 +217,9 @@ reg_expires=600
 reg_sendregister=1
 publish=0
 dial_escape_plus=0
+
+[auth_info_0]
+username=ocweb
+passwd=1q2w3e4r
+realm="etc.tario.ru"
 
