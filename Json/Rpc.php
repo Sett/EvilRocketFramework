@@ -98,6 +98,7 @@ class Evil_Json_Rpc
     						'params' => $params,
                             'id' => $requestId++
 						);
+						
 		$request = Zend_Json::encode($requestParams);
 		$client->setHeaders('Content-type','application/json');
 		$client->setRawData($request);
