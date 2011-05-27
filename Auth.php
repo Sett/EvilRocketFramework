@@ -38,7 +38,12 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
     {
         if (! isset($_SERVER['HTTP_USER_AGENT']))
             $_SERVER['HTTP_USER_AGENT'] = '';
-        return sha1($_SERVER['HTTP_USER_AGENT']);
+            
+        if (! isset($_SERVER['REMOTE_ADDR']))
+            $_SERVER['REMOTE_ADDR'] = '';
+                
+         $seal = $_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR'];    
+        return sha1($seal);
     }
     protected function _upTicket ($user)
     {

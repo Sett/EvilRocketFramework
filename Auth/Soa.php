@@ -32,7 +32,6 @@
                 {
                     $timeout = $config['evil']['auth']['soa']['timeout'];
                 }
-                
                 // @todo create new method
                 // auth on SOA_Service_Auth
                 $call = array(
