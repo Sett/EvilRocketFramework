@@ -2,8 +2,11 @@
 
 class Evil_Action_Language extends Evil_Action_Abstract
 {
-    public static function autoLoad($controller, $params)
+    public static function autoLoad()
     {
+        $params     = self::$_info['params'];
+        $controller = self::$_info['controller'];
+
         $controller->view->headLink()->appendStylesheet($controller->view->baseUrl() . '/css/language.css');
         $controller->view->addScriptPath(__DIR__ . '/Views');// add current folder to the view path
 
@@ -17,8 +20,11 @@ class Evil_Action_Language extends Evil_Action_Abstract
                                              'actionName' => $params['action']));
     }
 
-    protected function _actionDefault($params, $table, $config, $controller)
+    protected function _actionDefault()
     {
+        $params     = self::$_info['params'];
+        $controller = self::$_info['controller'];
+
         if(isset($params['lang']))
         {
             $session = new Zend_Session_Namespace('evil-language');

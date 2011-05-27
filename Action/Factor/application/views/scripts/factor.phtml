@@ -1,6 +1,8 @@
 <?php
 
 echo $this->form;
+echo $this->factorForm;
+
 foreach($this->evilAutoloads as $name => $function)
 {
     if(isset($this->$name))
@@ -15,8 +17,8 @@ if(isset($this->factors))
             <tr class="head">
                 <td class="author">Author</td>
                 <td class="content">Content</td>
-                <td class="content">Created at</td>
-                <td class="content">Votes</td>
+                <td class="created-at">Created at</td>
+                <td class="votes">Votes</td>
             </tr>';
 
     $factors = '';

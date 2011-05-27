@@ -1,0 +1,34 @@
+{
+    "method-to-variable" :
+    [
+        "controller",
+        "params",
+        "controllerName",
+        "setControllerNameIntoView",
+        "config",
+        "autoLoad",
+        "table",
+        "formConfig",
+        "data",
+        "fillForm",
+        "setFormIntoView",
+        "ifViewNotExistsRenderDefault"
+    ],
+
+    "paths" :
+    {
+        "configs" : "application/configs/",
+        "views" : "application/views/scripts/"
+    },
+
+    "autoLoad" :
+    [
+        [
+            "Evil_Action_List",
+            "__autoLoad"
+        ],
+            
+        "Evil_Action_Vote",
+        "Evil_Action_Share"
+    ]
+}

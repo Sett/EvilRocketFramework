@@ -1,0 +1,49 @@
+<?php
+
+if(isset($this->list))
+{
+        $html = '<div class="topics">';
+
+        if(isset($this->object))
+        {
+            $html .= '<div class="item">' .
+                        '<span class="title">' . $this->object['title'] . '</span>' .
+                        '<span class="created">' . date('Y-m-d H:i', $this->object['ctime']) . '</span>' .
+                        '<span class="author">' . $this->object['author'] . '</span>' .
+                        '<span class="content">' . $this->object['content'] . '</span>' .
+                     '</div>';
+        }
+
+        foreach($this->list as $item)
+        {
+            $commentCount = 0;
+
+            if(isset($this->byTopicId) && isset($this->byTopicId[$item['id']]))
+                $commentCount = $this->byTopicId[$item['id']]['count'];
+
+            
+            $html .= '<div class="item">' .
+                        '<span class="title">' . $item['title'] . '</span>' .
+                        '<span class="created">' . date('Y-m-d H:i', $item['ctime']) . '</span>' .
+                        '<span class="author">' . $item['author'] . '</span>' .
+                        '<span class="content">' . $item['content'] . '</span>' .
+                        '<div class="actions">' .
+                            '<a class="comment-href" href="http://' . $_SERVER['SERVER_NAME'] .
+                                '/comment/comment/id/'.$item['id'].'">' . 'Comment' . '</a>' .
+                            '<a class="comment-count" href="http://' . $_SERVER['SERVER_NAME'] .
+                                '/comment/list/id/'. $item['id'] . '">(' . $commentCount . ')</a>' .
+                            '<a href="http://' . $_SERVER['SERVER_NAME'] . '/comment/update/id/' .
+                                $item['id'] . '">Up</a> '.
+                            '<a href="http://' . $_SERVER['SERVER_NAME'] . '/comment/delete/id/' .
+                                $item['id'] . '">Del</a>'.
+                            '<a href="http://' . $_SERVER['SERVER_NAME'] . '/comment/show/id/' .
+                                $item['id'] . '">Look</a>' .
+                        '</div>' .
+                     '</div>';
+        }
+        $html .= '<div class="item" style="text-align: center"><a href="/blog/list">Back</a></div>' .
+                '</div>' . '<a href="http://' . $_SERVER['SERVER_NAME'] . '/topic/create">Add</a>';
+
+        echo $html;
+    
+}

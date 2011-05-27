@@ -19,12 +19,15 @@ class Evil_Action_Update extends Evil_Action_Abstract implements Evil_Action_Int
      * @param object $controller
      * @return null|object|array
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
-    protected function _actionUpdate($params, $table, $config, $controller)
+    protected function _actionUpdate()
     {
+        $params     = $this->_cleanParams(self::$_info['params']);
+        $table      = self::$_info['table'];
+
         $table->update($params, 'id="' . $params['id'] . '"');
-        return $table->fetchRow($params['id']);
+        return $table->fetchRow($table->select()->from($table)->where('id=?', $params['id']));
     }
 
     /**
@@ -35,18 +38,32 @@ class Evil_Action_Update extends Evil_Action_Abstract implements Evil_Action_Int
      * @param object $controller
      * @return null
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
-    protected function _actionDefault($params, $table, $config, $controller)
+    protected function _actionDefault()
     {
+        $params     = self::$_info['params'];
+        $table      = self::$_info['table'];
+        $controller = self::$_info['controller'];
+
         if(!isset($params['id']))
             $controller->_redirect('/');
         
         return $table->fetchRow($table->select()->from($table)->where('id=?', $params['id']));
     }
 
-    public static function autoLoad($controller, $params)
+    /**
+     * @description prepare link to itself
+     * @static
+     * @return void
+     * @author Se#
+     * @version 0.0.1
+     */
+    public static function __autoLoad()
     {
+        $params     = self::$_info['params'];
+        $controller = self::$_info['controller'];
+
         if(isset($params['id']) && ('update' != $params['action']))
         {
             $data = array('link' => 'update/id/' . $params['id'], 'text' => 'Edit');

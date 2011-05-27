@@ -1,0 +1,29 @@
+.evil-share{
+    position: fixed;
+    bottom: -25px;
+    right: 5px;
+    background: #7F97A7;
+    opacity: 0.5;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid #3D5565;
+    width: 80px;
+    height: 40px;
+    overflow: hidden;
+    paddin-bottom: 5px;
+}
+
+.evil-share input{
+    cursor: pointer;
+}
+
+.evil-share .top{
+    display: block;
+}
+
+.evil-share:hover{
+    opacity: 1;
+    bottom: 0px;
+    height: auto;
+    width: auto;
+}

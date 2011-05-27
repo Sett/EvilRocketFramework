@@ -21,13 +21,15 @@ class Evil_Action_Create extends Evil_Action_Abstract implements Evil_Action_Int
      * @author Se#
      * @version 0.0.1
      */
-    protected function _actionCreate($params, $table, $config, $controller)
+    protected function _actionCreate()
     {
-        $table->insert($params);
-        if(isset($config->create->redirect))
-            $controller->_redirect($config->create->redirect);
+        $params = self::$_info['params'];
+        self::$_info['table']->insert($this->_cleanParams($params));
 
-        $controller->view->result = '<span style="color: green; font-size: 24px">Created</span>';
+        if(isset(self::$_info['config']->create->redirect))
+            self::$_info['controller']->_redirect(self::$_info['config']->create->redirect);
+
+        self::$_info['controller']->view->result = '<span style="color: green; font-size: 24px">Created</span>';
         return $params;
     }
 }

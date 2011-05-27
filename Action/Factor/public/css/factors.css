@@ -1,0 +1,82 @@
+.object_info{
+    position: fixed;
+    right: 100px;
+    top: 50px;
+    width: 400px;
+}
+
+
+.factor_form{
+    position: fixed;
+    right: 100px;
+    top: 250px;
+    width: 400px;
+}
+
+.factors{
+/*	margin-top: 10px;*/
+    left: 0%;
+    top: 0%;
+	/*padding-top: 10px;*/
+    border: 1px solid #000000;
+    width: 800px;
+}
+
+.created-at{
+    width: 80px;
+}
+
+.factors td{
+    padding: 5px 5px 5px 5px;
+}
+
+.s{
+	background: #678FDF;
+	color: #ffffff;
+	padding: 5px 5px 5px 5px;
+}
+
+.w{
+    background: #D78F27;
+	color: #ffffff;
+	padding: 5px 5px 5px 5px;
+}
+
+.o{
+    background: #4FBF47;
+	color: #ffffff;
+	padding: 5px 5px 5px 5px;
+}
+
+.t{
+    background: #D73F2F;
+	color: #ffffff;
+	padding: 5px 5px 5px 5px;
+}
+
+.s:hover{
+	background: #2F57A7;
+}
+
+.w:hover{
+    background: #AF6700;
+}
+
+.o:hover{
+    background: #198911;
+}
+
+.t:hover{
+    background: #B31B0B;
+}
+
+.legend{
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.factor-legend div{
+    padding: 5px 5px 5px 5px;
+    border: 1px solid #000000;
+}

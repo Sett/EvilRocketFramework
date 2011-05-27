@@ -21,8 +21,12 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
      * @author Se#
      * @version 0.0.1
      */
-    protected function _actionFactor($params, $table, $config, $controller)
+    protected function _actionFactor()
     {
+        $params     = self::$_info['params'];
+        $controller = self::$_info['controller'];
+        $config     = self::$_info['config'];
+
         $data = array();
 
         foreach($params as $param => $value)
@@ -56,8 +60,11 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
      * @author Se#
      * @version 0.0.1
      */
-    public static function autoLoad($controller, $params)
+    public static function __autoLoad()
     {
+        $params     = self::$_info['params'];
+        $controller = self::$_info['controller'];
+
         if(!isset($controller->view->pleaseShow))
             $controller->view->pleaseShow = array();
 
@@ -80,9 +87,28 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
      * @author Se#
      * @version 0.0.1
      */
-    public function _actionDefault($params, $table, $config, $controller)
+    public function _actionDefault()
     {
-        $controller->view->headLink()->appendStylesheet($controller->view->baseUrl() . '/css/factors.css');
+        $params     = self::$_info['params'];
+        $table      = self::$_info['table'];
+        $controller = self::$_info['controller'];
+        $config     = self::$_info['config'];
+
+        if(!file_exists(ROOT . 'public/css/factors.css'))
+        {
+            $name = 'factors_' . sha1($_REQUEST['PHPSESSID']) . '.css';
+
+            if(!file_exists(ROOT . 'public/css/' . $name))
+            {
+                fopen(ROOT . 'public/css/' . $name, "w+t");
+                file_put_contents(ROOT . 'public/css/' . $name,
+                                   file_get_contents(__DIR__ . '/Factor/public/css/factors.css'));
+            }
+        }
+        else
+            $name = '/css/factors.css';
+
+        $controller->view->headLink()->appendStylesheet('/css/' . $name);
 
         if(!isset($params['id']))
             $controller->_redirect('/');
@@ -95,6 +121,7 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
 
         $controller->view->factors = $factors;
         $controller->view->factorsList = $this->_getFactorsList($config);
+        $controller->view->factorForm = new Zend_Form($this->_getFormConfig());
         return $table->fetchRow($table->select()->from($table)->where('id=?', $params['id']));
     }
 
@@ -109,7 +136,8 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
     {
         $config = isset($config->factor) ?
                 $config->factor->toArray() :
-                json_decode(file_get_contents(__DIR__ . '/Configs/factor.json'), true);
+                json_decode(file_get_contents(__DIR__ . '/Factor/' . self::$_info['invokeConfig']['paths']['configs']
+                                              . 'factor.json'), true);
 
         $factors = isset($config['factors']) ? $config['factors'] : array('empty' => 'There are no factors');
 
@@ -127,15 +155,18 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
      * @author Se#
      * @version 0.0.1
      */
-    protected function _changeFormConfig($formConfig, $table, $action, $config, $params)
+    protected function _getFormConfig()
     {
+        $config = self::$_info['config'];
+        $params = self::$_info['params'];
         $factors = $this->_getFactorsList($config);
-        $submit  = $formConfig['elements']['submit'];
-        unset($formConfig['elements']['submit']);
-        $submit['options']['label'] = 'Add';
 
-        foreach($formConfig['elements'] as $name => $element)
-            $formConfig['elements'][$name]['options']['readOnly'] = true;
+        $formConfig = array(
+            'class' => 'factor_form',
+            'elements' => array(
+                'do' => array('type' => 'hidden', 'options' => array('value' => 'factor'))
+            )
+        );
 
         $formConfig['elements']['factorobjectId'] = array(
             'type' => 'hidden',
@@ -157,7 +188,7 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
 
         $formConfig['elements']['factorcontent'] = array(
             'type' => 'textarea',
-            'options' => array('rows' => '5')
+            'options' => array('rows' => '5', 'cols' => 40)
         );
 
         $formConfig['elements']['factorauthor'] = array(
@@ -168,7 +199,12 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
             )
         );
 
-        $formConfig['elements']['submit'] = $submit;
+        $formConfig['elements']['submit'] = array(
+            'type' => 'submit',
+            'options' => array(
+                'label' => 'Add'
+            )
+        );
 
         return $formConfig;
     }

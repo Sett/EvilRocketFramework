@@ -10,6 +10,15 @@
  */
 class Evil_Action_Swot extends Evil_Action_Abstract implements Evil_Action_Interface
 {
+    /**
+     * @description invoke
+     * @param Zend_Controller_Action $controller
+     * @param string $ext
+     * @param array $params
+     * @return void
+     * @author Se#
+     * @version 0.0.1
+     */
     public function __invoke(Zend_Controller_Action $controller, $ext = null, $params = null)
     {
         return parent::__invoke($controller, $ext, $params, 'action');
@@ -23,10 +32,15 @@ class Evil_Action_Swot extends Evil_Action_Abstract implements Evil_Action_Inter
      * @param object $controller
      * @return array
      * @author Se#
-     * @version 0.0.3
+     * @version 0.0.4
      */
-    protected function _actionCreate($params, $table, $config, $controller)
+    protected function _actionCreate()
     {
+        $params     = self::$_info['params'];
+        $table      = self::$_info['table'];
+        $controller = self::$_info['controller'];
+        $config     = self::$_info['config'];
+
         $params['objectTable'] = Evil_DB::scope2table($this->_controllerName($controller, $params));
         $params['etime'] = time();
         $params['ctime'] = time();
@@ -43,8 +57,10 @@ class Evil_Action_Swot extends Evil_Action_Abstract implements Evil_Action_Inter
             $controller->_redirect($config->swot->create->redirect);
     }
 
-    protected function _actionList($params, $table, $config, $controller)
+    protected function _actionList()
     {
+        $params     = self::$_info['params'];
+
         if(isset($params['id']))
         {
             

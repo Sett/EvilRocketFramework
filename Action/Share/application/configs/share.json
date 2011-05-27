@@ -1,0 +1,8 @@
+{
+    "items" :
+    {
+        "twitter"  : ["Evil_Action_Share", "twitter"]
+    },
+
+    "viewPath" : "__DIR__/Share/application/views/scripts/items"
+}
