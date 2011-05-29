@@ -44,7 +44,13 @@
 	                    'timeout' => $timeout
 	                 )
                 );
-                $result = $controller->rpc->make($call);
+
+                //$result = $controller->rpc->make($call);
+                $result = is_callable($controller->rpc)
+                        ? $controller->rpc($call) 
+                        : method_exists($controller->rpc, 'make')
+                                ? $controller->rpc->make($call)
+                                : array();
 
                 if (isset($result['result'][0]) 
                     && $result['result'][0] == 'Success'
