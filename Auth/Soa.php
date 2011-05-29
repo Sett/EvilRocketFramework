@@ -41,7 +41,6 @@
 	                'data' => array(
 	                    'login' => $data['username'],
 	                    'password' => $data['password'],
-
 	                    'timeout' => $timeout
 	                 )
                 );
