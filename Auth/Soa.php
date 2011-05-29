@@ -48,7 +48,7 @@
                 //$result = $controller->rpc->make($call);
                 $result = is_callable($controller->rpc)
                         ? $controller->rpc($call) 
-                        : method_exists($controller->rpc, 'make')
+                        : is_object($controller->rpc) && is_callable(array($controller->rpc, 'make'))
                                 ? $controller->rpc->make($call)
                                 : array();
 
