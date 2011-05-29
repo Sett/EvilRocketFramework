@@ -46,11 +46,7 @@
                 );
 
                 //$result = $controller->rpc->make($call);
-                $result = is_callable($controller->rpc)
-                        ? $controller->rpc($call) 
-                        : is_object($controller->rpc) && is_callable(array($controller->rpc, 'make'))
-                                ? $controller->rpc->make($call)
-                                : array();
+                $result = $this->_makeSOACall($controller, $call);
 
                 if (isset($result['result'][0]) 
                     && $result['result'][0] == 'Success'
@@ -67,7 +63,7 @@
                             'array' => 1
 	                    )
                     );
-                    $result = $controller->rpc->make($call);
+                    $result = $this->_makeSOACall($controller, $call);;
                     
                     if (isset($result['result'][0]) 
                         && $result['result'][0] == 'Success'
@@ -173,7 +169,7 @@
 	                            'timeout' => 3000
 	                        )
 	                    );
-	                    $result = $controller->rpc->make($call);
+	                    $result = $this->_makeSOACall($controller, $call);
 	
 	                    print __METHOD__ . "\n";
 	                    var_dump($result);
@@ -219,7 +215,7 @@
                 	'method' => 'keyBreak',
                     'data' => array('key' => $key)
                 );
-                $result = $controller->rpc->make($call);
+                $result = $this->_makeSOACall($controller, $call);
 
                 // FIXME if result is not Success must we remove row from users?
 //                if (isset($result['result'][0]) 
@@ -240,6 +236,16 @@
         public function onSuccess()
         {
             // TODO: Implement onSuccess() method.
+        }
+
+        protected function _makeSOACall($controller, $call)
+        {
+            return
+                    is_callable($controller->rpc)
+                        ? $controller->rpc($call)
+                        : is_object($controller->rpc) && is_callable(array($controller->rpc, 'make'))
+                                ? $controller->rpc->make($call)
+                                : array();
         }
 
     }
