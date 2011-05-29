@@ -41,7 +41,6 @@
 	                'data' => array(
 	                    'login' => $data['username'],
 	                    'password' => $data['password'],
-
 	                    'timeout' => $timeout
 	                 )
                 );
@@ -237,12 +236,16 @@
 
         protected function _makeSOACall($controller, $call)
         {
-            return
-                    is_callable($controller->rpc)
-                        ? $controller->rpc($call)
-                        : is_object($controller->rpc) && is_callable(array($controller->rpc, 'make'))
-                                ? $controller->rpc->make($call)
-                                : array();
+            if (is_callable($controller->rpc)) {
+                $rpc = $controller->rpc;
+                return call_user_func($rpc, $call);
+            }
+
+            if (is_object($controller->rpc) && is_callable(array($controller->rpc, 'make'))) {
+                return $controller->rpc->make($call);
+            }
+
+            return array();
         }
 
     }
