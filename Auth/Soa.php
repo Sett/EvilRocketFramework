@@ -21,15 +21,16 @@
         	
         	$config = Zend_Registry::get('config');
         	$config = (is_object($config)) ? $config->toArray() : $config;
-        	        	
+
         	// require http post method
-            if ($controller->getRequest()->isPost())
-            {
+            if ($controller->getRequest()->isPost()) {
+
                 $data = $controller->getRequest()->getPost();
 
+                // FIXME change to 'timeout' => $config['evil']['auth']['soa']['timeout']
                 $timeout = 3000;
-                if (isset($config['evil']['auth']['soa']['timeout']))
-                {
+
+                if (isset($config['evil']['auth']['soa']['timeout'])) {
                     $timeout = $config['evil']['auth']['soa']['timeout'];
                 }
                 // @todo create new method
@@ -40,16 +41,17 @@
 	                'data' => array(
 	                    'login' => $data['username'],
 	                    'password' => $data['password'],
-	                    // FIXME change to 'timeout' => $config['evil']['auth']['soa']['timeout']
 	                    'timeout' => $timeout
 	                 )
                 );
-                $result = $controller->rpc->make($call);
+
+                //$result = $controller->rpc->make($call);
+                $result = $this->_makeSOACall($controller, $call);
 
                 if (isset($result['result'][0]) 
                     && $result['result'][0] == 'Success'
-                    && isset($result['result'][2]['key']))
-                {
+                    && isset($result['result'][2]['key'])
+                ) {
                     $key = $result['result'][2]['key'];
                     
                     // get user info
@@ -61,7 +63,8 @@
                             'array' => 1
 	                    )
                     );
-                    $result = $controller->rpc->make($call);
+
+                    $result = $this->_makeSOACall($controller, $call);;
                     
                     if (isset($result['result'][0]) 
                         && $result['result'][0] == 'Success'
@@ -77,8 +80,8 @@
                         $evilUser->where('nickname', '=', $user['login']);
                         
                         /**
-                         * 
                          * возьмем все данные что пришли нам от сервиса
+                         *
                          * @author NuR
                          * @var array
                          */
@@ -87,10 +90,10 @@
                         	'password' => $key, //'do not store any password on local system',
                         ));
                         // cache user info in local system 
-                        if ($evilUser->load())
-                        {
+                        if ($evilUser->load()) {
                             $evilUser->update($data);
-                            return $evilUser->getId();
+                            return
+                                    $evilUser->getId();
                         } else {
                             $data['uid'] = uniqid();
                           //  var_dump($user);die();
@@ -99,23 +102,21 @@
                             // reload for get id
                             $evilUser->where('nickname', '=', $user['login']);
                             
-                            if ($evilUser->getId())
-                            {
+                            if ($evilUser->getId()) {
                                 return $evilUser->getId();
                             }
                         }
                     }
                 }
+
                 $login_view->error_message = _('User not found');
-                
                 $login_view->username = $login_view->escape($data['username']);
             }
 
             $userid = Zend_Registry::get('userid');
             $evilUser = Evil_Structure::getObject('user');
             $evilUser->where('id', '=', $userid);
-            if ($evilUser->load())
-            {
+            if ($evilUser->load()) {
                 $login_view->username = $evilUser->getValue('nickname');
             }
 
@@ -136,17 +137,16 @@
         	$config = Zend_Registry::get('config');
         	$config = (is_object($config)) ? $config->toArray() : $config;
 
-        	if (!isset($controller->rpc))
-        	{
+        	if (!isset($controller->rpc)) {
         	    throw new Evil_Exception('RPC not specified in controller');
         	}
         	        	
-        	if (isset($config['evil']['auth']['soa']['view']) && !empty($config['evil']['auth']['soa']['view']))
-        	{
+        	if (isset($config['evil']['auth']['soa']['view']) &&
+                !empty($config['evil']['auth']['soa']['view'])
+            ) {
 				return $this->_doCustomAuth($controller, $config['evil']['auth']['soa']['view']);
         	}       	
-        	else
-        	{
+        	else {
         	    // FIXME
         	    /*
         		$form = new Evil_Auth_Form_Native();           
@@ -167,7 +167,7 @@
 	                            'timeout' => 3000
 	                        )
 	                    );
-	                    $result = $controller->rpc->make($call);
+	                    $result = $this->_makeSOACall($controller, $call);
 	
 	                    print __METHOD__ . "\n";
 	                    var_dump($result);
@@ -189,15 +189,13 @@
             
 //            var_dump($uid);
         
-            if (!isset($uid))
-            {
+            if (!isset($uid)) {
                 return -1;
             }
         
             $evilUser = Evil_Structure::getObject('user');
             $evilUser->where('id', '=', $uid);
-            if (!$evilUser->load())
-            {
+            if (!$evilUser->load()) {
                 return -1;
             }
         
@@ -206,19 +204,19 @@
             
 //            var_dump($key, $login);
         	
-            if (!empty($key) && !empty($login))
-            {
+            if (!empty($key) && !empty($login)) {
                 $call = array(
                 	'service' => 'Auth',
                 	'method' => 'keyBreak',
                     'data' => array('key' => $key)
                 );
-                $result = $controller->rpc->make($call);
+                $result = $this->_makeSOACall($controller, $call);
 
                 // FIXME if result is not Success must we remove row from users?
 //                if (isset($result['result'][0]) 
 //                    && $result['result'][0] == 'Success')
-//                {}                    
+//                {}
+
                 // Note method erase do not return status of erase operation
                 $evilUser->erase();
                 return $evilUser->getId();
@@ -234,6 +232,20 @@
         public function onSuccess()
         {
             // TODO: Implement onSuccess() method.
+        }
+
+        protected function _makeSOACall($controller, $call)
+        {
+            if (is_callable($controller->rpc)) {
+                $rpc = $controller->rpc;
+                return call_user_func($rpc, $call);
+            }
+
+            if (is_object($controller->rpc) && is_callable(array($controller->rpc, 'make'))) {
+                return $controller->rpc->make($call);
+            }
+
+            return array();
         }
 
     }
