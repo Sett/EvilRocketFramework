@@ -131,7 +131,7 @@ class Evil_Application extends  Zend_Application
     {
         if(is_string($options) && !empty($defaultClass))
             return call_user_func_array(array($defaultClass, $options), $args);
-
+ 
         return call_user_func_array($options, $args);
     }
 
