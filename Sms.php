@@ -5,10 +5,30 @@
  * поддерживает разные транспорты
  * @author nur
  *
+ * evil.sms.transport ="Evil_Sms_Sms24x7"
+    evil.sms.config.email = "nur.php@gmail.com"
+    evil.sms.config.password = "8ZvKkD5"
+    evil.sms.config.sender_name = "opencity.ru"
+ * $config = array('transport);
  */
-class Evil_Sms
+class Evil_Sms implements Evil_TransportInterface
 {
-
+    /**
+     * 
+     * траспорт который будет использоваться для отправки смс
+     * @var string
+     */
+    protected $_transport = 'Evil_Sms_Sms24x7';
+    /**
+     * 
+     * настройки траспорта
+     * @var array
+     */
+    protected $_config = array();
+    
+    
+    protected $_transportInstance = null;
+    
     /**
      * 
      * Отправка сообщения
@@ -18,24 +38,49 @@ class Evil_Sms
      * @return bool
      * @throws Zend_Exception
      */
-    public static function send ($to, $message)
+    public function send ($to, $message)
     {
-        $config = Zend_Registry::get('config');
         /**
-         * 
-         * настройки для транспорта
-         * @var array
+         * ели телефон верный
          */
-        $smsConfig = (array) $config['evil']['sms']['config'];
-        $transport = new $config['evil']['sms']['transport']();
+        if($this->_validate($to))
+        {
         /**
-         * создаем, инициализируем, отправляем
+         * отправка сообщения через транспорт
          */
-        if ($transport instanceof Evil_Sms_Interface) {
-            $transport->init($smsConfig);
-            return $transport->send($to, $message);
-        } else {
-            throw new Zend_Exception($smsConfig['transport'] . ' not instace of Evil_Sms_Interface');
+         return $this->_transportInstance->send($to, $message);
         }
+    }
+    /**
+     * инициализация транспорта класса
+     * @var $config array
+     * $config = array(
+     * 'transport' => [string], 
+     * 'config' = [array]
+     * )
+     */
+    public function init (array $config)
+    {
+        $this->_config = isset($config['transportconfig']) ? $config['transportconfig'] : array();
+        $this->_transport = isset($config['transport']) ? $config['transport'] : $this->_transport;
+        
+         $this->_transportInstance = new $this->_transport();
+         if ($this->_transportInstance instanceof Evil_Sms_Interface) {
+            $this->_transportInstance->init($this->_config);
+         }else {
+            throw new Zend_Exception(
+            $this->_transport . ' not instace of Evil_Sms_Interface');
+        }
+    }
+    
+     /* валидация номера телефона
+     * @param string $phoneNumber
+     * @return bool
+     */
+    private function _validate ($phoneNumber)
+    {
+        $pattern = '/^([0-9]+)([0-9]+)$/';
+        $vlidator = new Zend_Validate_Regex($pattern);
+        return $vlidator->isValid($phoneNumber);
     }
 }

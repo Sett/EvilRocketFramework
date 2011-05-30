@@ -33,6 +33,7 @@ class Evil_Sms_Sms24x7 implements Evil_Sms_Interface
              * @var array
              */
             $reqest = array_merge($this->_config, $reqest, $this->_defaultRequest);
+            
             $client = new Zend_Http_Client($this->_apiUrl);
             $client->setParameterGet($reqest);
             $result = $client->request('POST');
@@ -41,12 +42,12 @@ class Evil_Sms_Sms24x7 implements Evil_Sms_Interface
             if (0 == $json['response']['msg']['err_code']) {
                 return true;
             } else {
-                $this->_log($json['response']['msg']['text'] . ' ' . var_export($reqest, true),Zend_log::CRIT);
+                $this->_log($json['response']['msg']['text'] . ' ' . var_export($reqest, true),Zend_Log::CRIT);
                 return false;
             }
         } else 
         {
-            $this->_log('Номер телефона не корректный: ' . var_export($reqest, true) , Zend_log::ERR);
+            $this->_log('Номер телефона не корректный: ' . var_export($reqest, true) , Zend_Log::ERR);
             return false;
         }
     }
@@ -59,7 +60,7 @@ class Evil_Sms_Sms24x7 implements Evil_Sms_Interface
      */
     protected function _log($message,$levl)
     {
-        Evil_log::log(__CLASS__ . ' ' . $message, $levl);
+        Evil_Log::log(__CLASS__ . ' ' . $message, $levl);
     }
     /**
      * Инит транспорта, вызывается всегда первым
