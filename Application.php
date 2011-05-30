@@ -194,32 +194,30 @@ class Evil_Application extends  Zend_Application
      */
     protected function _mergeConfigs($default, $config)
     {
-        $result = array();
-
         if(is_string($default))
             return $config;
 
-        foreach($default as $item => $value)
+        foreach($config as $item => $value)
         {
-            
-            if(isset($config[$item]))
-                $result[$item] = $this->_mergeConfigs($value, $config[$item]);
+            if(isset($default[$item]))
+                $default[$item] = $this->_mergeConfigs($default[$item], $value);
             else
-                $result[$item] = $value;
+                $default[$item] = $value;
         }
 
-        return $result;
+        return $default;
     }
 
     /**
      * @description get default config
      * @return array
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     protected function _defaultConfig()
     {
-        return file_exists(__DIR__ . '/Application/configs/default.ini') ?
-                $this->_loadConfig(__DIR__ . '/Application/configs/default.ini', true) : array();
+        return is_file(__DIR__ . '/Application/configs/default.ini') ?
+                $this->_loadConfig(__DIR__ . '/Application/configs/default.ini', true) :
+                array();
     }
 }
