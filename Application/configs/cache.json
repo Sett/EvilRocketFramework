@@ -1,0 +1,17 @@
+{
+    "backend" :
+    [
+        {
+            "name" : "apc",
+            "class" : "Zend_Cache_Backend_Apc",
+            "path" : "Zend/Cache/Backend/Apc.php",
+            "check" : "extension_loaded"
+        },
+
+        {
+            "name" : "test",
+            "class" : "Zend_Cache_Backend_Test",
+            "path" : "Zend/Cache/Backend/Test.php"
+        }
+    ]
+}
