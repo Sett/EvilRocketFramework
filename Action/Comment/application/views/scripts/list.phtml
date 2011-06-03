@@ -14,10 +14,53 @@ if(isset($this->list))
                      '</div>';
         }
 
-        foreach($this->list as $item)
+        $comments = is_object($this->list) ? $this->list->toArray() : $this->list;
+
+        foreach($comments as $index => $comment)
         {
+
             $commentCount = 0;
 
+            $prev = '';
+            $end = '';
+
+            if($index < count($comments) -1)
+            {
+                $nextLevel = $comments[$index+1]['lvl'];
+                $dif = $comment['lvl'] - $nextLevel;
+                if($dif > 0)
+                {
+                    for($i = 0 ; $i < $dif ; $i++)
+                        $end .= '</div></div>';
+                }
+                elseif(!$dif)
+                    $end = '</div>';
+            }
+
+            $html .= isset($comment['title']) ? '
+                    <div class="comment">
+                        <span class="author">' . $comment['author'] . '</span>
+                        <span class="title">' . $comment['title']  . '</span>' .
+                        '<span class="content">' . $comment['content'] . '</span>
+                    '
+                    .
+                    '<div class="actions">' .
+                            '<a class="comment-href" href="http://' . $_SERVER['SERVER_NAME'] .
+                                '/comment/comment/id/'.$comment['id'].'">' . 'Comment' . '</a>' .
+                            '<a class="comment-count" href="http://' . $_SERVER['SERVER_NAME'] .
+                                '/comment/list/id/'. $comment['id'] . '">(' . $commentCount . ')</a>' .
+                            '<a href="http://' . $_SERVER['SERVER_NAME'] . '/comment/update/id/' .
+                                $comment['id'] . '">Up</a> '.
+                            '<a href="http://' . $_SERVER['SERVER_NAME'] . '/comment/delete/id/' .
+                                $comment['id'] . '">Del</a>'.
+                            '<a href="http://' . $_SERVER['SERVER_NAME'] . '/comment/show/id/' .
+                                $comment['id'] . '">Look</a>' .
+                        '</div>'
+                    . $end . '
+                    ' : '';
+
+
+            /*
             if(isset($this->byTopicId) && isset($this->byTopicId[$item['id']]))
                 $commentCount = $this->byTopicId[$item['id']]['count'];
 
@@ -40,10 +83,12 @@ if(isset($this->list))
                                 $item['id'] . '">Look</a>' .
                         '</div>' .
                      '</div>';
+
         }
         $html .= '<div class="item" style="text-align: center"><a href="/blog/list">Back</a></div>' .
                 '</div>' . '<a href="http://' . $_SERVER['SERVER_NAME'] . '/topic/create">Add</a>';
-
+//*/
+        }
         echo $html;
     
 }

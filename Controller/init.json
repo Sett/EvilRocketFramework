@@ -1,0 +1,13 @@
+{
+    "paths" :
+    {
+        "configs" : "application/configs/",
+        "views" : "application/views/scripts/"
+    },
+
+    "autoLoad" :
+    [
+        "Evil_Action_Vote",
+        "Evil_Action_Share"
+    ]
+}

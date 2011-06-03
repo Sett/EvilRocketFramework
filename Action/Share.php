@@ -14,7 +14,7 @@ class Evil_Action_Share extends Evil_Action_Abstract
      * @author Se#
      * @version 0.0.1
      */
-    public static function __autoLoad($controllerObject = null, $return = false)
+    public static function __autoLoad($controllerObject = null, $return = true)
     {
         $path       = __DIR__ . '/Share/application/configs/share.json';
         $controller = is_object($controllerObject) ? $controllerObject : self::$_info['controller'];
@@ -51,11 +51,28 @@ class Evil_Action_Share extends Evil_Action_Abstract
 
             $result .= '</div>';
 
-            if(!$return)
-                echo $result;
+            self::_echo($return, $result);
 
             return $result;
         }
+    }
+
+    /**
+     * @description define echo or not the result
+     * @static
+     * @param bool $return
+     * @param string $result
+     * @return void
+     * @author Se#
+     * @version 0.0.1
+     */
+    protected static function _echo($return, $result)
+    {
+        if(isset(self::$_info['controller']->selfConfig['share-return'][self::$_info['params']['action']]))
+            $return = self::$_info['controller']->selfConfig['share-return'][self::$_info['params']['action']];
+
+        if(!$return)
+            echo $result;
     }
 
     /**
@@ -69,18 +86,22 @@ class Evil_Action_Share extends Evil_Action_Abstract
      */
     protected static function _appendScripts($controller, $config)
     {
-        if(!isset($config['css']))
-        {
-            $name = 'share' . sha1(json_encode($_REQUEST['PHPSESSID'])) . '.css';
-            fopen(ROOT . 'public/css/' . $name, "w+t");
-            file_put_contents(ROOT . 'public/css/' . $name, file_get_contents(__DIR__ . '/Share/public/css/share.css'));
-            $cssPath = '/css/' . $name;
-        }
-        else
-            $cssPath = $config['css'];
-        
-        $controller->view->headLink()->appendStylesheet($cssPath);
+        if(isset($config['css']))
+            $controller->view->headLink()->appendStylesheet($config['css']);
+
         $controller->view->headScript()->appendFile('/js/share42/share42.js');
+    }
+
+    /**
+     * @description return default css
+     * @return void
+     * @author Se#
+     * @version 0.0.1
+     */
+    protected function _actionDefault()
+    {
+        self::$_info['controller']->turnOff();
+        echo file_get_contents(__DIR__ . '/Share/public/css/share.css');
     }
 
     /**

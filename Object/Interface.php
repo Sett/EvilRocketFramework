@@ -13,8 +13,8 @@
         public function data();
 
         public function where($key, $selector, $value = null);
-        public function create($id, $data);
-        public function erase();
+        //public function create($id, $data = null);
+       // public function erase();
 
         public function addNode($key, $value);
         public function delNode($key, $value = null);

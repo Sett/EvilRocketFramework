@@ -14,18 +14,24 @@ class Evil_Action_Comment extends Evil_Action_Abstract
      */
     protected function _actionList()
     {
+        $object = Evil_Structure::getObject('comment');
+        $params = self::$_info['params'];
+        $from = (strpos($params['from'], Zend_Registry::get('db-prefix')) !== false) ?
+                $params['from'] :
+                Evil_DB::scope2table($params['from']);
+
+        $where = array(
+            'objectTable=?' => $from,
+            'objectId=?' => $params['id']
+        );
+
+        $comments = $object->load(null, null, null, $where);
+        
         if(!isset(self::$_info['params']['id']) || !isset(self::$_info['params']['from']))
             self::$_info['controller']->_redirect('/');
 
-        $commentTable = new Zend_Db_Table(Evil_DB::scope2table('comment'));
-
         self::$_info['controller']->view->object = self::$_info['table']->fetchRow(self::$_info['table']->select()
                                                           ->where('id=?', self::$_info['params']['id']));
-
-        $comments = $commentTable->fetchAll($commentTable->select()
-                                                    ->where('objectId=?', self::$_info['params']['id'])
-                                                    ->where('objectTable=?',
-                                                            Evil_DB::scope2table(self::$_info['params']['from'])));
 
         self::$_info['controller']->getHelper('viewRenderer')->setNoRender(); // turn off native (personal) view
         self::$_info['controller']->view->addScriptPath(__DIR__ . '/Comment/application/views/scripts/');// add current folder to the view path
@@ -33,6 +39,7 @@ class Evil_Action_Comment extends Evil_Action_Abstract
         self::$_info['controller']->view->headLink()
                 ->appendStylesheet(self::$_info['controller']->view->baseUrl() . '/css/blog.css');
         self::$_info['controller']->getHelper('viewRenderer')->renderScript('list' . '.phtml');// render default script
+
     }
 
     /**
@@ -44,22 +51,25 @@ class Evil_Action_Comment extends Evil_Action_Abstract
     protected function _actionComment()
     {
         $params = self::$_info['params'];
-        $topicTable = new Zend_Db_Table(Evil_DB::scope2table('comment'));
         $data = array();
 
+        $mask = 'comment';
         foreach($params as $param => $value)
         {
-            if(strpos($param, 'topic') !== false)
-                $data[substr($param, 5)] = $value;
+            if(strpos($param, $mask) !== false)
+                $data[substr($param, strlen($mask))] = $value;
         }
 
         $data['ctime'] = time();
         $data['etime'] = $data['ctime'];
 
-        $topicTable->insert($data);
+        $object = Evil_Structure::getObject('comment');
+        $object->create($data);
 
-        self::$_info['controller']->_redirect('/' . self::$_info['controllerName']
-                         . '/comment/id/' . $data['objectId'] . '/do/list/from/' . self::$_info['controllerName']);
+        $controller = substr($data['objectTable'], strpos($data['objectTable'], '_')+1, strlen($data['obejctTable']) -1);
+
+        self::$_info['controller']->_redirect('/' . $controller
+                         . '/comment/id/' . $data['objectId'] . '/do/list/from/' . $data['objectTable']);
     }
 
     /**
@@ -77,7 +87,9 @@ class Evil_Action_Comment extends Evil_Action_Abstract
         $params     = self::$_info['params'];
         $table      = self::$_info['table'];
         $controller = self::$_info['controller'];
-        
+
+        $object = Evil_Structure::getObject('comment');
+
         if(!$justFetch)
             $controller->view->headLink()->appendStylesheet($controller->view->baseUrl() . '/css/comments.css');
 
@@ -90,11 +102,13 @@ class Evil_Action_Comment extends Evil_Action_Abstract
                                          where('objectId=?', $params['id'])->
                                          where('objectTable=?', Evil_DB::scope2table($params['controller'])));
 
-        if(!$justFetch)
+        $objectData = $table->fetchRow($table->select()->from($table)->where('id=?', $params['id']));
+
+        if(!$justFetch && isset($controller->selfConfig['comment']) && isset($controller->selfConfig['comment']['commentForm']))
             $controller->view->commentsForm =
-                new Zend_Form($this->_changeFormConfig($controller->selfConfig['comment']['commentForm']));
+                new Zend_Form($this->_changeFormConfig($controller->selfConfig['comment']['commentForm'], $objectData));
         
-        return $table->fetchRow($table->select()->from($table)->where('id=?', $params['id']));
+        return $objectData;
     }
 
     /**
@@ -108,7 +122,7 @@ class Evil_Action_Comment extends Evil_Action_Abstract
      * @author Se#
      * @version 0.0.1
      */
-    protected function _changeFormConfig($formConfig)
+    protected function _changeFormConfig($formConfig, $objectData = array())
     {
         $params = self::$_info['params'];
         $controller = self::$_info['controller'];
@@ -121,12 +135,24 @@ class Evil_Action_Comment extends Evil_Action_Abstract
         foreach($formConfig['elements'] as $name => $element)
             $formConfig['elements'][$name]['options']['readOnly'] = true;
 
-        $formConfig['elements']['topicobjectId'] = array(
+        if('comment' == self::$_info['controllerName'])
+        {
+            $objectId = $objectData['objectId'];
+            $objectTable = isset($objectData['objectTable']) ?
+                    $objectData['objectTable'] : '';
+        }
+        else
+        {
+            $objectId = $params['id'];
+            $objectTable = Evil_DB::scope2table($params['controller']);
+        }
+
+        $formConfig['elements']['commentobjectId'] = array(
             'type' => 'hidden',
-            'options' => array('value' => $params['id'])
+            'options' => array('value' => $objectId)
         );
 
-        $formConfig['elements']['topictitle'] = array(
+        $formConfig['elements']['commenttitle'] = array(
             'type' => 'text',
             'options' => array(
                 'value' => 'Re: ' . $rowData['title'],
@@ -137,13 +163,12 @@ class Evil_Action_Comment extends Evil_Action_Abstract
             )
         );
 
-        $formConfig['elements']['topicobjectTable'] = array(
+        $formConfig['elements']['commentobjectTable'] = array(
             'type' => 'hidden',
-            'options' => array('value' => Evil_DB::scope2table($params['controller']))
+            'options' => array('value' => $objectTable)
         );
 
-
-        $formConfig['elements']['topiccontent'] = array(
+        $formConfig['elements']['commentcontent'] = array(
             'type' => 'textarea',
             'options' => array(
                 'rows' => '5',
@@ -152,19 +177,75 @@ class Evil_Action_Comment extends Evil_Action_Abstract
         );
 
         if(isset($controller->selfConfig['comment']['comment']['content']))
-            $formConfig['elements']['topiccontent']['options']['label'] =
+            $formConfig['elements']['commentcontent']['options']['label'] =
                     $controller->selfConfig['comment']['comment']['content'];
 
-        $formConfig['elements']['topicauthor'] = array(
+
+
+        $formConfig['elements']['commentauthor'] = array(
             'type' => 'text',
             'options' => array(
                 'label' => 'Please, introduce yourself',
-                'value' => 'Get from current user'
+                'value' => $this->_getUserName()
             )
         );
 
         $formConfig['elements']['submit'] = $submit;
+        $formConfig = $this->_appendCommentData($formConfig);
 
+        return $formConfig;
+    }
+
+    protected function _getUserName()
+    {
+        $controller = self::$_info['controller'];
+
+        $name = 'Guest';
+        if(-1 != Zend_Registry::get('userid'))
+        {
+            if(isset($controller->selfConfig['comments']['author']['table']))
+            {
+                $table = $controller->selfConfig['comments']['author']['table'];
+                $field = $controller->selfConfig['comments']['author']['idField'];
+                $nameField = $controller->selfConfig['comments']['author']['nameField'];
+            }
+            else
+            {
+                $table = 'user';
+                $field = 'id';
+                $nameField = 'name';
+            }
+
+            $table = new Zend_Db_Table(Evil_DB::scope2table($table));
+            $user = $table->fetchRow($table->select()->where($field . '=?', Zend_Registry::get('userid')));
+            if($user)
+            {
+                $user = $user->toArray();
+                $name = isset($user[$nameField]) ? $user[$nameField] : 'Missed "' . $nameField . '" ';
+            }
+        }
+
+        return $name;
+    }
+
+    protected function _appendCommentData($formConfig)
+    {
+        $params = self::$_info['params'];
+        if('comment' == self::$_info['controllerName'])
+        {
+            $id = isset($params['id']) ? $params['id'] : 1;
+
+            if(!isset($formConfig['elements']))
+                return $formConfig;
+
+            $formConfig['elements']['commentparentId'] = array(
+                'type' => 'hidden',
+                'options' => array(
+                    'value' => $id
+                )
+            );
+        }
+        
         return $formConfig;
     }
 }

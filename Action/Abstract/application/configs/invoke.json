@@ -6,7 +6,7 @@
         "controllerName",
         "setControllerNameIntoView",
         "config",
-        "autoLoad",
+        ["Evil_Action_Abstract", "autoLoad"],
         "table",
         "formConfig",
         "data",

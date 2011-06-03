@@ -3,7 +3,7 @@
  * @description Abstract action, use default config if there is no personal,
  * use default view if there is no personal view
  * @author Se#
- * @version 0.0.3
+ * @version 0.0.4
  */
 abstract class Evil_Action_Abstract implements Evil_Action_Interface
 {
@@ -30,18 +30,14 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param array $params
      * @return void
      * @author Se#
-     * @version 0.0.5
+     * @version 0.0.7
      */
     public function __invoke(Zend_Controller_Action $controller, $params = null, $getTableFrom = null)
     {
-        $personalPath = APPLICATION_PATH . '/configs/invoke.json';
-        $generalPath  = __DIR__ . '/Abstract/application/configs/invoke.json';
-        // decide what config get
-        $path = file_exists($personalPath) ? $personalPath : (file_exists($generalPath) ? $generalPath : false);
+        $invokeConfig = self::getInvokeConfig();
 
-        if($path)
+        if($invokeConfig)
         {
-            $invokeConfig = json_decode(file_get_contents($path), true);// load config
             self::$_info['invokeConfig'] = $invokeConfig;
             if(isset($invokeConfig['method-to-variable']))
             {
@@ -49,24 +45,44 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
                 // operate
                 foreach($invokeConfig['method-to-variable'] as $variable)
                 {
-                    list($class, $method) = $this->_prepareArgsFromConfig($variable);
-                    
+                    list($class, $method, $field, $setField) = $this->_prepareArgsFromConfig($variable);
+                    $field = empty($field) ? $method : $field;
+                    $setField = (false == $setField) ? false : true;
+
                     if(method_exists($class, $method))
-                        self::$_info[$method] = $class->$method($args);
+                        $setField ? self::$_info[$field] = $class->$method($args) : $class->$method($args);
                 }
             }
         }
     }
 
     /**
-     * @description set controller->view->form
-     * @return void
+     * @description get invoke config
+     * @static
+     * @return array|mixed
      * @author Se#
      * @version 0.0.1
      */
+    public static function getInvokeConfig()
+    {
+        $personalPath = APPLICATION_PATH . '/configs/invoke.json';
+        $generalPath  = __DIR__ . '/Abstract/application/configs/invoke.json';
+        // decide what config get
+        $path = file_exists($personalPath) ? $personalPath : (file_exists($generalPath) ? $generalPath : false);
+
+        return $path ? json_decode(file_get_contents($path), true) : false;
+    }
+
+    /**
+     * @description set controller->view->form
+     * @return void
+     * @author Se#
+     * @version 0.0.2
+     */
     public function setFormIntoView()
     {
-        self::$_info['controller']->view->form = self::$_info['fillForm'];
+        if(isset(self::$_info['fillForm']) && isset(self::$_info['controller']))
+            self::$_info['controller']->view->form = self::$_info['fillForm'];
     }
 
     /**
@@ -75,16 +91,17 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param array $params
      * @return void
      * @author Se#
-     * @version 0.0.2
+     * @version 0.0.3
      */
-    public function autoLoad()
+    public static function autoLoad()
     {
         $data = array();
 
-        if(isset(self::$_info['invokeConfig']['autoLoad']))
-        {
+        $invokeConfig = isset(self::$_info['invokeConfig']) ? self::$_info['invokeConfig'] : self::getInvokeConfig();
 
-            foreach(self::$_info['invokeConfig']['autoLoad'] as $autoLoad)
+        if(isset($invokeConfig['autoLoad']))
+        {
+            foreach($invokeConfig['autoLoad'] as $autoLoad)
             {
                 if(is_string($autoLoad))
                 {
@@ -97,11 +114,15 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
                     $method = $autoLoad[1];
                 }
 
-                $data[$class] = call_user_func_array(array($class, $method), array(self::$_info));
+                $args = func_get_args();
+                $args = empty($args) ? array(self::$_info) : $args;
+
+                $data[$class] = call_user_func_array(array($class, $method), $args);
             }
         }
 
-        self::$_info['controller']->view->autoLoad = $data;
+        if(isset(self::$_info['controller']))
+            self::$_info['controller']->view->autoLoad = $data;
 
         return $data;
     }
@@ -111,11 +132,19 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param string $ext
      * @return
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     public function config()
     {
-        $configPath = $this->_configPath(self::$_info['controller']->selfConfig['ext']);
+        if(!isset(self::$_info['controller']))
+            return null;
+
+        if(isset(self::$_info['controller']->selfConfig['ext']))
+            $ext = self::$_info['controller']->selfConfig['ext'];
+        else
+            $ext = 'ini';
+
+        $configPath = $this->_configPath($ext);
         
         // construct config-class name
         $class = 'Zend_Config_' . ucfirst(self::$_info['controller']->selfConfig['ext']);
@@ -127,11 +156,12 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @description set controller->view->controllerName
      * @return void
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     public function setControllerNameIntoView()
     {
-        self::$_info['controller']->view->controllerName = self::$_info['controllerName'];
+        if(isset(self::$_info['controller']) && isset(self::$_info['controllerName']))
+            self::$_info['controller']->view->controllerName = self::$_info['controllerName'];
     }
 
     /**
@@ -140,11 +170,11 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param array $params
      * @return string
      * @author Se#
-     * @version 0.0.2
+     * @version 0.0.3
      */
     public function controllerName($args)
     {
-        $from = $args[2] ? $args[2] : 'controller'; // default
+        $from = isset($args[2]) ? $args[2] : 'controller'; // default
 
         return isset(self::$_info['params'][$from]) ?
                     self::$_info['params'][$from] :
@@ -156,11 +186,11 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param array $args
      * @return
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     public function params($args)
     {
-        return $args[1];
+        return isset($args[1]) ? $args[1] : array();
     }
 
     /**
@@ -168,11 +198,11 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param array $args
      * @return
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     public function controller($args)
     {
-        return $args[0];
+        return isset($args[0]) ? $args[0] : null;
     }
 
     /**
@@ -180,14 +210,21 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param array|string $args
      * @return array
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     protected function _prepareArgsFromConfig($args)
     {
         if(is_string($args))
-            return array($this, $args);
+            return array($this, $args, null, true);
         else
-            return array($args[0], $args[1]);
+        {
+            $class    = isset($args['class']) ? $args['class'] : $this;
+            $method   = isset($args['method']) ? $args['method'] : 'undefined';
+            $field    = isset($args['field']) ? $args['field'] : null;
+            $setField = isset($args['setField']) ? $args['setField'] : true;
+
+            return array($class, $method, $field, $setField);
+        }
     }
 
     /**
@@ -197,13 +234,13 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param string $controllerName
      * @return Zend_Db_Table
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     public function table()
     {
-        $config         = self::$_info['config'];
-        $action         = self::$_info['params']['action'];
-        $controllerName = self::$_info['controllerName'];
+        $config         = self::getStatic('config');
+        $action         = self::getStatic('params', 'action');
+        $controllerName = self::getStatic('controllerName');
 
         // check if there is optional table name
         $table  = isset($config->$action->tableName) ? $config->$action->tableName : $controllerName;
@@ -222,12 +259,12 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param object $config
      * @return array
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     public function formConfig()
     {
-        $action     = self::$_info['params']['action'];
-        $config     = is_object(self::$_info['config']) ? self::$_info['config']->toArray() : self::$_info['config'];
+        $action = self::getStatic('params', 'action');
+        $config = is_object(self::$_info['config']) ? self::$_info['config']->toArray() : self::$_info['config'];
 
         // get form config
         if(isset($config[$action]['form']['merge']) || !isset($config[$action]['form']))
@@ -271,25 +308,18 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param object $controller
      * @return bool
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     public function data()
     {
-        $params     = self::$_info['params'];
-        $table      = self::$_info['table'];
-        $config     = self::$_info['config'];
-        $controller = self::$_info['controller'];
+        $params = self::getStatic('params');
 
         if(isset($params['do']))// do something?
-        {
             $this->_prepareDataForAction();
-            //self::$_info['params'] = $this->_cleanParams(self::$_info['params']);// clear params
-        }
         else
             self::$_info['params']['do'] = 'default';
 
-        $data   = $this->_action();// force action
-        return $data;
+        return $this->_action();// force action
     }
 
     /**
@@ -301,13 +331,12 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param object $controller
      * @return
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     protected function _prepareDataForAction()
     {
-        $params = self::$_info['params'];
-        $controller = self::$_info['controller'];
-
+        $params     = self::getStatic('params');
+        $controller = self::getStatic('controller');
 
         if(!empty($controller->selfConfig[$params['action']][__FUNCTION__]))
         {
@@ -337,11 +366,11 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param string $action
      * @return void
      * @author Se#
-     * @version 0.0.2
+     * @version 0.0.3
      */
     public function ifViewNotExistsRenderDefault()
     {
-        $controller = self::$_info['controller'];
+        $controller = self::getStatic('controller');
 
         if(!isset($controller->view->evilAutoloads))
             $controller->view->evilAutoloads = array();
@@ -349,6 +378,7 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
         if($this->_skipFunction(__FUNCTION__))
             return true;
 
+        echo 'init';
         // construct view path
         $viewPath = APPLICATION_PATH . '/views/scripts/' . $controller->getHelper('viewRenderer')->getViewScript();
 
@@ -412,13 +442,13 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param object $form
      * @return object
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     public function fillForm()
     {
-        $data = self::$_info['data'];
+        $data = self::getStatic('data');
 
-        $form = new Zend_Form(self::$_info['formConfig']);
+        $form = new Zend_Form(self::getStatic('formConfig'));
 
         if(!empty($data) && !is_string($data))
         {
@@ -476,6 +506,7 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
             self::$_info['params']['do'] = 'default';
         
         $action = '_action' . ucfirst(self::$_info['params']['do']);
+
         if(method_exists($this, $action))
             return $this->$action();
 
@@ -487,18 +518,18 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @param object $table
      * @return array
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     protected function _createFormOptionsByTable($ignorePersonalConfig = false)
     {
-        $table  = self::$_info['table'];
-        $action = self::$_info['params']['action'];
-        $config = self::$_info['config'];
+        $table  = self::getStatic('table');
+        $action = self::getStatic('params', 'action');
+        $config = self::getStatic('config');
 
         if(!$ignorePersonalConfig)
         {
-            $controllerConfig = isset(self::$_info['controller']->selfConfig[$action]['form']) ?
-                    self::$_info['controller']->selfConfig[$action]['form'] :
+            $controllerConfig = isset(self::getStatic('controller')->selfConfig[$action]['form']) ?
+                    self::getStatic('controller')->selfConfig[$action]['form'] :
                     array('elements');
 
             $actionConfig = isset($config->$action) ? $config->$action->toArray() : array();
@@ -641,5 +672,34 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
         }
 
         return null;
+    }
+
+    /**
+     * @description get param form the self::$_info
+     * @static
+     * @param string $name
+     * @return null
+     * @author Se#
+     * @version 0.0.1
+     */
+    public static function getStatic()
+    {
+        $args = func_get_args();
+
+        if(empty($args))
+            return self::$_info;
+
+        $root  = self::$_info;
+        $count = sizeof($args);
+
+        for($i = 0; $i < $count; $i++)
+        {
+            if(is_array($root) && isset($root[$args[$i]]))
+                $root = $root[$args[$i]];
+            else
+                return null;
+        }
+
+        return $root;
     }
 }

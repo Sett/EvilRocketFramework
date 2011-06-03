@@ -13,7 +13,8 @@
            if (isset($config['evil']['log']['expose']['svn']) and $config['evil']['log']['expose']['svn'])
            {
                exec ('svn info', $svn);
-               $logger->log($svn[4], Zend_Log::INFO);
+               if(isset($svn[4]))
+                $logger->log($svn[4], Zend_Log::INFO);
            }
 
             $columnMapping = array('lvl' => 'priority', 'msg' => 'message');

@@ -15,8 +15,9 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
      * List of fixed table keys
      * @var <array>
      */
-    private $_fixedschema = array();
-    private $_fixed = null;
+    protected $_fixedschema = array();
+    protected $_fixed = null;
+
     public function __construct ($type, $id = null)
     {   
         $this->_type = $type;
@@ -28,6 +29,7 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
             $this->load($id);
         return true;
     }
+
     public function where ($key, $selector, $value = null)
     {
         switch ($selector) {
@@ -65,25 +67,30 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
         $this->_fixed->insert($fixedvalues);
         return $this;
     }
+
     public function erase ()
     {
        $this->_fixed->delete($this->_fixed->getAdapter()->quoteInto(array('id = ?'), array($this->_id)));
        return  $this;
     }
+
     public function addNode ($key, $value)
     {
         $this->_data[$key] = $value;
         return $this;
     }
+
     public function delNode ($key, $value = null)
     {
         return $this;
     }
+
     public function setNode ($key, $value, $oldvalue = null)
     {
         $this->_fixed->update(array($key => $value), array('id = "' . $this->_id . '"'));
         return $this;
     }
+
     public function incNode ($key, $increment)
     {
         if (isset($this->_data[$key]))
@@ -91,37 +98,44 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
         else
             return $this->addNode($key, $increment);
     }
+
     public function load ($id = null)
     {
         if ($this->_loaded)
             return true;
+
         if (null !== $id)
             $this->_id = $id;
+
         $this->_data = array();
         // Find fixed row, and extract data from
         $data = $this->_fixed->find($this->_id)->toArray();
-        if (! empty($data)) {
+
+        if (! empty($data))
             $this->_data = $data[0];
-        } else
+        else
             return false;
+
         $this->_loaded = true;
         return true;
     }
+
     public function update (array $data, $id = null)
     {
-        if (null == $id) {
+        if (null == $id)
             $id = $this->getId();
-        }
+
         $where = $this->_fixed->getAdapter()->quoteInto('id = ?', $id);
+
         $filtered = array();
-        foreach ($data as $key => $value) {
+
+        foreach ($data as $key => $value)
+        {
             if (in_array($key, $this->_fixedschema))
-                  {
-                      $filtered[$key] = $value;
-                  } 
-               }
+                $filtered[$key] = $value;
+        }
                     
-                $this->_fixed->update($filtered, $where);
-                $this->_loaded = false;
-          }
-       }
+        $this->_fixed->update($filtered, $where);
+        $this->_loaded = false;
+    }
+}

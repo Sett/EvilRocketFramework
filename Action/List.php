@@ -6,7 +6,7 @@
  * @description List Action
  * @package Evil
  * @subpackage Controller
- * @version 0.0.3
+ * @version 0.0.4
  */
 class Evil_Action_List extends Evil_Action_Abstract implements Evil_Action_Interface
 {
@@ -14,7 +14,7 @@ class Evil_Action_List extends Evil_Action_Abstract implements Evil_Action_Inter
      * @description construct list
      * @return void
      * @author Se#
-     * @version 0.0.1
+     * @version 0.0.2
      */
     protected function _actionDefault()
     {
@@ -34,7 +34,12 @@ class Evil_Action_List extends Evil_Action_Abstract implements Evil_Action_Inter
             $select->where($field . '=?', $params['id']);
         }
 
-        $controller->view->fields = empty(self::$metadata) ? $table->info('metadata') : self::$metadata;
+        if(isset(self::$_info['controller']->selfConfig['list']['metadata']))
+            $metadata = self::$_info['controller']->selfConfig['list']['metadata'];
+        else
+            $metadata = self::$metadata;
+
+        $controller->view->fields = $metadata;
         $controller->view->assign('list', $table->fetchAll($select));
     }
 
@@ -47,6 +52,11 @@ class Evil_Action_List extends Evil_Action_Abstract implements Evil_Action_Inter
      */
     public static function __autoLoad($args = array())
     {
-        return '<a href="/' . $args['controllerName'] . '/list">List</a>';
+        if(!is_array($args))
+            $name = $args->_getParam('controller');
+        else
+            $name = $args['controllerName'];
+
+        return '<a href="/' . $name . '/list">List</a>';
     }
 }
