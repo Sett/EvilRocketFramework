@@ -26,14 +26,32 @@ class Evil_Speech
      */
     public static function textToSpeech ($text, $toFile = false, $lang = 'ru')
     {
-        $client = new Zend_Http_Client(self::$textToSpeechUrl);
-        $client->setParameterGet(array('ie' => 'UTF-8', 'q' => $text, 'tl' => $lang));
-        $response = $client->request('GET');
-        if ($toFile) {
-            file_put_contents($toFile, $response->getBody());
+         //старый гуглокод, оставим здесь, вдруг снова откроют свой АПИ
+    //    $client = new Zend_Http_Client(self::$textToSpeechUrl);
+    //    $client->setParameterGet(array('ie' => 'UTF-8', 'q' => $text, 'tl' => $lang));
+    //    $response = $client->request('GET');
+    //    if ($toFile) {
+    //        file_put_contents($toFile, $response->getBody());
+    //        return true;
+    //    } else {
+    //        return $response->getBody();
+    //    }
+
+        $esf = new Evil_SpeechFestival();
+
+        $tmp_file = '/tmp/'.time();
+
+        if ($toFile)
+        {
+            $esf->textToSpeech($text, $tmp_file, $lang);
             return true;
-        } else {
-            return $response->getBody();
+        }
+        else
+        {
+            $file =  $esf->textToSpeech($text, $tmp_file, $lang);
+            header('Content-Type: audio/x-wav');
+            header('Content-Disposition: attachment; filename="'. $file .'"');
+            readfile($file);
         }
     }
 
