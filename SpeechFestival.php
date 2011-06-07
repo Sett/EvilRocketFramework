@@ -37,7 +37,6 @@ class Evil_SpeechFestival
         exec('lame -V2 ' . $toFile);
         exec('rm ' . $toFile); //удаляем вафку
         exec('mv '. $toFile .'.mp3 ' . $toFile); //подсовываем сюда мп3шку
-
         return $toFile . '.mp3';
     }
 
