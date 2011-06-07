@@ -39,20 +39,18 @@ class Evil_Speech
 
         $esf = new Evil_SpeechFestival();
 
-        $tmp_file = '/tmp/'.time();
+        $tmp_file = '/tmp/'.$toFile;
 
         if ($toFile)
         {
-            $esf->textToSpeech($text, $tmp_file, $lang);
+            $esf->textToSpeech($text, $toFile, $lang);
             return true;
         }
         else
         {
             $file =  $esf->textToSpeech($text, $tmp_file, $lang);
-            header('Content-Type: audio/x-wav');
-            header('Content-Disposition: attachment; filename="'. $file .'"');
-            readfile($file);
-        }
+            return $file;
+        } 
     }
 
     /**

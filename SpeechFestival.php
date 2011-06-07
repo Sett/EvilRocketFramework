@@ -32,10 +32,13 @@ class Evil_SpeechFestival
         }
 
         exec('echo "' . $text . '">' . $toFile . '.txt');
-        exec("text2wave " .$param . " " . $toFile . ".txt -o " . $toFile . ".wav");
+        exec("text2wave " .$param . " " . $toFile . ".txt -o " . $toFile );
         exec('rm ' . $toFile . '.txt');
-        
-        return $toFile . '.wav';
+        exec('lame -V2 ' . $toFile);
+        exec('rm ' . $toFile); //удаляем вафку
+        exec('mv '. $toFile .'.mp3 ' . $toFile); //подсовываем сюда мп3шку
+
+        return $toFile . '.mp3';
     }
 
 }
