@@ -24,10 +24,15 @@
         {
             parent::routeStartup ($request);
             $this->init();
-           
+            if( Zend_Controller_Front::getInstance()->getDispatcher()->isDispatchable($request) )  
+            {
             if ($this->denied($request->getParam('id'),
                 $request->getControllerName(), $request->getActionName()))
                     throw new Evil_Exception('Access Denied for '.$request->getControllerName().'::'.$request->getActionName(), 403);
+            } else 
+            {
+                throw new Evil_Exception('Not found '.$request->getControllerName().'::'.$request->getActionName(), 404);
+            }
         }
 
         protected function _resolve($condition, $object, $subject)
