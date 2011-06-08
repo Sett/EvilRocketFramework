@@ -8,8 +8,9 @@
            Zend_Registry::set('config', $this->_config = parent::getOptions());
 
            $front = $this->getResource('FrontController');
+       // $front->getResponse()->setHeader('Content-type','text/html;charset=utf-8');
+           $front->setParam('bootstrap', $this);
            header('Content-type: text/html;charset=utf-8');
-
            if (isset($this->_config['bootstrap']['plugins']))
                foreach ($this->_config['bootstrap']['plugins'] as $plugin)
                     $front->registerPlugin(new $plugin);
