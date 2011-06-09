@@ -70,7 +70,13 @@ class Evil_Payment_Tfb extends Evil_Payment implements Evil_Payment_Interface
         foreach($data as $name => $value)
             $client->setParameterPost($name, $value);
         
-        $result   = $client->request('POST')->getRawBody();
+        /**
+         * FIXME: getRawBody() adds additional characters to response
+         * maybe wrong
+         * Zend-Framework 1.11.4
+         */
+        //$result   = $client->request('POST')->getRawBody();
+        $result   = $client->request('POST')->getBody();
 
         return $result;
     }
