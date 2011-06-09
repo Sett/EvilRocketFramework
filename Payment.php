@@ -146,10 +146,11 @@ abstract class Evil_Payment implements Evil_Payment_Interface
 
         if(!empty($diff))
         {
-            echo '<pre>';
-            print_r($data);
-            print_r($required);
-            die(' Missed some required parameters ');
+            throw new Exception(' Missed some required parameters ' . implode(', ', $diff));
+//            echo '<pre>';
+//            print_r($data);
+//            print_r($required);
+//            die(' Missed some required parameters ');
         }
 
         /*
