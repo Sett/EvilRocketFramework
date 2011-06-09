@@ -1,0 +1,100 @@
+{
+    "class" : "evil_tfb_form",
+
+    "elements" :
+    {
+        "iPAN" :
+        {
+            "type" : "text",
+            "options" :
+            {
+                "label" : "Card #"
+            }
+        },
+
+        "month" :
+        {
+            "type" : "select",
+            "options" :
+            {
+                "multiOptions" :
+                [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December"
+                ]
+            }
+        },
+
+        "year" :
+        {
+            "type" : "select",
+            "options" :
+            {
+                "multiOptions" : {"2011" : "2011"}
+            }
+        },
+
+        "iTEXT" :
+        {
+            "type" : "text",
+            "options" :
+            {
+                "label" : "Your name",
+                "maxLength" : 90,
+                "autocomplete" : "off"
+            }
+        },
+
+        "iCVC" :
+        {
+            "type" : "password",
+            "options" :
+            {
+                "name" : "$CVC",
+                "maxLength" : 14,
+                "autocomplete" : "off",
+                "label" : "CVC"
+            }
+        },
+
+        "buttonPayment" :
+        {
+            "type" : "submit",
+
+            "options" :
+            {
+                "label" : "Pay",
+                "name"  : "SendPayment2",
+                "class" : "button"
+            }
+        },
+
+         "location" :
+        {
+            "type" : "hidden",
+            "options" :
+            {
+                "value" : "/../"
+            }
+        },
+
+        "language" :
+        {
+            "type" : "hidden",
+            "options" :
+            {
+                "value" : "ru"
+            }
+        }
+    }
+}

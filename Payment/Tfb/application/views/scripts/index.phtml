@@ -1,0 +1,29 @@
+<script type="text/javascript">
+    $(document).payment(
+    {
+        language: "ru",
+        messageAjaxError: "Сервис временно недоступен. Попробуйте позднее.",
+        messageTimeRemaining: "До окончания сессии осталось #MIN#:#SEC#",
+        orderId: "orderNumber",
+        paymentAction: "../../rest/processform.do",
+        getSessionStatusAction: "../../rest/getSessionStatus.do",
+        showErrorAction: "../../rest/showErrors.do",
+        updatePage: function(data)
+        {
+            $("#orderNumber").prepend('<p>' + data['orderNumber'] + "</p>");
+            $("#amount").prepend('<p>' + data['amount'] + "</p>");
+        }
+    });
+</script>
+
+<div id="orderNumber"></div>
+<div id="amount"></div>
+
+<?=$this->form?>
+
+<div id="errorBlock" style="color:red;"></div>
+<div id="numberCountdown"></div>
+<div id="infoBlock"></div>
+<div id="indicatorImage" style="display:none;">
+    <img src="../../img/ajax-loader.gif" height="19" width="220" alt="indicator">
+</div>
