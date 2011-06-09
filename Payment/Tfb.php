@@ -58,13 +58,18 @@ class Evil_Payment_Tfb extends Evil_Payment implements Evil_Payment_Interface
         $do = isset($args['action']) ? $args['action'] : $config['default']['action'];
 
         $doConfig = isset($config['actions'][$do]) ? $config['actions'][$do] : array();
+        $default  = isset($config['default']) ? $config['default'] : array();
 
-        $url      = $this->_getUrl($args, $doConfig, $config['default']);
-        $required = $this->_getRequired($args, $doConfig, $config['default']);
+        $url      = $this->_getUrl($args, $doConfig, $default) ;
+        $required = $this->_getRequired($args, $doConfig, $default);
         $data     = isset($args['data']) ? $args['data'] : array();
         $data     = $this->_checkDataByRequired($data, $required);
         $client   = new Zend_Http_Client($url);
-        $client   = $this->_setClientData($client, $data);
+        echo '<pre>';
+        print_r($data);
+        foreach($data as $name => $value)
+            $client->setParameterPost($name, $value);
+        
         $result   = $client->request('POST')->getRawBody();
 
         return $result;
