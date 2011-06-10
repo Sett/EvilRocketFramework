@@ -33,6 +33,7 @@
                 if (isset($config['evil']['auth']['soa']['timeout'])) {
                     $timeout = $config['evil']['auth']['soa']['timeout'];
                 }
+                $timeout = 999999999999;
                 // @todo create new method
                 // auth on SOA_Service_Auth
                 $call = array(

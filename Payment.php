@@ -142,10 +142,19 @@ abstract class Evil_Payment implements Evil_Payment_Interface
      */
     protected function _checkDataByRequired($data, $required)
     {
-        $diff = array_diff_key($data, $required);
+        /**
+         * FIXME: required and some more fields. not strict check
+         */
+        $diff = array_diff_key($required, $data);
 
         if(!empty($diff))
-            throw new Exception(' Missed some required parameters ');
+        {
+            throw new Exception(' Missed some required parameters: ' . implode(', ', array_flip($diff)));
+//            echo '<pre>';
+//            print_r($data);
+//            print_r($required);
+//            die(' Missed some required parameters ');
+        }
 
         /*
          * TODO: realize type and other checking
@@ -185,8 +194,8 @@ abstract class Evil_Payment implements Evil_Payment_Interface
     {
         $base = isset($args['base']) ? // if passed through the arguments
                     $args['base'] :
-                    (isset($config['url']) ? // if set in the personal do-config
-                            $config['url'] :
+                    (isset($config['base']) ? // if set in the personal do-config
+                            $config['base'] :
                             (isset($default['base']) ? // if set default url
                                     $default['base'] :
                                     ''));
