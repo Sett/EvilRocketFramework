@@ -36,7 +36,6 @@ class Evil_Speech
     //    } else {
     //        return $response->getBody();
     //    }
-
         $esf = new Evil_SpeechFestival();
 
         $tmp_file = $toFile;
