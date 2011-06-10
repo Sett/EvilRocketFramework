@@ -39,7 +39,7 @@ class Evil_Speech
 
         $esf = new Evil_SpeechFestival();
 
-        $tmp_file = '/tmp/'.time();
+        $tmp_file = $toFile;
 
         if ($toFile)
         {
@@ -49,9 +49,7 @@ class Evil_Speech
         else
         {
             $file =  $esf->textToSpeech($text, $tmp_file, $lang);
-            header('Content-Type: audio/x-wav');
-            header('Content-Disposition: attachment; filename="'. $file .'"');
-            readfile($file);
+            return $file;
         }
     }
 
