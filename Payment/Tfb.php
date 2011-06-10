@@ -64,8 +64,13 @@ class Evil_Payment_Tfb extends Evil_Payment implements Evil_Payment_Interface
         $required = $this->_getRequired($args, $doConfig, $default);
         $data     = isset($args['data']) ? $args['data'] : array();
         $data     = $this->_checkDataByRequired($data, $required);
+        /**
+         * Convert rub in copicks
+         */
+        $data['amount'] = floor(($data['amount'] * 100));
+
         $client   = new Zend_Http_Client($url);
-        //echo '<pre>';
+
         //print_r($data);
         foreach($data as $name => $value)
             $client->setParameterPost($name, $value);
