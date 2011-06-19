@@ -226,6 +226,13 @@
                 $this->_items[$id] = Evil_Structure::getObject($this->_type, $id, $data);
             
         }
+        
+        public function truncate()
+        {
+        	$this->_fixed->delete();
+        	$this->_fluid->delete();
+        	return $this;
+        }
 
         public function clear()
         {

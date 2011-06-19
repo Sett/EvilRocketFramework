@@ -11,6 +11,12 @@
             $info = $this->_fixed->info();
             $this->_fixedschema = $info['cols'];
         }
+        
+        public function truncate()
+        {
+        	$this->_fixed->delete();
+        	return $this;
+        }
 
         public function where ($key, $selector, $value = null,  $mode = 'new')
         {
@@ -62,6 +68,10 @@
                             break;
                         }
                     break;
+                    
+                    default:
+                    		throw new Evil_Exception('Unknown selector '  .$selector);
+                    	break;
             }
 
             $ids = $rows->toArray ();
