@@ -18,6 +18,7 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
     protected $_fixedschema = array();
     protected $_fixed = null;
 
+    protected $_loaded = FALSE;
     public function __construct ($type, $id = null)
     {   
         $this->_type = $type;
@@ -48,6 +49,7 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
         if (empty($data))
             return null;
         else {
+        	$this->_loaded = true;
             $data = $data->toArray();
             $this->_data = $data;
             return $this->_id = $data['id'];
@@ -55,7 +57,7 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
     }
     
     
-    public function create ($id, $data)
+    public function create ($id =null, $data)
     {
         $this->_id = $id;
         $fixedvalues = array('id' => $id);
@@ -64,7 +66,8 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
                 $fixedvalues[$key] = $value;
             else
                 $this->addNode($key, $value);
-        $this->_fixed->insert($fixedvalues);
+        $id = $this->_fixed->insert($fixedvalues);
+        $this->setId($id);
         return $this;
     }
 

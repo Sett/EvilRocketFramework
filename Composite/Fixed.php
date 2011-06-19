@@ -17,6 +17,12 @@
             switch ($selector)
             {
                 case '=':
+	            case '<':
+	            case '>':
+	            case '<=':
+	            case '>=':
+	            case '!=':
+                	
                     if (in_array ($key, $this->_fixedschema)) {
                         $rows = $this->_fixed->fetchAll (
                             $this->_fixed
@@ -25,7 +31,7 @@
                                 $this->_fixed,
                                 array('id')
                             )
-                                ->where ($key . ' = ?', $value));
+                                ->where ($key . ' ' . $selector . ' ?', $value));
 
                         $ids = $rows->toArray ();
                     }

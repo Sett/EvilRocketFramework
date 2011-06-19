@@ -4,6 +4,7 @@
     {
         private $_fixed;
         private $_ids;
+        private $_lastQuery = null;
 
         public function __construct ($type)
         {
@@ -15,13 +16,58 @@
             $info = $this->_fixed->info ();
             $this->_fixedschema = $info['cols'];
         }
-
-        public function where ($key, $selector, $value = null, $offset = null, $count = null, $mode = 'new')
+        /**
+         * 
+         * return items count from set
+         * @author NuR
+         * @return int
+         */
+        public function count()
         {
+        	/**
+        	 * 
+        	 * нутро подсказывает что как то проще должно быть...
+        	 * @var unknown_type
+        	 */
+        	
+        	 $query = $this->_lastQuery->
+        	 reset(Zend_Db_Select::LIMIT_COUNT)->
+        	 reset(Zend_Db_Select::LIMIT_OFFSET)->
+        	 reset(Zend_Db_Select::COLUMNS)->columns(new Zend_Db_Expr('count(*) as c'));
+        	 $rowData = $this->_lastQuery->getTable()->fetchRow ($query);
+        	 $count = $rowData->toArray();
+        	 return $count['c'];
+        	 
+        }
+
+        public function where ($key, $selector, $value = null, $offset = 0, $count = 50, $mode = 'new')
+        {	
             switch ($selector)
             {
+            	case 'multi':
+            				$this->_lastQuery = $this->_fixed->select ()->from ( $this->_fixed, array ('id' ) );	
+            				foreach ($value as $fieldName => $fieldParams)
+            				{
+            					foreach ($fieldParams as $val => $selector)
+            					{
+            						$this->_lastQuery->where ( $fieldName . ' ' . $selector . ' ?', $val );
+            					}
+		            			
+								
+            				}
+           					 $rows = $this->_fixed->fetchAll ( $this->_lastQuery );
+		                     $ids = $rows->toArray ();
+		
+		                        foreach ($ids as $id)
+		                        {
+		                            $id = $id['id'];
+		                            $this->_ids[] = $id;
+		                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
+		                        }
+            		break;
                 case '*':
-                        $rows = $this->_fixed->fetchAll(null, null, $count, $offset); //count and offset only for selector==*
+                		$this->_lastQuery = $this->_fixed->select()->limitPage($offset, $count);
+                        $rows = $this->_fixed->fetchAll($this->_lastQuery); //count and offset only for selector==*
 
                         $ids = $rows->toArray ();
 
@@ -40,15 +86,9 @@
                 case '>=':
                 case '<=':
                     if (in_array ($key, $this->_fixedschema)) {
-                        $rows = $this->_fixed->fetchAll (
-                            $this->_fixed
-                                ->select ()
-                                ->from (
-                                $this->_fixed,
-                                array('id')
-                            )
-                                ->where ($key . ' '.$selector.' ?', $value));
-
+                    	
+                    	$this->_lastQuery = $this->_fixed->select ()->from ( $this->_fixed, array ('id' ) )->where ( $key . ' ' . $selector . ' ?', $value );
+						$rows = $this->_fixed->fetchAll ( $this->_lastQuery );
                         $ids = $rows->toArray ();
 
                         foreach ($ids as $id)
@@ -60,16 +100,15 @@
                     }
                     else
                     {
-                       
-                        $rows = $this->_fluid->fetchAll (
-                            $this->_fluid
+                       $this->_lastQuery =    $this->_fluid
                                 ->select ()
                                 ->from (
                                 $this->_fluid,
                                 array('i')
                             )
                                 ->where ('k = ?', $key)
-                                ->where ('v '. $selector .' ?', $value));
+                                ->where ('v '. $selector .' ?', $value);
+                        $rows = $this->_fluid->fetchAll ( $this->_lastQuery );
 
                         $ids = $rows->toArray ();
                         foreach ($ids as $id)
@@ -88,13 +127,13 @@
 
                     if (in_array ($key, $this->_fixedschema))
                     {
-                        $rows = $this->_fixed->fetchAll (
-                            $this->_fixed
+                    	$this->_lastQuery = $this->_fixed
                                 ->select ()
                                 ->from (
                                 $this->_fixed,
                                 array('id')
-                            )->where ($key . ' IN (' . implode (',', $value) . ')'));
+                            )->where ($key . ' IN (' . implode (',', $value) . ')');
+                        $rows = $this->_fixed->fetchAll ($this->_lastQuery );
 
 
                         $ids = $rows->toArray ();
@@ -106,15 +145,15 @@
                     }
                     else
                     {
-                        $rows = $this->_fluid->fetchAll (
-                            $this->_fluid
+                    	$this->_lastQuery = $this->_fluid
                                 ->select ()
                                 ->from (
                                 $this->_fluid,
                                 array('i')
                             )
                                 ->where ('k = ?', $key)
-                                ->where ('v IN ("' . implode (',', $value) . '")'));
+                                ->where ('v IN ("' . implode (',', $value) . '")');
+                        $rows = $this->_fluid->fetchAll ($this->_lastQuery );
 
                         $ids = $rows->toArray ();
 
