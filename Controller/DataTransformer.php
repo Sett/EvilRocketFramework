@@ -1,6 +1,6 @@
 <?php
 /**
- * Evil_Controller_Converter
+ * Evil_Controller_DataTransformer
  *
  * Created by JetBrains PhpStorm.
  * @author Alexander M Artamonov <art.alex.m@gmail.com>
@@ -12,16 +12,44 @@
  * @time 12:06
  */
  
-class Evil_Controller_Converter
+class Evil_Controller_DataTransformer
 {
+    /**
+     * Store configurations of transformations
+     *
+     * @var array
+     */
     protected $_entities = array();
 
+    /**
+     * Default name of config
+     * Use last added config by default
+     *
+     * @var string
+     */
     protected $_defaultEntity = '';
 
+    /**
+     * Anabel types to catsTypes()
+     *
+     * @var array
+     */
     protected $_enabledTypes = array('boolean','float','string','integer','array','object','null');
 
+    /**
+     * Global PHP variables to get data in getParameter()
+     *
+     * @var array
+     */
     protected $_methods = array('POST', 'GET', 'COOKIE');
 
+    /**
+     * Add configuration
+     *
+     * @param  string $namespace
+     * @param  array $data
+     * @return Evil_Controller_Converter
+     */
     public function addEntity($namespace, array $data)
     {
         $this->_entities[$namespace] = $data;
@@ -29,6 +57,12 @@ class Evil_Controller_Converter
         return $this;
     }
 
+    /**
+     * Set default namespace
+     *
+     * @param  string $name
+     * @return Evil_Controller_Converter
+     */
     public function setDefaultEntity($name)
     {
         if (isset($this->_entities[$name]))
@@ -37,6 +71,13 @@ class Evil_Controller_Converter
         return $this;
     }
 
+    /**
+     * Translate given name in namespace
+     *
+     * @param  string $key
+     * @param  string|null $namespace
+     * @return array
+     */
     public function convert($key, $namespace = null)
     {
         if (is_null($namespace)) $namespace = $this->_defaultEntity;
@@ -47,6 +88,13 @@ class Evil_Controller_Converter
                         : $key;
     }
 
+    /**
+     * Translate all array keys to given namespace
+     *
+     * @param array $data
+     * @param string|null $namespace
+     * @return array
+     */
     public function convertAll(array $data, $namespace = null)
     {
         if (is_null($namespace)) $namespace = $this->_defaultEntity;
@@ -54,12 +102,21 @@ class Evil_Controller_Converter
         $newData = array();
 
         foreach ($data as $key => $value) {
-            $newData[$this->convert($key,$namespace)] = $value;
+            $key = $this->convert($key, $namespace);
+            $newData[$key] = $value;
         }
 
         return $newData;
     }
 
+    /**
+     * Set the type of a values in given array
+     *
+     * @throws Evil_Exception
+     * @param array $data
+     * @param string|null $namespace
+     * @return array
+     */
     public function castType(array $data, $namespace = null)
     {
         if (is_null($namespace)) $namespace = $this->_defaultEntity;
@@ -79,6 +136,15 @@ class Evil_Controller_Converter
         return $data;
     }
 
+    /**
+     * Get all values in globals
+     *
+     * @param string $method
+     * @param null $custom
+     * @param null $conversion
+     * @param string|null $namespace
+     * @return array
+     */
     public function getAllParameters($method='', $custom = null, $conversion = null,  $namespace = null)
     {
         if (is_null($namespace))
@@ -109,6 +175,14 @@ class Evil_Controller_Converter
         return $result;
     }
 
+    /**
+     * Get value from globals
+     *
+     * @param  string $name
+     * @param  null $conversion
+     * @param  string $method
+     * @return mixed
+     */
     public function getParameter($name, $conversion = null, $method='POST')
     {
         $storage = '_'. $method;
@@ -124,6 +198,12 @@ class Evil_Controller_Converter
         return null;
     }
 
+    /**
+     * Return the fist non empty value
+     *
+     * @param array $values
+     * @return mixed
+     */
     protected function _cast(array $values)
     {
         foreach ($values as $v)
