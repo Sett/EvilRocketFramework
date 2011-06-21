@@ -63,7 +63,7 @@ class Evil_Controller_Converter
      * @param  string $name
      * @return Evil_Controller_Converter
      */
-    public function setDefaultEntity($name)
+    public function chooseEntity($name)
     {
         if (isset($this->_entities[$name]))
             $this->_defaultEntity = $name;
