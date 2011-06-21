@@ -33,6 +33,9 @@ if(isset($this->factors))
                         '<td class="content">' . $factor['content'] . '</td>' .
                         '<td class="created">' . date('Y-m-d H:i', $factor['ctime']) . '</td>' .
                         '<td class="votes">' . $factor['votes'] . '</td>' .
+                        '<td class="actions">' .
+                            '<a href="http://' . $_SERVER['SERVER_NAME'] . '/factor/factor/id/' . $factor['id'] . '">Comment</a>' .
+                        '</td>' .
                     '</tr>';
 
     }

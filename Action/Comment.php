@@ -6,6 +6,8 @@
  */
 class Evil_Action_Comment extends Evil_Action_Abstract
 {
+    protected $_defaultConfig = array();
+
     /**
      * @description comments list
      * @return void
@@ -104,11 +106,43 @@ class Evil_Action_Comment extends Evil_Action_Abstract
 
         $objectData = $table->fetchRow($table->select()->from($table)->where('id=?', $params['id']));
 
-        if(!$justFetch && isset($controller->selfConfig['comment']) && isset($controller->selfConfig['comment']['commentForm']))
-            $controller->view->commentsForm =
-                new Zend_Form($this->_changeFormConfig($controller->selfConfig['comment']['commentForm'], $objectData));
+        $this->_commentsForm($justFetch, $objectData);
         
         return $objectData;
+    }
+
+    protected function _commentsForm($justFetch, $objectData)
+    {
+        $controller = self::$_info['controller'];
+
+        if(!$justFetch && ($commentConfig = $this->_getFromConfig('comment')))
+        {
+            if(isset($commentConfig['commentForm']))
+            {
+                $controller->view->commentsForm =
+                    new Zend_Form($this->_changeFormConfig($commentConfig['commentForm'], $objectData));
+            }
+        }
+    }
+
+    protected function _loadDefaultConfig()
+    {
+        $path = __DIR__ . '/Comment/application/configs/comment.json';
+        if(is_file($path))
+            $this->_defaultConfig = json_decode(file_get_contents($path), true);
+    }
+
+    protected function _getFromConfig($name)
+    {
+        if(empty($this->_defaultConfig))
+            $this->_loadDefaultConfig();
+
+        if(isset(self::$_info['controller']->selfConfig[$name]))
+            return self::$_info['controller']->selfConfig[$name];
+        elseif(isset($this->_defaultConfig[$name]))
+            return $this->_defaultConfig[$name];
+
+        return false;
     }
 
     /**
