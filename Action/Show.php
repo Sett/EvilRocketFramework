@@ -23,6 +23,8 @@ class Evil_Action_Show extends Evil_Action_Abstract implements Evil_Action_Inter
         if(!isset($params['id']))
             $controller->_redirect('/');
 
-        return $table->fetchRow($table->select()->from($table)->where('id=?', $params['id']));
+        $data = $table->fetchRow($table->select()->where('id=?', $params['id']));
+
+        return $data;
     }
 }

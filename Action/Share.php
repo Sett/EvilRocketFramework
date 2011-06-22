@@ -68,6 +68,9 @@ class Evil_Action_Share extends Evil_Action_Abstract
      */
     protected static function _echo($return, $result)
     {
+        if(!isset(self::$_info['params']))
+            return false;
+
         if(isset(self::$_info['controller']->selfConfig['share-return'][self::$_info['params']['action']]))
             $return = self::$_info['controller']->selfConfig['share-return'][self::$_info['params']['action']];
 

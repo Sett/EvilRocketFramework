@@ -1,0 +1,61 @@
+{
+    "form" :
+    {
+        "elements" :
+        {
+            "author" :
+            {
+                "type" : "text",
+                "options" :
+                {
+                    "size"  : 40,
+                    "label" : "Author"
+                }
+            },
+
+            "title" :
+            {
+                "type" : "text",
+                "options" :
+                {
+                    "label" : "Title",
+                    "size" : 80
+                }
+            },
+
+            "content" :
+            {
+                "type" : "textarea",
+                "options" :
+                {
+                    "rows"  : 10,
+                    "cols"  : 60,
+                    "label" : "Content"
+                }
+            },
+
+            "ctime" :
+            {
+                "type" : "hidden",
+                "options" :
+                {
+                    "default" : "time"
+                }
+            },
+
+            "votes" :
+            {
+                "type" : "hidden"
+            },
+
+            "submit" :
+            {
+                "type" : "submit",
+                "options" :
+                {
+                    "label" : "Create"
+                }
+            }
+        }
+    }
+}

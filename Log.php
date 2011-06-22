@@ -10,12 +10,10 @@
            $logger->addWriter(new Zend_Log_Writer_Firebug());
 
            $config = Zend_Registry::get('config');
-           if (isset($config['evil']['log']['expose']['svn']) and $config['evil']['log']['expose']['svn'])
-           {
-               exec ('svn info', $svn);
-               if(isset($svn[4]))
-                $logger->log($svn[4], Zend_Log::INFO);
-           }
+           $logExp = isset($config['evil']['log']['expose']) ? $config['evil']['log']['expose'] : array();
+
+            if(isset($logExp['use']) && method_exists($this, $logExp['use']) && $logExp[$logExp['use']])
+                call_user_func_array(array($this, $config['evil']['log']['expose']['use']), array($logger));
 
             $columnMapping = array('lvl' => 'priority', 'msg' => 'message');
             $dbWriter = new Zend_Log_Writer_Db(Zend_Registry::get('db'), Zend_Registry::get('db-prefix').'log', $columnMapping);
@@ -26,6 +24,42 @@
             $logger->addWriter($dbWriter);
 
             Zend_Registry::set('logger',$logger);
+        }
+
+        /**
+         * @description get git info
+         * @param object $logger
+         * @return void
+         * @author Se#
+         * @version 0.0.1
+         */
+        public function git($logger)
+        {
+
+            exec('git log -n 1', $git);
+            /**
+             * $git = array(
+             *      0 => commit commitHash
+             *      1 => Author: AuthorName
+             *      2 => Date: Thu Jun 9 15:09:47 2011 +0400
+             * )
+             */
+            if(isset($git[0]) && isset($git[1]) && isset($git[2]))
+                $logger->log($git[0] . '; ' . $git[1] . '; ' . $git[2], Zend_Log::INFO);
+        }
+
+        /**
+         * @description get svn info
+         * @param object $logger
+         * @return void
+         * @author Se#
+         * @version 0.0.1
+         */
+        public function svn($logger)
+        {
+            exec ('svn info', $svn);
+            if(isset($svn[4]))
+                $logger->log($svn[4], Zend_Log::INFO);
         }
 
         public static function info($message)

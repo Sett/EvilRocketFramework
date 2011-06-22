@@ -9,7 +9,7 @@
  * @version 0.0.4
  */
 
-class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Interface
+class Evil_Action_Factor extends Evil_Action_Abstract
 {
     /**
      * @description operate factor
@@ -23,10 +23,12 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
      */
     protected function _actionFactor()
     {
+
         $params     = self::$_info['params'];
         $controller = self::$_info['controller'];
         $config     = self::$_info['config'];
 
+        $controller->view->headLink()->appendStylesheet('/css/factors.css');
         $data = array();
 
         foreach($params as $param => $value)
@@ -47,7 +49,7 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
             $controller->_redirect($config->factor->redirect);
 
         $controller->view->result = 'Factor added';
-        $controller->_redirect('/' . $this->_controllerName($controller, $params['controller'])
+        $controller->_redirect('/' . self::$_info['controllerName']
                                .'/factor/id/' . $params['id']);
     }
 
@@ -94,21 +96,7 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
         $controller = self::$_info['controller'];
         $config     = self::$_info['config'];
 
-        if(!file_exists(ROOT . 'public/css/factors.css'))
-        {
-            $name = 'factors_' . sha1($_REQUEST['PHPSESSID']) . '.css';
-
-            if(!file_exists(ROOT . 'public/css/' . $name))
-            {
-                fopen(ROOT . 'public/css/' . $name, "w+t");
-                file_put_contents(ROOT . 'public/css/' . $name,
-                                   file_get_contents(__DIR__ . '/Factor/public/css/factors.css'));
-            }
-        }
-        else
-            $name = '/css/factors.css';
-
-        $controller->view->headLink()->appendStylesheet('/css/' . $name);
+        $controller->view->headLink()->appendStylesheet('/css/factors.css');
 
         if(!isset($params['id']))
             $controller->_redirect('/');
@@ -122,7 +110,9 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
         $controller->view->factors = $factors;
         $controller->view->factorsList = $this->_getFactorsList($config);
         $controller->view->factorForm = new Zend_Form($this->_getFormConfig());
-        return $table->fetchRow($table->select()->from($table)->where('id=?', $params['id']));
+        $object = $table->fetchRow($table->select()->from($table)->where('id=?', $params['id']));
+        
+        return $object;
     }
 
     /**
@@ -191,11 +181,23 @@ class Evil_Action_Factor extends Evil_Action_Abstract implements Evil_Action_Int
             'options' => array('rows' => '5', 'cols' => 40)
         );
 
+        $userTable = new Zend_Db_Table(Evil_DB::scope2table('user'));
+        $user = $userTable->fetchRow('id="' . Zend_Registry::get('userid') . '"');
+
+        if(!$user)
+            $userName = 'Guest';
+        else
+        {
+            $user = $user->toArray();
+            $userName = isset($user['nickname']) ? $user['nickname'] : 'User';
+        }
+
         $formConfig['elements']['factorauthor'] = array(
             'type' => 'text',
             'options' => array(
-                'label' => 'Please, introduce yourself',
-                'value' => 'Get from current user'
+                'label'    => 'Please, introduce yourself',
+                'value'    => $userName,
+                'readOnly' => true
             )
         );
 

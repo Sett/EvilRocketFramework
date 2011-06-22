@@ -39,8 +39,10 @@ class Evil_Action_List extends Evil_Action_Abstract implements Evil_Action_Inter
         else
             $metadata = self::$metadata;
 
+        $data = $table->fetchAll($select);
+
         $controller->view->fields = $metadata;
-        $controller->view->assign('list', $table->fetchAll($select));
+        $controller->view->assign('list', $data);
     }
 
     /**
@@ -55,7 +57,7 @@ class Evil_Action_List extends Evil_Action_Abstract implements Evil_Action_Inter
         if(!is_array($args))
             $name = $args->_getParam('controller');
         else
-            $name = $args['controllerName'];
+            $name = isset($args['controllerName']) ? $args['controllerName'] : '';
 
         return '<a href="/' . $name . '/list">List</a>';
     }
