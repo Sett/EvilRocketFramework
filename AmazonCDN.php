@@ -142,7 +142,6 @@
 					throw new Exception("Plugin AmazonCdn. Количество  элементов в массивах адресов для замены не совпадает", 500);
 				}
 			
-				
 			$body = $this->getResponse()->getBody();
 			$body = str_ireplace($this->_address_inside, 
 								$this->_address_outside, 
