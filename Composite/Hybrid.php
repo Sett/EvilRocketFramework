@@ -40,6 +40,14 @@
         	 
         }
 
+        public function update($data)
+        {
+        	foreach ($this->_items as $item)
+        	{
+        		$item->update($data);
+        	}
+        	return $this;
+        }
         public function where ($key, $selector, $value = null, $offset = 0, $count = 50, $mode = 'new')
         {	
             switch ($selector)
@@ -87,7 +95,7 @@
                 case '<=':
                     if (in_array ($key, $this->_fixedschema)) {
                     	
-                    	$this->_lastQuery = $this->_fixed->select ()->from ( $this->_fixed, array ('id' ) )->where ( $key . ' ' . $selector . ' ?', $value );
+                    	$this->_lastQuery = $this->_fixed->select ()->limitPage($offset, $count)->from ( $this->_fixed, array ('id' ) )->where ( $key . ' ' . $selector . ' ?', $value );
 						$rows = $this->_fixed->fetchAll ( $this->_lastQuery );
                         $ids = $rows->toArray ();
 
