@@ -62,7 +62,6 @@ class Evil_Cdn_HeadScript extends Zend_View_Helper_HeadScript
 	 */
 	public function toString($indent=null){
 		$strings = parent::toString($indent);
-		
 		$this->_init();
 		
 		//ничего не делаем, если пути замены не определены
