@@ -48,7 +48,7 @@
         	}
         	return $this;
         }
-        public function where ($key, $selector, $value = null, $offset = 0, $count = 50, $mode = 'new')
+        public function where ($key, $selector, $value = null, $offset = 0, $count = 50, $orderBy = 'id DESC')
         {	
             switch ($selector)
             {
@@ -74,7 +74,7 @@
 		                        }
             		break;
                 case '*':
-                		$this->_lastQuery = $this->_fixed->select()->limitPage($offset, $count);
+                		$this->_lastQuery = $this->_fixed->select()->limitPage($offset, $count)->order($orderBy) ;
                         $rows = $this->_fixed->fetchAll($this->_lastQuery); //count and offset only for selector==*
 
                         $ids = $rows->toArray ();

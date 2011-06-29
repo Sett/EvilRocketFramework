@@ -14,6 +14,7 @@ class Evil_Multiform extends Zend_Form
         $idEl = new Zend_Form_Element_Hidden(self::$_idParam);
         $idEl->setRequired(false);
         $idEl->setValue($this->_getFormid());
+        $this->setAttrib('id', $this->_getFormid());
         $this->addElement($idEl);
     }
     
