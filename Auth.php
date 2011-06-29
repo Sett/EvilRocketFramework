@@ -45,13 +45,14 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
          $seal = $_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR'];    
         return sha1($seal);
     }
-    protected function _upTicket ($user)
+    
+    protected function _upTicket ($ticket)
     {
-        $config = Zend_Registry::get('config');
-        if (is_object($config))
-            $config = $config->toArray();
-        $prefix = $config['resources']['db']['prefix'];
-        Zend_Registry::get('db')->update($prefix . 'tickets', array('created' => time()), 'user="' . $user . '"');
+        /**
+         * зачем апать этот тикет?
+         */
+        return;
+        $ticket->update(array('created' => time()));
         $logger = Zend_Registry::get('logger');
         $logger->log('Updated', LOG_INFO);
     }
@@ -68,7 +69,8 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
                     if ($this->_ticket->getValue('seal') == $ticketSalt) {
                         if ($this->_seal() == $ticketSalt) {
                             $logger->log('Audited', Zend_Log::INFO);
-                            $this->_upTicket($this->_ticket->getValue('user'));
+                            
+                            $this->_upTicket($this->_ticket);
                             Zend_Registry::set('userid', $this->_ticket->getValue('user'));
                         } else {
                             $logger->log('Stolen seal', Zend_Log::INFO);
@@ -86,27 +88,28 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
                 $logger->log('Ticket No Exist', Zend_Log::INFO);
                 $this->annulate();
             }
+        } else 
+        {
+              $logger->log('No TID', Zend_Log::INFO);
+              $this->register();
         }
-        if (null !== $getTicketID) {
+        
+        if (null != $getTicketID) {
             $_ticket = Evil_Structure::getObject('ticket',$getTicketID);
             if ($_ticket->load()) {
                 if ($_ticket->getValue('seal') == '') {
                     Zend_Registry::set('userid', $_ticket->getValue('user'));
                     $_ticket->erase();
                     $this->register();
-                } else 
-                {
-                     $logger->log('Used ticket', Zend_Log::INFO);
+                } else {
+                    $logger->log('Used ticket', Zend_Log::INFO);
                 }
             }
-        } else {
-            $logger->log('No TID', Zend_Log::INFO);
-            $this->register();
         }
     }
     public function register ($useSeal = true)
     {
-        $id = uniqid(true,true);
+        $id = uniqid(true, true);
         if ($useSeal) {
             $seal = $this->_seal();
         } else {
@@ -114,31 +117,12 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
         }
         $userId = Zend_Registry::get('userid');
         $db = Zend_Registry::get('db');
-        $ticket = null;
-        $config = Zend_Registry::get('config');
-        if (is_object($config))
-            $config = $config->toArray();
-        $prefix = $config['resources']['db']['prefix'];
-        if (- 1 != $userId) {
-            $ticket = $db->fetchAll(
-            $db->select()
-                ->from($prefix . 'tickets')
-                ->where('user=?', $userId)
-                ->where('seal=?', $seal));
-            if (is_object($ticket))
-                $ticket = $ticket->toArray();
-        }
-        if (empty($ticket)) {
-            $db->delete($prefix . 'tickets', 'seal="' . $seal . '"');
-            $this->_ticket->create($id, array('seal' => $seal, 'user' => $userId, 'created' => time()));
+        $this->_ticket->create($id, 
+        array('seal' => $seal, 'user' => $userId, 'created' => time()));
             setcookie('SCORETID', $id, 0, '/');
             setcookie('SCORETSL', $seal, 0, '/');
             return $this->_ticket->getId();
-        } else {
-            $db->update($prefix . 'tickets', array('created' => time()), 'id="' . $ticket[0]['id'] . '"');
-            //var_dump($ticket);
-            return $ticket[0]['id'];
-        }
+
     }
     public function annulate ()
     {

@@ -70,13 +70,27 @@
                 $logger->log($message, Zend_Log::INFO);
             }
         }
-        
-        public static function log($message,$levl)
-        {
-            if (Zend_Registry::isRegistered('logger'))
-            {
-                $logger = Zend_Registry::get('logger');
-                $logger->log($message, $levl);
+    public static function log ($message, $levl = Zend_Log::INFO, $data = null)
+    {
+        if (Zend_Registry::isRegistered('logger')) {
+            $logger = Zend_Registry::get('logger');
+            /**
+             * прислали что то на вардамп
+             */
+            if (null != $data) {
+                /**
+                 * 
+                 * сделаем табличку
+                 * @var unknown_type
+                 */
+                $_message = new Zend_Wildfire_Plugin_FirePhp_TableMessage(
+                $message);
+                $_message->setHeader(array('Data'));
+                $_message->addRow(array(($data)));
+                $logger->log($_message, $levl);
+            } else {
+                $logger->log($message, $levl, $extras);
             }
         }
+    }
     }

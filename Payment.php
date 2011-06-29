@@ -49,6 +49,16 @@ abstract class Evil_Payment implements Evil_Payment_Interface
     }
 
     /**
+     * Getter for $_config
+     *
+     * @return array|mixed|string
+     */
+    public function getConfig()
+    {
+        return $this->_config;
+    }
+
+    /**
      * @description basic payment form
      * @return null
      * @author Se#

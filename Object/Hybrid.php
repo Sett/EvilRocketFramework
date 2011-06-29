@@ -174,12 +174,12 @@
                 if (null !== $oldvalue and !empty($oldvalue))
                 {
                     if (in_array($oldvalue, $this->_data[$key]))
-                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = "'.$this->_id.'"','k = "'.$key.'"','v = "'.$oldvalue.'"'));
+                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = ? ' => $this->_id,'k = ? ' => $key,'v = ?' => $key));
                 }
                 else
                 {
                     if (isset($this->_data[$key]))
-                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = "'.$this->_id.'"','k = "'.$key.'"'));
+                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = ?' => $this->_id ,'k = ?' => $key));
                     else
                         $this->addNode($key, $value);
                 }
@@ -229,7 +229,7 @@
             {
                 $this->_data = $data[0];
 
-                $fluidrows = $this->_fluid->fetchAll('i = "'.$this->_id.'"')->toArray();
+                $fluidrows = $this->_fluid->fetchAll( array('i = ?' => $this->_id) )->toArray();
 
                     foreach ($fluidrows as $row)
                     {
