@@ -1,0 +1,8 @@
+{
+    "methods" :
+    [
+        {
+            "method" : ["Evil_Error_UnknownError", "log"]
+        }
+    ]
+}
