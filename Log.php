@@ -70,6 +70,7 @@
                 $logger->log($message, Zend_Log::INFO);
             }
         }
+        
     public static function log ($message, $levl = Zend_Log::INFO, $data = null)
     {
         if (Zend_Registry::isRegistered('logger')) {
