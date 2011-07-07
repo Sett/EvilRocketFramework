@@ -162,7 +162,7 @@ class Evil_Controller_DataTransformer
             if (empty($method)) {
 
                 foreach ($this->_methods as $method)
-                    $toCast[] = $this->getParameter($key, $method);
+                    $toCast[] = $this->getParameter($key, $conversion, $method);
 
             } else {
                     $toCast[] = $this->getParameter($key, $conversion, $method);
