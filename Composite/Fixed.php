@@ -11,12 +11,24 @@
             $info = $this->_fixed->info();
             $this->_fixedschema = $info['cols'];
         }
+        
+        public function truncate()
+        {
+        	$this->_fixed->delete();
+        	return $this;
+        }
 
         public function where ($key, $selector, $value = null,  $mode = 'new')
         {
             switch ($selector)
             {
                 case '=':
+	            case '<':
+	            case '>':
+	            case '<=':
+	            case '>=':
+	            case '!=':
+                	
                     if (in_array ($key, $this->_fixedschema)) {
                         $rows = $this->_fixed->fetchAll (
                             $this->_fixed
@@ -25,7 +37,7 @@
                                 $this->_fixed,
                                 array('id')
                             )
-                                ->where ($key . ' = ?', $value));
+                                ->where ($key . ' ' . $selector . ' ?', $value));
 
                         $ids = $rows->toArray ();
                     }
@@ -56,6 +68,10 @@
                             break;
                         }
                     break;
+                    
+                    default:
+                    		throw new Evil_Exception('Unknown selector '  .$selector);
+                    	break;
             }
 
             $ids = $rows->toArray ();

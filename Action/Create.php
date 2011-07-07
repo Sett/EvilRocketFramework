@@ -9,7 +9,7 @@
  * @version 0.0.3
  */
 
-class Evil_Action_Create extends Evil_Action_Abstract implements Evil_Action_Interface
+class Evil_Action_Create extends Evil_Action_Abstract
 {
     /**
      * @description create a row in a DB
@@ -24,12 +24,17 @@ class Evil_Action_Create extends Evil_Action_Abstract implements Evil_Action_Int
     protected function _actionCreate()
     {
         $params = self::$_info['params'];
+
+        foreach($params as $attr => $value)
+            $params[$attr] = is_numeric($value) ? (int) $value : htmlspecialchars($value);
+
         self::$_info['table']->insert($this->_cleanParams($params));
 
         if(isset(self::$_info['config']->create->redirect))
             self::$_info['controller']->_redirect(self::$_info['config']->create->redirect);
 
         self::$_info['controller']->view->result = '<span style="color: green; font-size: 24px">Created</span>';
+
         return $params;
     }
 }

@@ -102,11 +102,12 @@ class Evil_Json_Rpc
 		$request = Zend_Json::encode($requestParams);
 		$client->setHeaders('Content-type','application/json');
 		$client->setRawData($request);
+		$response = $client->request('POST');
 		try {
-		    return Zend_Json::decode($client->request('POST')->getBody());
+		    return Zend_Json::decode($response->getBody());
 		} catch (Exception $e)
 		{
-		    return array('ex' => $e->__toString(),'response' => $client->request('POST')->getBody());
+		    return array('ex' => $e->__toString(),'response' => $response->getBody());
 		}
 		
     }

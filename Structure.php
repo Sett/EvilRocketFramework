@@ -20,13 +20,16 @@
                 return $config['evil']['object']['map'][$type];
         }
 
-        public static function getObject ($type, $id = null)
-        {
-            if (!isset(self::$_Structures['Object'][$type][$id]))
-            {
-                $className = 'Evil_Object_'.self::_getMapper($type);
-                self::$_Structures['Object'][$type][$id] = new $className($type, $id);
-            }
+        public static function getObject($type, $id = null) {
+        	
+		if (! isset ( self::$_Structures ['Object'] [$type] [$id] )) {
+			$className = 'Evil_Object_' . self::_getMapper ( $type );
+			if (null != $id) {
+				self::$_Structures ['Object'] [$type] [$id] = new $className ( $type, $id );
+			} else {
+				return new $className ( $type, $id );
+			}
+		}
             return self::$_Structures['Object'][$type][$id];
 
         }

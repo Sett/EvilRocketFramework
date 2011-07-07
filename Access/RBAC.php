@@ -29,6 +29,7 @@
         	$decision	= false;
         	$object 	= Zend_Registry::get('userid');
         	$user 		= Evil_Structure::getObject('user', $object);
+        	Zend_Registry::set('userData', $user->data());
         	$role 		= $user->getValue('role');
             $logger 	= Zend_Registry::get('logger');
 

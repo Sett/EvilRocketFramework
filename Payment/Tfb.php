@@ -67,7 +67,8 @@ class Evil_Payment_Tfb extends Evil_Payment implements Evil_Payment_Interface
         /**
          * Convert rub in copicks
          */
-        $data['amount'] = floor(($data['amount'] * 100));
+        if (isset($data['amount']))
+            $data['amount'] = floor(($data['amount'] * 100));
 
         $client   = new Zend_Http_Client($url);
 

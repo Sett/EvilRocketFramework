@@ -1,0 +1,60 @@
+{
+    "comment" :
+    {
+        "form" :
+        {
+            "elements" :
+            {
+                "author" :
+                {
+                    "type" : "label"
+                },
+
+                "ctime" :
+                {
+                    "type" : "label"
+                },
+
+                "title" :
+                {
+                    "type" : "label"
+                }
+            }
+        },
+
+        "commentForm" :
+        {
+            "elements" :
+            {
+                "submit" :
+                {
+                    "type" : "submit"
+                },
+
+                "do" :
+                {
+                    "type" : "hidden",
+                    "options" :
+                    {
+                        "value" : "comment"
+                    }
+                }
+            }
+        },
+
+        "actions" :
+        {
+            "list" :
+            {
+                "ifViewNotExistsRenderDefault" : "skip"
+            }
+        },
+
+        "author" :
+        {
+            "table" : "profile",
+            "idField" : "id",
+            "nameField" : "name"
+        }
+    }
+}
