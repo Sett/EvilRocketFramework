@@ -2,8 +2,9 @@
 /**
  * @description Обработчик массивов
  * @author nur, Se#
- * @version 0.0.2
+ * @version 0.0.3
  * @changeLog
+ * 0.0.3 added methods byField and filter
  * 0.0.2 added methods jut, prepareData
  */
 class Evil_Array
@@ -131,5 +132,67 @@ class Evil_Array
         }
 
         return $r;
+    }
+
+    /**
+     * @description make a new array($field => whole cell| data[$perField]);
+     * Example:
+     * $users = Array(
+     *  0 => array('id' => 2, 'login' => 'user1'),
+     *  1 => array('id' => 3, 'login' => 'userN')
+     * )
+     * $result = Evil_Array::byField($users, null, 'id', 'login');
+     *
+     * $result :
+     * array(
+     *  2 => 'user1',
+     *  3 => 'userN'
+     * )
+     * 
+     * @static
+     * @param array|string $dataOrName array for operating or a table name (will fetch all)
+     * @param object|null $db
+     * @param string $field
+     * @param bool $perField
+     * @return array
+     * @author Se#
+     * @version 0.0.1
+     */
+    public static function byField($dataOrName = array(), $db = null, $field = 'id', $perField = false)
+    {
+        $db = $db ? $db : Zend_Registry::get('db');
+        if(is_string($dataOrName))// name
+            $data = $db->fetchAll($db->select()->from(Evil_DB::scope2table($dataOrName)));
+        else
+            $data = $dataOrName;
+
+        $result = array();
+        $count = count($data);
+        for($i = 0; $i < $count; $i++)
+        {
+            $id = isset($data[$i][$field]) ? $data[$i][$field] : 0;
+            $result[$id] = $perField && isset($data[$i][$perField]) ? $data[$i][$perField] : $data[$i];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @description summary for Evil_Array filters.
+     * Example:
+     * $result = Evil_Array::filter('byField', array($users, null, 'id', 'login'));//see byField method
+     * @static
+     * @param string $filterName
+     * @param array $args
+     * @return mixed|null
+     * @author Se#
+     * @version 0.0.1
+     */
+    public static function filter($filterName,array $args)
+    {
+        if(is_string($filterName) && method_exists('Evil_Array', $filterName))
+            return call_user_func_array(array('Evil_Array', $filterName), $args);
+
+        return null;
     }
 }
