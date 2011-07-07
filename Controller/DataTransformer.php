@@ -123,11 +123,14 @@ class Evil_Controller_DataTransformer
 
         foreach ($data as $key => &$value) {
 
+            if (!isset($this->_entities[$namespace][$key]))
+                continue;
+            
             $type = $this->_entities[$namespace][$key];
 
             if (!in_array($type, $this->_enabledTypes))
                 /// FIXME: maybe use some magic keys or check class or existing global function
-                throw new Evil_Exception('Anknown type to cast \'' . $type . '\'');
+                throw new Evil_Exception('Anknown type to cast \'' . $type . '\'of key \'' . $key . '\'');
 
             if (!settype($value, $type))
                 throw new Evil_Exception('Cannot cast type \'' . $type . '\' to value of key \'' . $key . '\'');
@@ -159,7 +162,7 @@ class Evil_Controller_DataTransformer
             if (empty($method)) {
 
                 foreach ($this->_methods as $method)
-                    $toCast[] = $this->getParameter($key, $method);
+                    $toCast[] = $this->getParameter($key, $conversion, $method);
 
             } else {
                     $toCast[] = $this->getParameter($key, $conversion, $method);
