@@ -159,34 +159,32 @@
                     if (null !== $value and !empty($value))
                         $this->_fluid->delete(
                             $this->_fluid->getAdapter()->quoteInto(array('i = ?','k = ?','v = ?'), array($this->_id, $key, $value)));
-                    else
-                        $this->_fluid->delete(
-                            $this->_fluid->getAdapter()->quoteInto(array('i = ?','k = ?'), array($this->_id, $key)));
-                }
-
-            return $this;
-        }
-
-        public function setNode  ($key, $value, $oldvalue = null)
-        {
-            if (!in_array($key, $this->_fixedschema))
+			else
+				$this->_fluid->delete ( $this->_fluid->getAdapter ()->quoteInto ( array ('i = ?', 'k = ?' ), array ($this->_id, $key ) ) );
+		}
+		
+		return $this;
+	}
+	
+	public function setNode($key, $value, $oldvalue = null) {
+		if (! in_array ( $key, $this->_fixedschema )) {
+			if (null !== $oldvalue and ! empty ( $oldvalue )) {
+				if (in_array ( $oldvalue, $this->_data [$key] ))
+					$this->_fluid->update ( array ('k' => $key, 'v' => $value ), array ('i = ? ' => $this->_id, 'k = ? ' => $key, 'v = ?' => $key ) );
+			} else {
+				if (isset ( $this->_data [$key] ))
+					$this->_fluid->update ( array ('k' => $key, 'v' => $value ), array ('i = ?' => $this->_id, 'k = ?' => $key ) );
+				else
+					$this->addNode ( $key, $value );
+			}
+		} else
             {
-                if (null !== $oldvalue and !empty($oldvalue))
-                {
-                    if (in_array($oldvalue, $this->_data[$key]))
-                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = ? ' => $this->_id,'k = ? ' => $key,'v = ?' => $key));
-                }
-                else
-                {
-                    if (isset($this->_data[$key]))
-                        $this->_fluid->update(array('k'=>$key, 'v'=>$value), array('i = ?' => $this->_id ,'k = ?' => $key));
-                    else
-                        $this->addNode($key, $value);
-                }
-            }
-            else
+            	if($value == $oldvalue)
+            	{
+            		return $this;
+            	}
                 $this->_fixed->update(array($key => $value), array('id = "'.$this->_id.'"'));
-
+            }
             return $this;
         }
 

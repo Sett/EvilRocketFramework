@@ -19,15 +19,23 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
     protected $_fixed = null;
 
     protected $_loaded = FALSE;
-    public function __construct ($type, $id = null)
+    public function __construct ($type, $id = null,$data = null)
     {   
+
+                    
         $this->_type = $type;
-        $this->_fixed = new Zend_Db_Table(Evil_DB::scope2table($type));
-        $info = $this->_fixed->info();
-        $this->_info = $info;
-        $this->_fixedschema = $info['cols'];
-        if (null !== $id)
-            $this->load($id);
+		$this->_fixed = new Zend_Db_Table ( Evil_DB::scope2table ( $type ) );
+		$info = $this->_fixed->info ();
+		$this->_info = $info;
+		$this->_fixedschema = $info ['cols'];
+		if ($data !== null)
+           {
+               $this->_data = $data;
+               $this->_loaded = true;
+           }
+           else
+               if (null !== $id)
+                    $this->load($id);
         return true;
     }
 
@@ -57,7 +65,7 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
     }
     
     
-    public function create ($id =null, $data)
+    public function create ($id = null, $data)
     {
         $this->_id = $id;
         $fixedvalues = array('id' => $id);
@@ -90,7 +98,11 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
 
     public function setNode ($key, $value, $oldvalue = null)
     {
-        $this->_fixed->update(array($key => $value), array('id = "' . $this->_id . '"'));
+    	if ($value != $oldvalue)
+    	{
+    		$where = $this->_fixed->getAdapter()->quoteInto('id = ?', $this->_id);
+        	$this->_fixed->update(array($key => $value), $where);
+    	}
         return $this;
     }
 

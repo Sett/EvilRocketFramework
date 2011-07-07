@@ -65,7 +65,7 @@
             if (extension_loaded('xcache'))
             {
                   $frontendOptions = array(
-                     'lifetime' => 60,
+                     'lifetime' => 60 * 5, //5min
                      'automatic_serialization' => true
                   );
 

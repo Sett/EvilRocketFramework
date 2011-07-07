@@ -10,6 +10,6 @@
     interface Evil_Composite_Interface
     {
         function data();
-        function where($key, $selector, $value = null, $mode = 'new');
+        function where($key, $selector, $value = null, $offset = 0, $count = 500, $orderBy = 'id DESC');
         function addDNode($key, $fn);
     }

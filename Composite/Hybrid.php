@@ -48,12 +48,12 @@
         	}
         	return $this;
         }
-        public function where ($key, $selector, $value = null, $offset = 0, $count = 50, $orderBy = 'id DESC')
+        public function where ($key, $selector, $value = null, $offset = 0, $count = 500, $orderBy = 'id DESC')
         {	
             switch ($selector)
             {
             	case 'multi':
-            				$this->_lastQuery = $this->_fixed->select ()->from ( $this->_fixed, array ('id' ) );	
+            				$this->_lastQuery = $this->_fixed->select ()->from ( $this->_fixed );	
             				foreach ($value as $fieldName => $fieldParams)
             				{
             					foreach ($fieldParams as $val => $selector)
@@ -63,27 +63,27 @@
 		            			
 								
             				}
+            				
            					 $rows = $this->_fixed->fetchAll ( $this->_lastQuery );
 		                     $ids = $rows->toArray ();
 		
-		                        foreach ($ids as $id)
+		                        foreach ($ids as $data)
 		                        {
-		                            $id = $id['id'];
+		                            $id = $data['id'];
 		                            $this->_ids[] = $id;
-		                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
+		                            $this->_items[$id] = Evil_Structure::getObject($this->_type, $id, $data);
 		                        }
             		break;
                 case '*':
                 		$this->_lastQuery = $this->_fixed->select()->limitPage($offset, $count)->order($orderBy) ;
                         $rows = $this->_fixed->fetchAll($this->_lastQuery); //count and offset only for selector==*
-
                         $ids = $rows->toArray ();
 
-                        foreach ($ids as $id)
+                        foreach ($ids as $data)
                         {
-                            $id = $id['id'];
+                            $id = $data['id'];
                             $this->_ids[] = $id;
-                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
+                            $this->_items[$id] = Evil_Structure::getObject($this->_type, $id, $data);
                         }
 
                 break;
@@ -95,15 +95,15 @@
                 case '<=':
                     if (in_array ($key, $this->_fixedschema)) {
                     	
-                    	$this->_lastQuery = $this->_fixed->select ()->limitPage($offset, $count)->from ( $this->_fixed, array ('id' ) )->where ( $key . ' ' . $selector . ' ?', $value );
+                    	$this->_lastQuery = $this->_fixed->select ()->limitPage($offset, $count)->from ( $this->_fixed)->where ( $key . ' ' . $selector . ' ?', $value );
 						$rows = $this->_fixed->fetchAll ( $this->_lastQuery );
                         $ids = $rows->toArray ();
 
-                        foreach ($ids as $id)
+                        foreach ($ids as $data)
                         {
-                            $id = $id['id'];
+                            $id = $data['id'];
                             $this->_ids[] = $id;
-                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
+                            $this->_items[$id] = Evil_Structure::getObject($this->_type, $id, $data);
                         }
                     }
                     else
@@ -119,11 +119,11 @@
                         $rows = $this->_fluid->fetchAll ( $this->_lastQuery );
 
                         $ids = $rows->toArray ();
-                        foreach ($ids as $id)
+                        foreach ($ids as $data)
                         {
-                            $id = $id['i'];
+                            $id = $data['i'];
                             $this->_ids[] = $id;
-                            $this->_items[$id] = new Evil_Object_Hybrid($this->_type, $id);
+                            $this->_items[$id] = Evil_Structure::getObject($this->_type, $id, $data);
                         }
                     }
 

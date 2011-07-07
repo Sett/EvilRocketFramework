@@ -16,6 +16,7 @@
         private $_ids = array();
         public $_items = array(); // FIXME Private
         private $_type;
+        protected $_loadedData = null;
         
         public function count ()
         {
@@ -136,6 +137,10 @@
 
         public function data ($key = null)
         {
+        	if (null != $this->_loadedData)
+        	{
+        		return $this->_loadedData;
+        	}
             $output = array();
 
             if ($key == null)
