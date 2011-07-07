@@ -15,13 +15,13 @@
             if(isset($logExp['use']) && method_exists($this, $logExp['use']) && $logExp[$logExp['use']])
                 call_user_func_array(array($this, $config['evil']['log']['expose']['use']), array($logger));
 
-            $columnMapping = array('lvl' => 'priority', 'msg' => 'message');
-            $dbWriter = new Zend_Log_Writer_Db(Zend_Registry::get('db'), Zend_Registry::get('db-prefix').'log', $columnMapping);
+            //$columnMapping = array('lvl' => 'priority', 'msg' => 'message');
+            //$dbWriter = new Zend_Log_Writer_Db(Zend_Registry::get('db'), Zend_Registry::get('db-prefix').'log', $columnMapping);
 
-            $onlyCrit = new Zend_Log_Filter_Priority(Zend_Log::CRIT);
-            $dbWriter->addFilter($onlyCrit);
+           // $onlyCrit = new Zend_Log_Filter_Priority(Zend_Log::CRIT);
+           // $dbWriter->addFilter($onlyCrit);
 
-            $logger->addWriter($dbWriter);
+ //           $logger->addWriter($dbWriter);
 
             Zend_Registry::set('logger',$logger);
         }
@@ -70,6 +70,7 @@
                 $logger->log($message, Zend_Log::INFO);
             }
         }
+        
     public static function log ($message, $levl = Zend_Log::INFO, $data = null)
     {
         if (Zend_Registry::isRegistered('logger')) {
