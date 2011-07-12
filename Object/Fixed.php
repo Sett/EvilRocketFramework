@@ -20,22 +20,25 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
 
     protected $_loaded = FALSE;
     public function __construct ($type, $id = null,$data = null)
-    {   
-
-                    
-        $this->_type = $type;
+    {
+		
+		$this->_type = $type;
 		$this->_fixed = new Zend_Db_Table ( Evil_DB::scope2table ( $type ) );
 		$info = $this->_fixed->info ();
 		$this->_info = $info;
 		$this->_fixedschema = $info ['cols'];
-		if ($data !== null)
-           {
-               $this->_data = $data;
-               $this->_loaded = true;
+		if ($data != null) {
+			$this->_id = $id;
+			$this->_data = $data;
+            $this->_loaded = true;
            }
            else
-               if (null !== $id)
+           {
+               if (null != $id)
+               {
                     $this->load($id);
+               }
+           }
         return true;
     }
 
@@ -152,5 +155,7 @@ class Evil_Object_Fixed extends Evil_Object_Base implements Evil_Object_Interfac
                     
         $this->_fixed->update($filtered, $where);
         $this->_loaded = false;
+        
+        return $this;
     }
 }

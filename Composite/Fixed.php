@@ -22,6 +22,15 @@
         	return $this;
         }
 
+        public function update($data)
+        {
+        	foreach ($this->_items as $item)
+        	{
+        		$item->update($data);
+        	}
+        	return $this;
+        }
+        
         public function where ($key, $selector, $value = null, $offset = 0, $count = 500, $orderBy = 'id DESC')
         {
             switch ($selector)

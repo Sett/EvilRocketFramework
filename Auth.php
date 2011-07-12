@@ -19,20 +19,25 @@ class Evil_Auth extends Zend_Controller_Plugin_Abstract
     private $_ticket;
     public function init ()
     {
+    	Zend_Registry::set('userid', - 1);
         $this->_ticket = Evil_Structure::getObject('ticket');
-        Zend_Registry::set('userid', - 1);
-    }
-    public function routeStartup (Zend_Controller_Request_Abstract $request)
-    {
-        parent::routeStartup($request);
-        $this->init();
-        //TODO:fix this
-        if ('/api' != $request->getRequestUri())
-            $this->audit();
     }
     public function routeShutdown (Zend_Controller_Request_Abstract $request)
     {
-        parent::routeShutdown($request);
+        parent::routeStartup($request);
+       
+        
+        $config = Zend_Registry::get('config');
+        $ingore = Evil_Array::get('evil.auth.ignoreControllers', $config);
+        if (is_array($ingore))
+        {
+        	if(in_array($request->getControllerName(),$ingore))
+        	{
+        		return null;
+        	}
+        }
+       $this->init();
+       $this->audit();
     }
     private function _seal ()
     {
