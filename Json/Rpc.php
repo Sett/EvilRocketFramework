@@ -90,7 +90,13 @@ class Evil_Json_Rpc
                 
                 self::$rpcUrl = isset($config['jsonrpc']['url']) ? $config['jsonrpc']['url'] :null;
             }
-             $client = new Zend_Http_Client(self::$rpcUrl);
+            $options = array(
+                'maxredirects' => 5,
+                'timeout'      => 300,
+                'useragent'    => 'Evil_Json_Rpc'
+            );
+            $client = new Zend_Http_Client(self::$rpcUrl);
+            $client->setConfig($options);
         }
        
         $requestParams = array(
