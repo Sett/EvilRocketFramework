@@ -10,7 +10,7 @@ class Evil_Composite_Fixed extends Evil_Composite_Base implements Evil_Composite
 		$this->_fixed = new Zend_Db_Table ( Evil_DB::scope2table ( $type ) );
 		$info = $this->_fixed->info ();
 		$this->_fixedschema = $info ['cols'];
-		$this->_lastQuery = null;
+		$this->_lastQuery = $this->_fixed->select ()->from ( $this->_fixed );
 	
 	}
 	public function erase() {
