@@ -42,7 +42,14 @@ abstract class Evil_Access_Abstract extends Zend_Controller_Plugin_Abstract {
 		$this->init ();
 		if (Zend_Controller_Front::getInstance ()->getDispatcher ()->isDispatchable ( $request )) {
 			if ($this->denied ( $request->getParam ( 'id' ), $request->getControllerName (), $request->getActionName () ))
-				throw new Evil_Exception ( 'Access Denied for ' . $request->getControllerName () . '::' . $request->getActionName (), 403 );
+			{
+				/**
+				 * я считаю что так будет лучше
+				 * @author NuR
+				 */
+				$this->_response->setRedirect('/auth/');
+				//	throw new Evil_Exception ( 'Access Denied for ' . $request->getControllerName () . '::' . $request->getActionName (), 403 );
+			}
 		} else {
 			throw new Evil_Exception ( 'Not found ' . $request->getControllerName () . '::' . $request->getActionName (), 404 );
 		}
