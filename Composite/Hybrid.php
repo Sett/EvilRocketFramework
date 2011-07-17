@@ -40,6 +40,15 @@
         	 
         }
 
+      	public function erase()
+        {
+        	foreach ($this->_items as $item)
+        	{
+        		$item->erase();
+        	}
+        	return $this;
+        }
+        
         public function update($data)
         {
         	foreach ($this->_items as $item)
