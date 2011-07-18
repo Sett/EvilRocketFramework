@@ -110,7 +110,6 @@ class Evil_Object_Fixed_NestedSets extends Evil_Object_Fixed_Required
         $data['lvl'] + 1;// inc level
         $resultData = $requiredData + $data;// merge required data and dynamic data
 
-
         $this->_fixed->insert($resultData);
 
         return Zend_Registry::get('db')->lastInsertId();
@@ -131,10 +130,22 @@ class Evil_Object_Fixed_NestedSets extends Evil_Object_Fixed_Required
         $root = $this->_fixed->fetchRow($this->_fixed->select()->where('type="root"'));
 
         if($root)
-            $data['parentId'] = $root->id;
+            $data['parentId'] = $this->createVirtual($root);
         else // initialize global tree
             $this->_fixed->insert(array('lk' => 1, 'rk' => 2, 'lvl' => 1, 'type' => 'root'));
 
+        return $this->create($data);
+    }
+
+    /**
+     * @param $root
+     * @return bool|int
+     */
+    public function createVirtual($root)
+    {
+        $root = is_object($root) ? $root->toArray() : $root;
+        $data['parentId'] = isset($root['id']) ? $root['id'] : 0;
+        $data['type']     = 'virtual';
         return $this->create($data);
     }
 
