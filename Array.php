@@ -2,8 +2,9 @@
 /**
  * @description Обработчик массивов
  * @author nur, Se#
- * @version 0.0.3
+ * @version 0.0.4
  * @changeLog
+ * 0.0.4 added methods convert and convertLevel2LRKeys
  * 0.0.3 added methods byField and filter
  * 0.0.2 added methods jut, prepareData
  */
@@ -16,6 +17,22 @@ class Evil_Array
      * @version 0.0.1
      */
     public static $operated = array();
+
+    /**
+     * @description left key, for calculating lk, rk by level
+     * @var int
+     * @author Se#
+     * @version 0.0.1
+     */
+    protected static $_lk = 0;
+
+    /**
+     * @description right key, for calculating lk, rk by level
+     * @var int
+     * @author Se#
+     * @version 0.0.1
+     */
+	protected static $_rk = 0;
     
     /**
      * Доставалка из многомерных массивов
@@ -194,5 +211,78 @@ class Evil_Array
             return call_user_func_array(array('Evil_Array', $filterName), $args);
 
         return null;
+    }
+
+    /**
+     * @description factory for different types of converting.
+     * Ex.: Evil_Array::convert('Level2LRKeys', array($src, $needed, $curLevel, $index, $levelField));
+     * @static
+     * @param string $type
+     * @param array $args
+     * @return mixed|null
+     * @author Se#
+     * @version 0.0.1
+     */
+    public static function convert($type, array $args)
+    {
+        if(!is_string($type))
+            return null;
+        
+        $method = 'convert' . $type;
+
+        return method_exists('Evil_Array', $method) ? call_user_func_array(array('Evil_Array', $method), $args) : null;
+    }
+
+    /**
+     * @static
+     * @param array $src source array
+     * @param array $needed needed fields
+     * @param int $curLevel
+     * @param int $index
+     * @param string $levelField where from level should be extracted
+     * @return array
+     * @author Se#
+     * @version 0.0.1
+     */
+	public static function convertLevel2LRKeys(array $src, array $needed, $curLevel = 0, $index = 0, $levelField = 'level')
+    {
+        $result = array();
+        $count  = count($src);
+
+        for($i = $index; $i < $count; $i++)
+        {
+            if(isset(self::$operated[$i]))// do not operate a row second time
+                continue;
+
+            if($src[$i][$levelField] > $curLevel)// child
+            {
+                self::$operated[$i] = true;
+                //$prepared = self::prepareData($src[$i], $needed);
+				self::$_lk++;
+				self::$_rk = self::$_lk+1;
+				$result[$i] = $src[$i];
+				$result[$i]['lk'] = self::$_lk;
+				$result[$i]['rk'] = self::$_rk;
+
+                // get children for a child
+                $result += self::convertLevel2LRKeys($src, $needed, $src[$i][$levelField], $i+1);
+				if(isset($result[$i+1]))
+				{
+					self::$_rk++;
+					$result[$i]['rk'] = self::$_rk;
+					self::$_lk = self::$_rk;
+				}
+				else
+					self::$_lk++;
+
+                continue;
+            }
+            elseif($src[$i][$levelField] < $curLevel)// new branch
+                return $result;
+            elseif($i)// the same branch
+                return $result;
+        }
+
+        return $result;
     }
 }
