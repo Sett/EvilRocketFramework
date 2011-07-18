@@ -1,8 +1,10 @@
 <?php
 /**
  * @author Se#
- * @version 0.0.1
+ * @version 0.0.2
  * @description Realize Nested Sets
+ * @changeLog
+ * 0.0.2 added creating virtual roots, which allows to operate any count of trees at once
  */
 class Evil_Object_Fixed_NestedSets extends Evil_Object_Fixed_Required
 {
@@ -138,8 +140,11 @@ class Evil_Object_Fixed_NestedSets extends Evil_Object_Fixed_Required
     }
 
     /**
+     * @description create virtual root
      * @param $root
      * @return bool|int
+     * @author Se#
+     * @version 0.0.1
      */
     public function createVirtual($root)
     {
