@@ -69,7 +69,7 @@ class Evil_Rest_Redmine_Issue extends Evil_Rest_Client
         if(isset($keys['default']))
             $default = $keys['default'];
 
-        $need  = isset($keys['need']) ? $keys['need'] : array('projectId', 'subject', 'description');
+        $need  = isset($keys['need']) ? $keys['need'] : array('project_id', 'subject', 'description', 'tracker_id');
         $data  = array();
         $count = count($need);
         for($i = 0; $i < $count; $i++)

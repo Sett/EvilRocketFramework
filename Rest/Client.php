@@ -45,6 +45,7 @@ class Evil_Rest_Client implements Evil_Rest_Interface
      * @param array $args
      * @author Se#
      * @version 0.0.1
+     * @return boolean
      */
     public function __construct($args, $request = false)
     {
@@ -69,7 +70,6 @@ class Evil_Rest_Client implements Evil_Rest_Interface
      */
     protected function _setClient($url)
     {
-        echo ' URL: ' . $url . ' ; ';
         $this->_client = curl_init($url);
         curl_setopt($this->_client, CURLOPT_POST, 1);
     }

@@ -41,11 +41,10 @@ class Evil_Autoloader extends Zend_Controller_Plugin_Abstract
                 $viewRenderer->initView();
 
             $view = $viewRenderer->view;
-
             foreach($resources as $res => $method)
             {
-                if(method_exists($this, $res) && isset($params[$res]))
-                    $this->$res($params[$res], $view);
+                if(method_exists($this, $method) && isset($params[$method]))
+                    $this->$method($params[$method], $view);
             }
         }
     }

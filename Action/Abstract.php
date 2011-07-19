@@ -3,7 +3,7 @@
  * @description Abstract action, use default config if there is no personal,
  * use default view if there is no personal view
  * @author Se#
- * @version 0.0.5
+ * @version 0.0.6
  */
 abstract class Evil_Action_Abstract implements Evil_Action_Interface
 {
@@ -300,7 +300,7 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
         else
             $formConfig = $config[$action]['form'];
 
-        return $this->_defaultFormValues($formConfig);
+        return Evil_Form::callback($formConfig, 'default');
     }
 
     protected function _applyDefault($config, $action)
@@ -336,30 +336,6 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
         }
 
         return $actConfig;
-    }
-
-    /**
-     * @description operate options : {"default" : ... }
-     * @param array $formConfig
-     * @return
-     * @author Se#
-     * @version 0.0.1
-     */
-    protected function _defaultFormValues($formConfig)
-    {
-        $elements = isset($formConfig['elements']) ? $formConfig['elements'] : array();
-
-        foreach($elements as $name => $config)
-        {
-            if(isset($config['options']['default']))
-            {
-                $formConfig['elements'][$name]['options']['value'] = call_user_func_array($config['options']['default'],
-                                                                                          array($formConfig['elements'][$name]));
-                unset($formConfig['elements'][$name]['options']['default']);
-            }
-        }
-
-        return $formConfig;
     }
 
     /**
@@ -641,77 +617,19 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
             if($columnScheme['PRIMARY'])// don't show if primary key
                 continue;
 
-            $typeOptions = $this->_getFieldType($columnScheme['DATA_TYPE']);// return array('type'[, 'options'])
+            $typeOptions = Evil_Form::getFieldType($columnScheme['DATA_TYPE']);// return array('type'[, 'options'])
 
             $attrOptions = array('label' => ucfirst($columnName));
             if(isset($actionConfig['default']))
                 $attrOptions += $actionConfig['default'];
 
-            $options = $this->_setFormField($options, $columnName, $attrOptions, $typeOptions);
+            $options = Evil_Form::setFormField($options, $columnName, $attrOptions, $typeOptions);
         }
 
         $options['elements']['do']     = array('type' => 'hidden', 'options' => array('value' => $action));// add submit button
         $options['elements']['submit'] = array('type' => 'submit');// add submit button
 
         return $options;
-    }
-
-    /**
-     * @description set form field
-     * @param array $options
-     * @param string $columnName
-     * @param array $attrOptions
-     * @param array $typeOptions
-     * @return
-     * @author Se#
-     * @version 0.0.1
-     */
-    protected function _setFormField($options, $columnName, $attrOptions, $typeOptions)
-    {
-        if(isset($options['elements'][$columnName]) && ('ignore' == $options['elements'][$columnName]))
-            unset($options['elements'][$columnName]);
-        else
-        {
-            if(isset($options['elements'][$columnName]))
-            {
-                $options['elements'][$columnName]['type'] = isset($options['elements'][$columnName]['type']) ?
-                        $options['elements'][$columnName]['type'] :
-                        $typeOptions[0];
-
-                $options['elements'][$columnName]['options'] = isset($options['elements'][$columnName]['options']) ?
-                        $options['elements'][$columnName]['options'] + $attrOptions :
-                        $attrOptions;
-            }
-            else
-            {
-                $options['elements'][$columnName] = array(
-                    'type' => $typeOptions[0],
-                    'options' =>  $attrOptions
-                );
-            }
-
-            if(isset($typeOptions[1]))// if there is some additional options, merge it with the basic options
-                $options['elements'][$columnName]['options'] += $typeOptions[1];
-        }
-
-        return $options;
-    }
-
-    /**
-     * @description convert mysql type to the HTML-type and add (if it needs) options for the HTML-type
-     * @param string $type
-     * @return array
-     * @author Se#
-     * @version 0.0.1
-     */
-    protected function _getFieldType($type)
-    {
-        switch($type)
-        {
-            case 'text' : return array('textarea', array('rows' => 5));
-            case 'int'  : return array('text');
-            default     : return array('text');
-        }
     }
 
     /**
