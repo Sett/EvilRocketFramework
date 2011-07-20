@@ -169,8 +169,10 @@
 	public function setNode($key, $value, $oldvalue = null) {
 		if (! in_array ( $key, $this->_fixedschema )) {
 			if (null !== $oldvalue and ! empty ( $oldvalue )) {
-				if (in_array ( $oldvalue, $this->_data [$key] ))
+				if ( isset($this->_data [$key]) && $oldvalue != $this->_data [$key] )
+				{
 					$this->_fluid->update ( array ('k' => $key, 'v' => $value ), array ('i = ? ' => $this->_id, 'k = ? ' => $key, 'v = ?' => $key ) );
+				}
 			} else {
 				if (isset ( $this->_data [$key] ))
 					$this->_fluid->update ( array ('k' => $key, 'v' => $value ), array ('i = ?' => $this->_id, 'k = ?' => $key ) );
