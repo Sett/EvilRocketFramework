@@ -72,23 +72,28 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @static
      * @return array|mixed
      * @author Se#
-     * @version 0.0.2
+     * @version 0.0.3
      */
     public static function getInvokeConfig($params)
     {
         $personalPath = APPLICATION_PATH . '/configs/evil/invoke.json';
         $generalPath  = __DIR__ . '/Abstract/application/configs/invoke.json';
-        // decide what config get
-        $path   = file_exists($personalPath) ? $personalPath : (file_exists($generalPath) ? $generalPath : false);
-        $config = $path ? json_decode(file_get_contents($path), true) : false;
+        $config       = is_file($generalPath) ? json_decode(file_get_contents($generalPath), true) : array();
 
-        // if there is personal config for current controller
-        if(isset($params['controller']) && is_array($config) && isset($config[$params['controller']]))
+        if(is_file($personalPath))
         {
-            $config = $config[$params['controller']];
-            // if there is personal config for current action
-            if(isset($params['action']) && isset($config[$params['action']]))
-                $config = $config[$params['action']];
+            $pConfig = json_decode(file_get_contents($personalPath), true);
+            // if there is personal config for current controller
+            if(isset($params['controller']) && is_array($pConfig) && isset($pConfig[$params['controller']]))
+            {
+                // if there is personal config for current action
+                if(isset($params['action']) && isset($pConfig[$params['controller']][$params['action']]))
+                    $config = $pConfig[$params['controller']][$params['action']];
+                else
+                    $config = $pConfig[$params['controller']];
+            }
+            elseif(isset($pConfig['method-to-variable']))
+                $config = $pConfig;
         }
 
         return $config;
