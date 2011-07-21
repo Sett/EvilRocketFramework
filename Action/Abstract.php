@@ -717,15 +717,6 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
         return $root;
     }
 
-    public static function partial($controllerName, $actionName, $actionDo = 'default')
-    {
-        $link = 'http://' . $_SERVER['SERVER_NAME'] . '/'
-                                  . $controllerName . '/' . $actionName . '/do/' . $actionDo . '/partial/yes';
-
-        $data = file_get_contents($link);
-        return $data;
-    }
-
     /**
      * @description get attribute from th self::$_info
      * @param string $name
