@@ -3,7 +3,7 @@
  * @description Abstract action, use default config if there is no personal,
  * use default view if there is no personal view
  * @author Se#
- * @version 0.0.6
+ * @version 0.0.7
  */
 abstract class Evil_Action_Abstract implements Evil_Action_Interface
 {

@@ -72,10 +72,12 @@
                     $this->selfConfig['ext'] = 'ini';
 
                 //$methodClass = 'Evil_Action_'.ucfirst($this->_getParam('action'));// Se#
-                // BreathLess:
-                $methodClass = 'Evil_Action_'.ucfirst(substr($methodName, 0, strpos($methodName, 'Action')));
+                // Se#:
+                $namespace   = isset($this->selfConfig['namespace']) ? $this->selfConfig['namespace'] : 'Evil_Action_';
+                $methodClass = $namespace . ucfirst(substr($methodName, 0, strpos($methodName, 'Action')));// BreathLess
+
                 $method = new $methodClass();
-                $method ($this, $this->_getAllParams());
+                $method ($this, $this->_getAllParams());// call __invoke
             }
             else
                 return call_user_func_array(array(&$this, $methodName), $args);
