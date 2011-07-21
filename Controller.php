@@ -83,6 +83,11 @@
                 return call_user_func_array(array(&$this, $methodName), $args);
         }
 
+        public static function getNamespace($selfConfig = array())
+        {
+            if(!empty($selfConfig) && isset($selfConfig['namespace']))
+        }
+
         /**
          * turn of layout and view
          *

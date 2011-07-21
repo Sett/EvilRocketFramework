@@ -3,7 +3,7 @@
  * @description Abstract action, use default config if there is no personal,
  * use default view if there is no personal view
  * @author Se#
- * @version 0.0.7
+ * @version 0.0.8
  */
 abstract class Evil_Action_Abstract implements Evil_Action_Interface
 {
@@ -72,7 +72,7 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
      * @static
      * @return array
      * @author Se#
-     * @version 0.0.3
+     * @version 0.0.4
      */
     public static function getInvokeConfig($params)
     {
@@ -87,9 +87,13 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
             if(isset($params['controller']) && is_array($pConfig) && isset($pConfig[$params['controller']]))
             {
                 // if there is personal config for current action
-                if(isset($params['action']) && isset($pConfig[$params['controller']][$params['action']]))
+                if(isset($params['action']) &&
+                   isset($pConfig[$params['controller']][$params['action']]) &&
+                   isset($pConfig[$params['controller']][$params['action']]['method-to-variable']))
+                {
                     $config = $pConfig[$params['controller']][$params['action']];
-                else
+                }
+                elseif(isset($pConfig[$params['controller']]['method-to-variable']))
                     $config = $pConfig[$params['controller']];
             }
             elseif(isset($pConfig['method-to-variable']))
