@@ -7,7 +7,7 @@
      * @description: More than a CRUD From Codeine
      * @package Evil
      * @subpackage Code
-     * @version 0.2.1
+     * @version 0.2.2
      * @date 25.05.10
      * @time 10:58
      */
@@ -73,7 +73,7 @@
 
                 //$methodClass = 'Evil_Action_'.ucfirst($this->_getParam('action'));// Se#
                 // Se#:
-                $namespace   = isset($this->selfConfig['namespace']) ? $this->selfConfig['namespace'] : 'Evil_Action_';
+                $namespace   = self::getNamespace($this->selfConfig);
                 $methodClass = $namespace . ucfirst(substr($methodName, 0, strpos($methodName, 'Action')));// BreathLess
 
                 $method = new $methodClass();
@@ -83,9 +83,31 @@
                 return call_user_func_array(array(&$this, $methodName), $args);
         }
 
+        /**
+         * @description get action namespace
+         * @static
+         * @param array $selfConfig
+         * @return string
+         * @author Se#
+         * @version 0.0.1
+         */
         public static function getNamespace($selfConfig = array())
         {
             if(!empty($selfConfig) && isset($selfConfig['namespace']))
+                $namespace = $selfConfig['namespace'];
+            else
+            {
+                $namespace = 'Evil_Action_';
+
+                if(is_file(APPLICATION_PATH . '/configs/evil/controller.json'))
+                {
+                    $config = json_decode(file_get_contents(APPLICATION_PATH . '/configs/evil/controller.json'), true);
+                    if(isset($config['namespace']))
+                        $namespace = $config['namespace'];
+                }
+            }
+            
+            return $namespace;
         }
 
         /**
