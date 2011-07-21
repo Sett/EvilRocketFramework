@@ -70,7 +70,7 @@ abstract class Evil_Action_Abstract implements Evil_Action_Interface
     /**
      * @description get invoke config, may get personal for controller & action
      * @static
-     * @return array|mixed
+     * @return array
      * @author Se#
      * @version 0.0.3
      */
