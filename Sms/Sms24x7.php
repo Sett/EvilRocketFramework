@@ -8,9 +8,9 @@
  * @config example
  * @see application.ini
     evil.sms.transport ="Evil_Sms_Sms24x7"
-    evil.sms.config.email = "nur.php@gmail.com"
-    evil.sms.config.password = "8ZvKkD5"
-    evil.sms.config.sender_name = "opencity.ru
+    evil.sms.config.email = "email@example.com"
+    evil.sms.config.password = "xxxxxx"
+    evil.sms.config.sender_name = "mySite.com"
  *
  */
 class Evil_Sms_Sms24x7 implements Evil_Sms_Interface
